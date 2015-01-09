@@ -30,6 +30,7 @@
 #include <math.h>
 #include "../../elec_plugins.h"
 #include "ntricks.h"
+#include "../../inp.h"
 
 static int unused __attribute__ ((unused));
 
@@ -74,6 +75,12 @@ void sim_jv(struct device *in)
 
 	remesh_reset(in, in->Vapplied);
 
+	if (in->remesh == TRUE) {
+		light_solve_and_update(in, &(in->mylight),
+				       in->Psun * config.jv_light_efficiency,
+				       0.0);
+	}
+
 	V = in->Vapplied;
 	newton_set_min_ittr(30);
 	in->Vapplied = config.Vstart;
@@ -95,11 +102,15 @@ void sim_jv(struct device *in)
 	double n_voc = 0.0;
 	double r_voc = 0.0;
 	double nsc = 0.0;
+	double n_trap_voc = 0.0;
+	double p_trap_voc = 0.0;
+	double n_free_voc = 0.0;
+	double p_free_voc = 0.0;
+	double np_voc_tot = 0.0;
+	double r_pmax = 0.0;
+	double n_pmax = 0.0;
 	do {
 
-		if (in->fgen != 0)
-			light_solve_and_update(in, &(in->mylight), in->Psun,
-					       0.0);
 		in->Vapplied = V;
 
 		newton_sim_jv(in);
@@ -134,7 +145,7 @@ void sim_jv(struct device *in)
 
 		Pden = fabs(J * Vexternal);
 
-		plot_now(in, "jv_vars.plot");
+		plot_now(in, "jv.plot");
 
 		if (first == FALSE) {
 
@@ -158,12 +169,19 @@ void sim_jv(struct device *in)
 				    pow(get_extracted_np(in), 2.0);
 				r_voc = get_avg_recom(in);
 				n_voc = get_extracted_np(in);
+				np_voc_tot = get_total_np(in);
+				n_trap_voc = get_n_trapped_charge(in);
+				n_free_voc = get_free_n_charge(in);
+				p_trap_voc = get_p_trapped_charge(in);
+				p_free_voc = get_free_p_charge(in);
 
 			}
 
 			if ((Pden > Pdenlast) && (Vexternal > 0.0) && (J < 0.0)) {
 				in->Pmax = Pden;
 				in->Pmax_voltage = Vexternal;
+				r_pmax = get_avg_recom(in);
+				n_pmax = get_extracted_np(in);
 			}
 
 			if (Vexternal > Vstop)
@@ -181,11 +199,10 @@ void sim_jv(struct device *in)
 		Pdenlast = Pden;
 		first = FALSE;
 
-		if (get_dump_status(dump_energy_slice_switch) == TRUE) {
-			dump_energy_slice(in, ittr, in->dump_slicepos);
-		}
+		slice_check(in);
 
 		V += Vstep;
+		Vstep *= config.jv_step_mul;
 
 		if ((Vstep >= 0) && (V > Vstop)) {
 			in->stop = TRUE;
@@ -217,37 +234,31 @@ void sim_jv(struct device *in)
 		printf("Voltage to get Pmax= %lf (V)\n", in->Pmax_voltage);
 		printf("FF= %lf\n", in->FF * 100.0);
 		printf("Efficiency= %lf percent\n",
-		       mod(in->Pmax / in->Psun) * 100.0);
+		       fabs(in->Pmax / in->Psun) * 100.0);
 	}
 
+	FILE *out;
+	out = fopena(in->outputpath, "./sim_info.dat", "w");
+	fprintf(out, "#ff\n%le\n", in->FF);
+	fprintf(out, "#pce\n%le\n", fabs(in->Pmax / (in->Psun)) * 100.0);
+	fprintf(out, "#voc\n%le\n", in->Voc);
+	fprintf(out, "#jv_voc_tau\n%le\n", n_voc / r_voc);
+	fprintf(out, "#jv_voc_k\n%le\n", r_voc / n_voc);
+	fprintf(out, "#jv_pmax_n\n%le\n", n_pmax);
+	fprintf(out, "#jv_pmax_tau\n%le\n", n_pmax / r_pmax);
+	fprintf(out, "#jv_voc_nt\n%le\n", n_trap_voc);
+	fprintf(out, "#jv_voc_pt\n%le\n", p_trap_voc);
+	fprintf(out, "#jv_voc_nf\n%le\n", n_free_voc);
+	fprintf(out, "#jv_voc_pf\n%le\n", p_free_voc);
+	fprintf(out, "#jsc\n%le\n", in->Jsc);
+	fprintf(out, "#jv_jsc_n\n%le\n", nsc);
+	fprintf(out, "#jv_vbi\n%le\n", in->vbi);
+	fprintf(out, "#jv_gen\n%le\n", get_avg_gen(in));
+	fprintf(out, "#jv_voc_np_tot\n%le\n", np_voc_tot);
+	fprintf(out, "#end");
+	fclose(out);
+
 	if (get_dump_status(dump_iodump) == TRUE) {
-		iv = fopena(in->outputpath, "./ff.dat", "w");
-		fprintf(iv, "%le\n", in->FF);
-		fclose(iv);
-
-		FILE *outfile = fopena(in->outputpath, "./eff.dat", "w");
-		fprintf(outfile, "%le", mod(in->Pmax / (in->Psun)) * 100.0);
-		fclose(outfile);
-
-		outfile = fopena(in->outputpath, "./voc.dat", "w");
-		fprintf(outfile, "%le", in->Voc);
-		fclose(outfile);
-
-		outfile = fopena(in->outputpath, "./jsc.dat", "w");
-		fprintf(outfile, "%le", in->Jsc);
-		fclose(outfile);
-
-		outfile = fopena(in->outputpath, "./nsc.dat", "w");
-		fprintf(outfile, "%le", nsc);
-		fclose(outfile);
-
-		outfile = fopena(in->outputpath, "./vbi.dat", "w");
-		fprintf(outfile, "%le", in->vbi);
-		fclose(outfile);
-
-		outfile = fopena(in->outputpath, "./jv_gen.dat", "w");
-		fprintf(outfile, "%le", get_avg_gen(in));
-		fclose(outfile);
 
 		inter_save_a(&klist, in->outputpath, "k.dat");
 		inter_free(&klist);
@@ -255,10 +266,6 @@ void sim_jv(struct device *in)
 
 	FILE *kvocfile = fopena(in->outputpath, "./kvoc.dat", "w");
 	fprintf(kvocfile, "%le %le\n", n_voc, k_voc);
-	fclose(kvocfile);
-
-	kvocfile = fopena(in->outputpath, "./voc_tau.dat", "w");
-	fprintf(kvocfile, "%le %le\n", in->Voc, n_voc / r_voc);
 	fclose(kvocfile);
 
 	kvocfile = fopena(in->outputpath, "./n_tau.dat", "w");
@@ -287,31 +294,14 @@ void sim_jv(struct device *in)
 
 void jv_load_config(struct jv *in, struct device *dev)
 {
-	double ver = 0.0;
-	char name[200];
-	FILE *config = fopena(dev->outputpath, "jv.inp", "r");
+	inp_load(dev->outputpath, "jv.inp");
+	inp_check(1.2);
+	inp_search_double(&(in->Vstart), "#Vstart");
+	inp_search_double(&(in->Vstop), "#Vstop");
+	inp_search_double(&(in->Vstep), "#Vstep");
+	inp_search_double(&(in->jv_step_mul), "#jv_step_mul");
+	inp_search_double(&(in->jv_light_efficiency), "#jv_light_efficiency");
+	in->jv_light_efficiency = fabs(in->jv_light_efficiency);
+	inp_free();
 
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%le", &(in->Vstart));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%le", &(in->Vstop));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%le", &(in->Vstep));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%lf", &(ver));
-	if (ver != 1.0) {
-		printf("File compatability problem %s\n", "jv.inp");
-		exit(0);
-	}
-
-	unused = fscanf(config, "%s", name);
-
-	if (strcmp("#end", name) != 0) {
-		printf("Problem with jv.inp file last item read %s!\n", name);
-		exit(0);
-	}
-	fclose(config);
 }

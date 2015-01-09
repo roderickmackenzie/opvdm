@@ -735,7 +735,14 @@ void fill_matrix(struct device *in)
 				      in->srh_n_r4[i][band]);
 
 				if (get_dump_status(dump_iodump) == TRUE) {
-
+					in->nt_r1[i][band] =
+					    nc * in->srh_n_r1[i][band];
+					in->nt_r2[i][band] =
+					    in->srh_n_r2[i][band];
+					in->nt_r3[i][band] =
+					    pc * in->srh_n_r3[i][band];
+					in->nt_r4[i][band] =
+					    in->srh_n_r4[i][band];
 				}
 
 			}
@@ -782,6 +789,18 @@ void fill_matrix(struct device *in)
 				in->ptrap_to_n[i] +=
 				    -(-nc * in->srh_p_r3[i][band] +
 				      in->srh_p_r4[i][band]);
+
+				if (get_dump_status(dump_iodump) == TRUE) {
+					in->pt_r1[i][band] =
+					    pc * in->srh_p_r1[i][band];
+					in->pt_r2[i][band] =
+					    in->srh_p_r2[i][band];
+					in->pt_r3[i][band] =
+					    nc * in->srh_p_r3[i][band];
+					in->pt_r4[i][band] =
+					    in->srh_p_r4[i][band];
+				}
+
 			}
 
 		}
@@ -1052,8 +1071,7 @@ void fill_matrix(struct device *in)
 	}
 
 	if (pos > in->N) {
-		printf("Error %d %d %d\n", pos, in->N, in->newton_cur);
-		exit(1);
+		ewe("Error %d %d %d\n", pos, in->N, in->newton_cur);
 	}
 
 }
@@ -1078,18 +1096,18 @@ double get_cur_error(struct device *in)
 		    if ((in->interfaceright == TRUE)
 			&& (i == in->ymeshpoints - 1)) {
 		} else {
-			phi += mod(in->b[i]);
+			phi += fabs(in->b[i]);
 		}
 
-		n += mod(in->b[in->ymeshpoints * (1) + i]);
-		p += +mod(in->b[in->ymeshpoints * (1 + 1) + i]);
+		n += fabs(in->b[in->ymeshpoints * (1) + i]);
+		p += +fabs(in->b[in->ymeshpoints * (1 + 1) + i]);
 
 		if (in->ntrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
 				ttn +=
-				    mod(in->
-					b[in->ymeshpoints * (1 + 1 + 1 + band) +
-					  i]);
+				    fabs(in->
+					 b[in->ymeshpoints *
+					   (1 + 1 + 1 + band) + i]);
 
 			}
 		}
@@ -1097,10 +1115,10 @@ double get_cur_error(struct device *in)
 		if (in->ptrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
 				ttp +=
-				    mod(in->
-					b[in->ymeshpoints *
-					  (1 + 1 + 1 + in->srh_bands + band) +
-					  i]);
+				    fabs(in->
+					 b[in->ymeshpoints *
+					   (1 + 1 + 1 + in->srh_bands + band) +
+					   i]);
 			}
 		}
 
@@ -1112,10 +1130,7 @@ double get_cur_error(struct device *in)
 		       ttn, ttp);
 		solver_dump_matrix(in->M, in->N, in->Ti, in->Tj, in->Tx, in->b,
 				   "");
-		FILE *out = fopen("./server_stop.dat", "w");
-		fprintf(out, "solver\n");
-		fclose(out);
-		exit(1);
+		ewe("nan detected in newton solver\n");
 	}
 
 	return tot;

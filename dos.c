@@ -48,7 +48,7 @@ double get_dos_filled_n(struct device *in)
 			n_tot_den += dosn[in->imat[i]].srh_den[band];
 		}
 	}
-	n_tot = (n_tot_den - n_tot) / (in->srh_bands * in->ymeshpoints);
+	n_tot = (n_tot) / (n_tot_den);
 	return n_tot;
 }
 
@@ -64,7 +64,7 @@ double get_dos_filled_p(struct device *in)
 			p_tot_den += dosp[in->imat[i]].srh_den[band];
 		}
 	}
-	p_tot = (p_tot_den - p_tot) / (in->srh_bands * in->ymeshpoints);;
+	p_tot = (p_tot) / (p_tot_den);
 	return p_tot;
 }
 

@@ -149,7 +149,7 @@ double get_thermal_error(struct device *in)
 	double tot = 0.0;
 	int i;
 	for (i = 0; i < in->ymeshpoints; i++) {
-		tot += mod(thermal_b[i]);
+		tot += fabs(thermal_b[i]);
 	}
 	return tot;
 }

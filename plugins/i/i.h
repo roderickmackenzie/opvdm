@@ -33,6 +33,9 @@ struct istruct {
 	char name[200];
 };
 
+void inter_add_to_hist(struct istruct *in, double pos, double value);
+void inter_init_mesh(struct istruct *in, int len, double min, double max);
+void inter_smooth_range(struct istruct *in, int points, double x);
 double inter_avg_range(struct istruct *in, double start, double stop);
 double inter_array_get_max(double *data, int len);
 void inter_div(struct istruct *one, struct istruct *two);
@@ -56,6 +59,7 @@ void inter_to_new_mesh(struct istruct *in, struct istruct *out);
 void inter_swap(struct istruct *in);
 void inter_log_y_m(struct istruct *in);
 double inter_get_min(struct istruct *in);
+double inter_get_fabs_max(struct istruct *in);
 double inter_norm_to_one_range(struct istruct *in, double min, double max);
 void inter_chop(struct istruct *in, double min, double max);
 void inter_save_a(struct istruct *in, char *path, char *name);
@@ -96,4 +100,5 @@ void inter_import_array(struct istruct *in, double *x, double *y, int len,
 double inter_avg(struct istruct *in);
 void inter_convolve(struct istruct *one, struct istruct *two);
 void inter_save_backup(struct istruct *in, char *name, int backup);
+void inter_dft(double *real, double *imag, struct istruct *in, double fx);
 #endif

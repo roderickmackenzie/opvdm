@@ -67,7 +67,7 @@ void ramp_externalv(struct device *in, double from, double to)
 			printf("ramp: %lf %lf %d\n", V, to, in->newton_cur);
 		sim_externalv(in, V);
 
-		plot_now(in, "jv_vars.plot");
+		plot_now(in, "jv.plot");
 
 		if (fabs(in->Vapplied - to) < fabs(dV)) {
 			break;

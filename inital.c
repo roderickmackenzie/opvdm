@@ -69,6 +69,7 @@ void my_guess(struct device *in)
 	int i;
 
 	double Ef = 0.0;
+	double phi_ramp = 0.0;
 	double Eg = in->Eg[0];
 	double Xi = in->Xi[0];
 	double charge_left = in->lcharge;
@@ -89,6 +90,7 @@ void my_guess(struct device *in)
 		    get_top_from_n(charge_right, in->Te[in->ymeshpoints - 1],
 				   in->imat[in->ymeshpoints - 1]);
 	}
+
 	if (get_dump_status(dump_iodump) == TRUE) {
 		printf("check1= %e %e\n",
 		       get_p_den(top_l, in->Te[0], in->imat[0]), charge_left);
@@ -116,24 +118,26 @@ void my_guess(struct device *in)
 
 	if (get_dump_status(dump_iodump) == TRUE) {
 		double Lp =
-		    get_p_den((-Xi - in->phi[0] - Eg) - Ef, in->Th[0],
+		    get_p_den((-in->Xi[0] - in->phi[0] - Eg) - Ef, in->Th[0],
 			      in->imat[0]);
 		double Ln =
-		    get_n_den(Ef - (-Xi - in->phi[0]), in->Te[0], in->imat[0]);
+		    get_n_den(Ef - (-in->Xi[0] - in->phi[0]), in->Te[0],
+			      in->imat[0]);
 		double Rp =
-		    get_p_den((-Xi - delta_phi - Eg) - Ef,
-			      in->Th[in->ymeshpoints - 1],
+		    get_p_den((-in->Xi[in->ymeshpoints - 1] - delta_phi - Eg) -
+			      Ef, in->Th[in->ymeshpoints - 1],
 			      in->imat[in->ymeshpoints - 1]);
 		double Rn =
-		    get_n_den(Ef - (-Xi - delta_phi),
+		    get_n_den(Ef - (-in->Xi[in->ymeshpoints - 1] - delta_phi),
 			      in->Te[in->ymeshpoints - 1],
 			      in->imat[in->ymeshpoints - 1]);
 		printf("Ef=%e\n", Ef);
-		printf("Lp = %e\n", Lp);
-		printf("Ln = %e\n", Ln);
+		printf("Holes on left contact = %e\n", Lp);
+		printf("Electrons on left contact = %e\n", Ln);
 
-		printf("Rp = %e\n", Rp);
-		printf("Rn = %e\n", Rn);
+		printf("Holes on right contact = %e\n", Rp);
+		printf("Electrons on right contact = %e\n", Rn);
+
 		FILE *contacts = fopena(in->outputpath, "./contacts.dat", "w");
 		fprintf(contacts, "%le\n", Lp);
 		fprintf(contacts, "%le\n", Ln);
@@ -144,17 +148,28 @@ void my_guess(struct device *in)
 	}
 
 	for (i = 0; i < in->ymeshpoints; i++) {
-
-		in->phi[i] = 0;
-		in->Ec[i] = -in->phi[i] - in->Xi[i];
-		in->Ev[i] = -in->phi[i] - in->Xi[i] - in->Eg[i];
+		phi_ramp =
+		    delta_phi * (in->ymesh[i] / in->ymesh[in->ymeshpoints - 1]);
 
 		in->Fi[i] = Ef;
 
 		in->Fn[i] = Ef;
 		in->Fp[i] = Ef;
-		if (in->Fi[i] < in->Ev[i])
-			in->Fi[i] = in->Ev[i];
+
+		in->phi[i] = phi_ramp;
+		in->Ec[i] = -in->phi[i] - in->Xi[i];
+		if (in->Ec[i] < in->Fi[i]) {
+			in->phi[i] = -(in->Fi[i] + in->Xi[i]);
+			in->Ec[i] = -in->phi[i] - in->Xi[i];
+		}
+
+		in->Ev[i] = -in->phi[i] - in->Xi[i] - in->Eg[i];
+		if (in->Ev[i] > in->Fi[i]) {
+			in->phi[i] = -(in->Fi[i] + in->Xi[i] + in->Eg[i]);
+			in->Ev[i] = -in->phi[i] - in->Xi[i] - in->Eg[i];
+
+			in->Ec[i] = -in->phi[i] - in->Xi[i];
+		}
 
 		double t = in->Fi[i] - in->Ec[i];
 		double tp = in->Ev[i] - in->Fi[i];

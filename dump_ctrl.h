@@ -36,9 +36,11 @@
 #define dump_band_structure 14
 #define dump_print_newtonerror 15
 #define dump_print_converge 16
-#define dump_slices 17
-#define dump_print_pos_error 18
-
+#define dump_slices_by_time 17
+#define dump_all_slices 18
+#define dump_print_pos_error 19
+#define dump_optics_verbose 20
+#define dump_pl 21
 void set_io_dump(int in);
 int get_io_dump();
 int get_dump_status(int a);

@@ -31,6 +31,7 @@
 #include <zlib.h>
 #include "code_ctrl.h"
 #include "sim.h"
+#include "inp.h"
 
 static int unused __attribute__ ((unused));
 
@@ -64,23 +65,13 @@ void md5write(char *file_name)
 	FILE *file;
 	char *buffer;
 	unsigned long len;
+	long l;
 	char chkfile[100];
 	sprintf(chkfile, "md5.%s.dat", file_name);
-	file = fopen(file_name, "rb");
-	if (file == NULL) {
-		printf("File %s not found\n", chkfile);
-		exit(0);
-	}
 
-	fseek(file, 0, SEEK_END);
-	len = ftell(file);
-	fseek(file, 0, SEEK_SET);
+	inp_read_buffer(&buffer, &l, "./", file_name);
+	len = (unsigned int)l;
 
-	buffer = (char *)malloc(len + 1);
-
-	unused = fread(buffer, len, 1, file);
-
-	fclose(file);
 	unsigned char md5[16];
 	MD5((const unsigned char *)buffer, len, md5);
 	char temp[100];
@@ -92,8 +83,7 @@ void md5write(char *file_name)
 
 	file = fopen(chkfile, "w");
 	if (file == NULL) {
-		printf("File %s not found\n", chkfile);
-		exit(0);
+		ewe("File %s not found\n", chkfile);
 	}
 	fprintf(file, "%s\n", temp);
 	fclose(file);
@@ -111,21 +101,10 @@ int md5check(char *file_name)
 	char fromfile[100];
 
 	sprintf(chkfile, "md5.%s.dat", file_name);
+	long l;
+	inp_read_buffer(&buffer, &l, "./", file_name);
 
-	file = fopen(file_name, "rb");
-	if (!file) {
-		return FALSE;
-	}
-
-	fseek(file, 0, SEEK_END);
-	len = ftell(file);
-	fseek(file, 0, SEEK_SET);
-
-	buffer = (char *)malloc(len + 1);
-
-	unused = fread(buffer, len, 1, file);
-	fclose(file);
-
+	len = (unsigned int)l;
 	MD5((const unsigned char *)buffer, len, md5);
 	free(buffer);
 
@@ -416,8 +395,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 		}
 
 		if (dosread == NULL) {
-			printf("can not open srhband file\n");
-			exit(0);
+			ewe("can not open srhband file\n");
 		}
 
 		for (band = 0; band < in->srh_bands; band++) {
@@ -431,8 +409,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #ifdef test_dist
 	FILE *munfile = fopen("./munfile.dat", "w");
 	if (munfile == NULL) {
-		printf("problem\n");
-		exit(0);
+		ewe("problem\n");
 	}
 
 	tpos = 300;
@@ -827,8 +804,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 #ifdef dos_bin
 	if (buf_len != buf_pos) {
-		printf("Expected dos size is different from generated\n");
-		exit(0);
+		ewe("Expected dos size is different from generated\n");
 	}
 	gzFile file;
 	file = gzopen(outfile, "w9b");
@@ -881,35 +857,29 @@ void gen_dos_fd_gaus_p(int mat)
 
 void gen_load_dos(int mat)
 {
-	FILE *in;
 	char file_name[100];
+	char temp[100];
 
-	char name[100];
 	sprintf(file_name, "dos%d.inp", mat);
-	in = fopen(file_name, "r");
-	if (in == NULL) {
-		printf("Density of states config not found\n");
-		exit(0);
-	}
 
-	config_read_line_to_int(&(confige[mat].dostype), in, "#dostype");
+	inp_load("./", file_name);
+	inp_check(1.2);
+
+	inp_search_string(temp, "#dostype");
+	confige[mat].dostype = english_to_bin(temp);
 	configh[mat].dostype = confige[mat].dostype;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(confige[mat].m));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(configh[mat].m));
+	inp_search_double(&(confige[mat].m), "#me");
+	inp_search_double(&(configh[mat].m), "#mh");
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(confige[mat].Nt));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(configh[mat].Nt));
+	inp_search_double(&(confige[mat].Nt), "#Ntrape");
+	inp_search_double(&(configh[mat].Nt), "#Ntraph");
+
 	confige[mat].Nt = fabs(confige[mat].Nt);
 	configh[mat].Nt = fabs(configh[mat].Nt);
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(confige[mat].Et));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(configh[mat].Et));
+
+	inp_search_double(&(confige[mat].Et), "#Etrape");
+	inp_search_double(&(configh[mat].Et), "#Etraph");
 
 	confige[mat].Et = fabs(confige[mat].Et);
 	configh[mat].Et = fabs(configh[mat].Et);
@@ -919,150 +889,107 @@ void gen_load_dos(int mat)
 	if (configh[mat].Et < 2e-3)
 		configh[mat].Et = 2e-3;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%d", &gendos);
+	inp_search_int(&(gendos), "#gendos");
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].mu));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].mu));
+	inp_search_double(&(confige[mat].mu), "#mueffe");
+	inp_search_double(&(configh[mat].mu), "#mueffh");
+
 	confige[mat].mu = fabs(confige[mat].mu);
 	configh[mat].mu = fabs(configh[mat].mu);
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &confige[mat].epsilonr);
+	inp_search_double(&(confige[mat].epsilonr), "#epsilonr");
 	confige[mat].epsilonr = fabs(confige[mat].epsilonr);
 	configh[mat].epsilonr = fabs(confige[mat].epsilonr);
 
-	config_read_line_to_double(&(confige[mat].doping), in, "#doping");
+	inp_search_double(&(confige[mat].doping), "#doping");
 	configh[mat].doping = confige[mat].doping;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &confige[mat].Ngaus);
-	confige[mat].Ngaus = fabs(confige[mat].Ngaus);
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &configh[mat].Ngaus);
-	configh[mat].Ngaus = fabs(configh[mat].Ngaus);
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &confige[mat].Tstart);
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &confige[mat].Tstop);
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%d", &confige[mat].Tsteps);
+	inp_search_double(&(confige[mat].Tstart), "#Tstart");
+	inp_search_double(&(confige[mat].Tstop), "#Tstop");
+	inp_search_int(&(confige[mat].Tsteps), "#Tpoints");
 
 	configh[mat].Tstart = confige[mat].Tstart;
 	configh[mat].Tstop = confige[mat].Tstop;
 	configh[mat].Tsteps = confige[mat].Tsteps;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].nstart));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].nstop));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%d", &(confige[mat].npoints));
+	inp_search_double(&(confige[mat].nstart), "#nstart");
+	inp_search_double(&(confige[mat].nstop), "#nstop");
+	inp_search_int(&(confige[mat].npoints), "#npoints");
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].nstart));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].nstop));
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%d", &(configh[mat].npoints));
+	inp_search_double(&(configh[mat].nstart), "#pstart");
+	inp_search_double(&(configh[mat].nstop), "#pstop");
+	inp_search_int(&(configh[mat].npoints), "#ppoints");
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%d", &(confige[mat].srh_bands));
+	inp_search_int(&(confige[mat].srh_bands), "#srh_bands");
 	configh[mat].srh_bands = confige[mat].srh_bands;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].srh_start));
+	inp_search_double(&(confige[mat].srh_start), "#srh_start");
 	configh[mat].srh_start = confige[mat].srh_start;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].srh_sigman));
+	inp_search_double(&(confige[mat].srh_sigman), "#srhsigman_e");
 	confige[mat].srh_sigman = fabs(confige[mat].srh_sigman);
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].srh_sigmap));
+	inp_search_double(&(confige[mat].srh_sigmap), "#srhsigmap_e");
 	confige[mat].srh_sigmap = fabs(confige[mat].srh_sigmap);
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(confige[mat].srh_vth));
+	inp_search_double(&(confige[mat].srh_vth), "#srhvth_e");
 	confige[mat].srh_vth = fabs(confige[mat].srh_vth);
 	if (confige[mat].srh_vth < 1e2)
 		confige[mat].srh_vth = 1e2;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].srh_sigman));
+	inp_search_double(&(configh[mat].srh_sigman), "#srhsigman_h");
 	configh[mat].srh_sigman = fabs(configh[mat].srh_sigman);
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].srh_sigmap));
+	inp_search_double(&(configh[mat].srh_sigmap), "#srhsigmap_h");
 	configh[mat].srh_sigmap = fabs(configh[mat].srh_sigmap);
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%le", &(configh[mat].srh_vth));
-
+	inp_search_double(&(configh[mat].srh_vth), "#srhvth_h");
 	configh[mat].srh_vth = fabs(configh[mat].srh_vth);
 	if (configh[mat].srh_vth < 1e2)
 		configh[mat].srh_vth = 1e2;
 
-	config_read_line_to_double(&(confige[mat].Nc), in, "#Nc");
+	inp_search_double(&(confige[mat].Nc), "#Nc");
 
-	config_read_line_to_double(&(confige[mat].Nv), in, "#Nv");
+	inp_search_double(&(confige[mat].Nv), "#Nv");
 
-	config_read_line_to_double(&(confige[mat].srh_cut), in, "#srh_cut");
+	inp_search_double(&(confige[mat].srh_cut), "#srh_cut");
 	confige[mat].srh_cut = -fabs(confige[mat].srh_cut);
 	configh[mat].srh_cut = confige[mat].srh_cut;
 
-	config_read_line_to_double(&(confige[mat].del_start), in,
-				   "#lumodelstart");
+	inp_search_double(&(confige[mat].del_start), "#lumodelstart");
 
-	config_read_line_to_double(&(confige[mat].del_stop), in,
-				   "#lumodelstop");
+	inp_search_double(&(confige[mat].del_stop), "#lumodelstop");
 
-	config_read_line_to_double(&(configh[mat].del_start), in,
-				   "#homodelstart");
+	inp_search_double(&(configh[mat].del_start), "#homodelstart");
 
-	config_read_line_to_double(&(configh[mat].del_stop), in,
-				   "#homodelstop");
+	inp_search_double(&(configh[mat].del_stop), "#homodelstop");
 
-	config_read_line_to_double(&(confige[mat].Xi), in, "#Xi");
+	inp_search_double(&(confige[mat].Xi), "#Xi");
 
-	config_read_line_to_double(&(confige[mat].Eg), in, "#Eg");
+	inp_search_double(&(confige[mat].Eg), "#Eg");
 	confige[mat].Eg = fabs(confige[mat].Eg);
 
-	config_read_line_to_double(&(confige[mat].gaus_mull), in, "#gaus_mull");
+	inp_search_double(&(confige[mat].gaus_mull), "#gaus_mull");
 	configh[mat].gaus_mull = confige[mat].gaus_mull;
 
-	config_read_line_to_int(&(confige[mat].Esteps), in, "#Esteps");
+	inp_search_int(&(confige[mat].Esteps), "#Esteps");
 
 	configh[mat].Esteps = confige[mat].Esteps;
 	int dump;
-	config_read_line_to_int(&dump, in, "#dump_band_structure");
+	inp_search_int(&dump, "#dump_band_structure");
 	set_dump_status(dump_band_structure, dump);
-	double ver;
 
-	unused = fscanf(in, "%s", name);
-	unused = fscanf(in, "%lf", &(ver));
-	if (ver != 1.12) {
-		printf("File compatability problem %s\n", file_name);
-		exit(0);
-	}
-
-	unused = fscanf(in, "%s", name);
-	if (strcmp("#end", name) != 0) {
-		printf("Problem with last item read %s!\n", file_name);
-		exit(0);
-	}
+	inp_free();
 
 	configh[mat].Xi = confige[mat].Xi;
 	configh[mat].Eg = confige[mat].Eg;
 
 	confige[mat].Nc = fabs(confige[mat].Nc);
 	confige[mat].Nv = fabs(confige[mat].Nv);
-	if (confige[mat].Nc < 1e24)
-		confige[mat].Nc = 1e24;
-	if (confige[mat].Nv < 1e24)
-		confige[mat].Nv = 1e24;
+	if (confige[mat].Nc < 1e16)
+		confige[mat].Nc = 1e16;
+	if (confige[mat].Nv < 1e16)
+		confige[mat].Nv = 1e16;
 	confige[mat].m =
 	    pow(confige[mat].Nc / 2.0,
 		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / pi;
@@ -1072,8 +999,6 @@ void gen_load_dos(int mat)
 
 	configh[mat].Nc = confige[mat].Nc;
 	configh[mat].Nv = confige[mat].Nv;
-
-	fclose(in);
 
 }
 

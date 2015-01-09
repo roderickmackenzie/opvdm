@@ -28,8 +28,8 @@
 #define server_job_ready 1
 #define server_job_running 2
 
-#include <true_false.h>
 #include <time.h>
+#include "true_false.h"
 
 struct server globalserver;
 
@@ -56,13 +56,13 @@ struct server {
 	time_t start_time;
 };
 void server_stop_and_exit();
-void server_shut_down(struct server *myserver);
+void server_shut_down(struct server *myserver, char *lock_file);
 void server_add_job(struct server *myserver, char *command);
 void print_jobs(struct server *myserver);
 void server_init(struct server *myserver);
 void server_exe_jobs(struct server *myserver);
 void server_job_finished(struct server *myserver, char *job);
-void server_run_jobs(struct server *myserver);
+int server_run_jobs(struct server *myserver);
 double server_get_odes_per_s();
 double server_get_jobs_per_s();
 void change_cpus(struct server *myserver);

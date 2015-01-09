@@ -23,7 +23,7 @@
 #define h_light_interface
 #include "device.h"
 
-void light_init();
+void light_init(struct light *in, struct device *cell);
 void light_transfer_gen_rate_to_device(struct device *cell, struct light *in);
 void light_solve_and_update(struct device *cell, struct light *in,
 			    double Psun_in, double Plaser_in);

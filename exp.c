@@ -24,12 +24,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sim.h"
+#include "i.h"
 #include <math.h>
 
 static double n_count = 0.0;
 static double p_count = 0.0;
 static double rn_count = 0.0;
 static double rp_count = 0.0;
+
+void exp_cal_emission(char *extra, struct device *in)
+{
+	return;
+}
 
 double get_avg_recom(struct device *in)
 {
@@ -73,7 +79,7 @@ double get_avg_recom_n(struct device *in)
 	int i = 0;
 	double Rtot = 0.0;
 	for (i = 0; i < in->ymeshpoints; i++) {
-		Rtot += (in->Rn[i]);
+		Rtot += (in->ptrap_to_n[i]);
 	}
 	return Rtot / (((double)in->ymeshpoints));
 }
@@ -83,7 +89,7 @@ double get_avg_recom_p(struct device *in)
 	int i = 0;
 	double Rtot = 0.0;
 	for (i = 0; i < in->ymeshpoints; i++) {
-		Rtot += (in->Rp[i]);
+		Rtot += (in->ntrap_to_p[i]);
 	}
 	return Rtot / (((double)in->ymeshpoints));
 }
@@ -212,6 +218,18 @@ double get_extracted_n(struct device *in)
 	}
 
 	return sum_n / ((double)(in->ymeshpoints));
+}
+
+double get_total_np(struct device *in)
+{
+	int i;
+	double sum = 0.0;
+	for (i = 0; i < in->ymeshpoints; i++) {
+		sum += (in->n[i] + in->p[i]);
+		sum += (in->nt_all[i] + in->pt_all[i]);
+	}
+
+	return sum / ((double)(in->ymeshpoints) * 2.0);
 }
 
 double get_extracted_p(struct device *in)
@@ -491,6 +509,8 @@ double get_equiv_J(struct device *in)
 {
 	double J = 0.0;
 	J = get_J(in);
+	if (in->lr_pcontact == RIGHT)
+		J *= -1.0;
 	J += in->Vapplied / in->Rshunt / in->area;
 
 	return J;
@@ -515,13 +535,6 @@ double get_equiv_V(struct device *in)
 
 	double V = J * in->Rcontact * in->area + in->Vapplied;
 	return V;
-}
-
-inline double mod(double x)
-{
-	if (x < 0)
-		return -x;
-	return x > 0 ? x : -x;
 }
 
 double get_J(struct device *in)

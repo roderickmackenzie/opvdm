@@ -25,6 +25,10 @@
 #include <string.h>
 #include <math.h>
 #include <frame.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
 #include "sim.h"
 #include "dump.h"
 
@@ -56,10 +60,11 @@ static struct istruct tpc_muh;
 static struct istruct tpc_mu_avg;
 static struct istruct tpc_filledn;
 static struct istruct tpc_filledp;
-static struct istruct tpvnp;
+static struct istruct dynamic_np;
 static struct istruct only_n;
 static struct istruct only_p;
 static struct istruct E_field;
+static struct istruct dynamic_pl;
 
 static int frame_config_change;
 
@@ -219,49 +224,8 @@ void dump_write_2d_charge_map(struct map *in_e, struct map *in_h,
 
 }
 
-void dump_device_map(struct device *in)
+void dump_device_map(char *out_dir, char *extra, struct device *in)
 {
-	int i;
-	int band;
-	FILE *out;
-	out = fopen("./2dframen.dat", "w");
-
-	for (i = 0; i < in->ymeshpoints; i++) {
-
-		for (band = 0; band < in->srh_bands; band++) {
-
-			fprintf(out, "%le %le %le\n", in->ymesh[i],
-				in->Ec[i] + dos_get_band_energy_n(band,
-								  in->imat[i]),
-				in->nt[i][band]);
-
-		}
-
-		fprintf(out, "%le %le %le\n", in->ymesh[i], in->Ec[i],
-			in->n[i]);
-
-		fprintf(out, "\n");
-
-	}
-	fclose(out);
-
-	out = fopen("./2dframep.dat", "w");
-
-	for (i = 0; i < in->ymeshpoints; i++) {
-
-		for (band = 0; band < in->srh_bands; band++) {
-			fprintf(out, "%le %le %le\n", in->ymesh[i],
-				in->Ev[i] - dos_get_band_energy_p(band,
-								  in->imat[i]),
-				in->pt[i][band]);
-
-		}
-		fprintf(out, "%le %le %le\n", in->ymesh[i], in->Ev[i],
-			in->p[i]);
-		fprintf(out, "\n");
-
-	}
-	fclose(out);
 }
 
 void frame_add_data(struct map *in, double x, double y, double data)
@@ -315,10 +279,11 @@ void dump_dynamic_init(struct device *in)
 		inter_init(&tpc_mu_avg);
 		inter_init(&tpc_filledn);
 		inter_init(&tpc_filledp);
-		inter_init(&tpvnp);
+		inter_init(&dynamic_np);
 		inter_init(&only_n);
 		inter_init(&only_p);
 		inter_init(&E_field);
+		inter_init(&dynamic_pl);
 	}
 }
 
@@ -326,46 +291,54 @@ void dump_dynamic_save(struct device *in)
 {
 
 	if (get_dump_status(dump_iodump) == TRUE) {
+		char out_dir[1000];
+		sprintf(out_dir, "%s/dynamic/", in->outputpath);
+		struct stat st = { 0 };
+
+		if (stat(out_dir, &st) == -1) {
+			mkdir(out_dir, 0700);
+		}
+
 		char outpath[200];
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_jn.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_jn.dat");
 		inter_save(&jnout, outpath);
 
 		struct istruct one;
 		inter_copy(&one, &jnout, TRUE);
 		inter_deriv(&one, &jnout);
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_djn.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_djn.dat");
 		inter_save(&one, outpath);
 		inter_free(&one);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_jp.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_jp.dat");
 		inter_save(&jpout, outpath);
 
 		inter_copy(&one, &jpout, TRUE);
 		inter_deriv(&one, &jpout);
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_djp.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_djp.dat");
 		inter_save(&one, outpath);
 		inter_free(&one);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_j.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_j.dat");
 		inter_save(&jout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_j_avg.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_j_avg.dat");
 		inter_save(&jout_avg, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_i.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_i.dat");
 		inter_save(&iout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_i_left.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_i_left.dat");
 		inter_save(&iout_left, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_i_right.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_i_right.dat");
 		inter_save(&iout_right, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_gex.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_gex.dat");
 		inter_save(&gexout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_Rn.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_Rn.dat");
 		inter_save(&Rnout, outpath);
 
 		double sum = inter_intergrate(&Rnout);
@@ -373,7 +346,7 @@ void dump_dynamic_save(struct device *in)
 		fprintf(out, "%le", sum);
 		fclose(out);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_Rp.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_Rp.dat");
 		inter_save(&Rpout, outpath);
 
 		sum = inter_intergrate(&Rpout);
@@ -383,81 +356,88 @@ void dump_dynamic_save(struct device *in)
 
 		inter_make_cumulative(&Rnout);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_Rn_cumulative.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_Rn_cumulative.dat");
 		inter_save(&Rnout, outpath);
 
 		inter_make_cumulative(&Rpout);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_Rp_cumulative.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_Rp_cumulative.dat");
 		inter_save(&Rpout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_prelax.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_prelax.dat");
 		inter_save(&nrelax_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_nrelax.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_nrelax.dat");
 		inter_save(&prelax_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_ntrap.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_ntrap.dat");
 		inter_save(&ntrapout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_ptrap.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_ptrap.dat");
 		inter_save(&ptrapout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_nfree.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_nfree.dat");
 		inter_save(&nfreeout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_pfree.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_pfree.dat");
 		inter_save(&pfreeout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_nfree_delta.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_nfree_delta.dat");
 		inter_save(&nfree_delta_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_pfree_delta.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_pfree_delta.dat");
 		inter_save(&pfree_delta_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_ntrap_delta.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_ntrap_delta.dat");
 		inter_save(&ntrap_delta_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath,
-			"dynamic_ptrap_delta.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_ptrap_delta.dat");
 		inter_save(&ptrap_delta_out, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_filledn.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_filledn.dat");
 		inter_save(&tpc_filledn, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_Rn-p.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_Rn-p.dat");
 		inter_save(&Rnpout, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_filledp.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_filledp.dat");
 		inter_save(&tpc_filledp, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_mue.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_mue.dat");
 		inter_save(&tpc_mue, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_muh.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_muh.dat");
 		inter_save(&tpc_muh, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_mu_avg.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_mu_avg.dat");
 		inter_save(&tpc_mu_avg, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_n.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_n.dat");
 		inter_save(&only_n, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_p.dat");
+		sprintf(outpath, "%s%s", out_dir, "dynamic_p.dat");
 		inter_save(&only_p, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_np.dat");
-		inter_save(&tpvnp, outpath);
+		inter_sub_double(&dynamic_np, dynamic_np.data[0]);
+		sprintf(outpath, "%s%s", out_dir, "dynamic_np.dat");
+		inter_save(&dynamic_np, outpath);
 
-		sprintf(outpath, "%s%s", in->outputpath, "dynamic_E_field.dat");
+		inter_norm_to_one(&dynamic_np);
+		sprintf(outpath, "%s%s", out_dir, "dynamic_np_norm.dat");
+		inter_save(&dynamic_np, outpath);
+
+		sprintf(outpath, "%s%s", out_dir, "dynamic_E_field.dat");
 		inter_div_double(&E_field, E_field.data[0]);
 		inter_save(&E_field, outpath);
 
+		sprintf(outpath, "%s%s", out_dir, "dynamic_pl.dat");
+		inter_save(&dynamic_pl, outpath);
+
+		double max =
+		    inter_array_get_max(dynamic_pl.data, dynamic_pl.len / 4);
+		inter_div_double(&dynamic_pl, max);
+		sprintf(outpath, "%s%s", out_dir, "dynamic_pl_norm.dat");
+		inter_save(&dynamic_pl, outpath);
 	}
 
 }
@@ -497,9 +477,9 @@ void dump_dynamic_free(struct device *in)
 		inter_free(&tpc_mu_avg);
 		inter_free(&only_n);
 		inter_free(&only_p);
-		inter_free(&tpvnp);
+		inter_free(&dynamic_np);
 		inter_free(&E_field);
-
+		inter_free(&dynamic_pl);
 	}
 }
 
@@ -508,13 +488,27 @@ void dump_for_plot(struct device *in, char *extra)
 	FILE *out;
 	char outpath[100];
 	strcpy(outpath, "");
+	char out_dir[200];
+	if (strcmp(extra, "") != 0) {
+		sprintf(out_dir, "%s/snapshots/", in->outputpath);
+		struct stat st = { 0 };
+
+		if (stat(out_dir, &st) == -1) {
+			mkdir(out_dir, 0700);
+		}
+	} else {
+		strcpy(out_dir, in->outputpath);
+	}
+
+	if (get_dump_status(dump_pl) == TRUE) {
+		exp_cal_emission(extra, in);
+	}
 
 	if (get_dump_status(dump_newton) == TRUE) {
 		int i;
 		int band;
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Ec", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Ec", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ec[i]);
@@ -522,16 +516,14 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Ev", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Ev", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ev[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Nad", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Nad", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Nad[i]);
@@ -539,32 +531,28 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Eg", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Eg", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Eg[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Fn", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Fn", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fn[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Fp", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Fp", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fp[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "phi", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "phi", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->phi[i]);
@@ -572,26 +560,35 @@ void dump_for_plot(struct device *in, char *extra)
 
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "j", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Jn", extra, ".dat");
 		out = fopen(outpath, "w");
 
-		fprintf(out, "%e %e %e %e\n", -in->ymesh[0], q * in->Jnleft,
-			q * in->Jpleft, q * (in->Jpleft - in->Jnleft));
-		for (i = 1; i < in->ymeshpoints - 2; i++) {
-			fprintf(out, "%e ", in->ymesh[i]);
-
-			fprintf(out, "%e %e %e\n", in->Jn[i], in->Jp[i],
-				(in->Jp[i] - in->Jn[i]));
-
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i], in->Jn[i]);
 		}
-		fprintf(out, "%e %e %e %e\n", in->ymesh[in->ymeshpoints - 1],
-			q * in->Jnright, q * in->Jpright,
-			q * (in->Jpright - in->Jnright));
+
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "Fi", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Jp", extra, ".dat");
+		out = fopen(outpath, "w");
+
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i], in->Jp[i]);
+		}
+
+		fclose(out);
+
+		sprintf(outpath, "%s%s%s%s", out_dir, "Jnp", extra, ".dat");
+		out = fopen(outpath, "w");
+
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i],
+				(in->Jp[i] + in->Jn[i]));
+		}
+
+		fclose(out);
+
+		sprintf(outpath, "%s%s%s%s", out_dir, "Fi", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e ", in->ymesh[i]);
@@ -603,7 +600,7 @@ void dump_for_plot(struct device *in, char *extra)
 
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "epsilon_r", extra,
+		sprintf(outpath, "%s%s%s%s", out_dir, "epsilon_r", extra,
 			".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
@@ -611,16 +608,14 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "mu_n", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "mu_n", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->mun[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "mu_p", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "mu_p", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->mup[i]);
@@ -628,8 +623,24 @@ void dump_for_plot(struct device *in, char *extra)
 
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "n", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "mu_n_ft", extra, ".dat");
+		out = fopen(outpath, "w");
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i],
+				in->mun[i] * in->n[i] / in->nt_all[i]);
+		}
+		fclose(out);
+
+		sprintf(outpath, "%s%s%s%s", out_dir, "mu_p_ft", extra, ".dat");
+		out = fopen(outpath, "w");
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i],
+				in->mup[i] * in->p[i] / in->pt_all[i]);
+		}
+
+		fclose(out);
+
+		sprintf(outpath, "%s%s%s%s", out_dir, "n", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -638,8 +649,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "p", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "p", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -648,8 +658,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "nt", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "nt", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -658,8 +667,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "pt", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "pt", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -668,8 +676,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "dn", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "dn", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -678,8 +685,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "charge", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "charge", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -690,8 +696,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "dcharge", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "dcharge", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -701,8 +706,7 @@ void dump_for_plot(struct device *in, char *extra)
 			fprintf(out, "\n");
 		}
 		fclose(out);
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "dp", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "dp", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -711,8 +715,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "dnt", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "dnt", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -721,8 +724,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "dpt", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "dpt", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -731,8 +733,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "ntot", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "ntot", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -741,8 +742,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "ptot", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "ptot", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -753,9 +753,8 @@ void dump_for_plot(struct device *in, char *extra)
 
 		double Gn_max = inter_array_get_max(in->Gn, in->ymeshpoints);
 		if (Gn_max > 0.0) {
-			out = fopena(in->outputpath, "./Gn.dat", "w");
-			FILE *out_norm =
-			    fopena(in->outputpath, "./Gn_norm.dat", "w");
+			out = fopena(out_dir, "./Gn.dat", "w");
+			FILE *out_norm = fopena(out_dir, "./Gn_norm.dat", "w");
 			for (i = 0; i < in->ymeshpoints; i++) {
 				fprintf(out, "%e %le\n", in->ymesh[i],
 					in->Gn[i]);
@@ -767,7 +766,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 
 		if (Gn_max > 0.0) {
-			out = fopena(in->outputpath, "./Gp.dat", "w");
+			out = fopena(out_dir, "./Gp.dat", "w");
 			for (i = 0; i < in->ymeshpoints; i++) {
 				fprintf(out, "%e %le\n", in->ymesh[i],
 					in->Gp[i]);
@@ -775,17 +774,21 @@ void dump_for_plot(struct device *in, char *extra)
 			fclose(out);
 		}
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "R", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Rn", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
-			fprintf(out, "%e %e %e\n", in->ymesh[i], in->Rn[i],
-				in->Rp[i]);
+			fprintf(out, "%e %e\n", in->ymesh[i], in->Rn[i]);
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "relax", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "Rp", extra, ".dat");
+		out = fopen(outpath, "w");
+		for (i = 0; i < in->ymeshpoints; i++) {
+			fprintf(out, "%e %e\n", in->ymesh[i], in->Rp[i]);
+		}
+		fclose(out);
+
+		sprintf(outpath, "%s%s%s%s", out_dir, "relax", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e %e\n", in->ymesh[i], in->nrelax[i],
@@ -793,7 +796,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./fsrhn.dat", "w");
+		out = fopena(out_dir, "./fsrhn.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e ", in->ymesh[i]);
 			for (band = 0; band < in->srh_bands; band++) {
@@ -806,7 +809,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./fsrhh.dat", "w");
+		out = fopena(out_dir, "./fsrhh.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e ", in->ymesh[i]);
 			for (band = 0; band < in->srh_bands; band++) {
@@ -819,8 +822,7 @@ void dump_for_plot(struct device *in, char *extra)
 		}
 		fclose(out);
 
-		sprintf(outpath, "%s%s%s%s", in->outputpath, "imat", extra,
-			".dat");
+		sprintf(outpath, "%s%s%s%s", out_dir, "imat", extra, ".dat");
 		out = fopen(outpath, "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%le ", in->ymesh[i]);
@@ -828,6 +830,8 @@ void dump_for_plot(struct device *in, char *extra)
 			fprintf(out, "\n");
 		}
 		fclose(out);
+
+		dump_device_map(out_dir, extra, in);
 
 	}
 

@@ -21,6 +21,7 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef exp_h
 #define exp_h
+void exp_cal_emission(char *extra, struct device *in);
 double get_avg_field(struct device *in);
 double get_np_tot(struct device *in);
 void reset_npequlib(struct device *in);
@@ -74,4 +75,5 @@ double get_J(struct device *in);
 double get_charge(struct device *in);
 double get_avg_gen(struct device *in);
 void set_orig_charge_den(struct device *in);
+double get_total_np(struct device *in);
 #endif

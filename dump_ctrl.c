@@ -26,7 +26,7 @@
 #include "dump_ctrl.h"
 #include "true_false.h"
 
-static int dump_array[20];
+static int dump_array[100];
 
 int get_dump_status(int a)
 {

@@ -128,12 +128,34 @@ int complex_solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *Txz,
 
 	double Info[UMFPACK_INFO], Control[UMFPACK_CONTROL];
 
+	umfpack_zi_defaults(Control);
+
+	Control[UMFPACK_PRL] = 1;
+
 	Control[UMFPACK_PRL] = 0;
+
+	umfpack_zi_report_control(Control);
+
+	status =
+	    umfpack_zi_triplet_to_col(col, col, nz, Ti, Tj, Tx, Txz, Ap, Ai, Ax,
+				      Az, NULL);
+
+	if (status != UMFPACK_OK) {
+		error_report(status, __FILE__, __func__, __LINE__);
+		return EXIT_FAILURE;
+	}
 
 	status =
 	    umfpack_zi_symbolic(col, col, Ap, Ai, Ax, Az, &Symbolic, Control,
 				Info);
 	umfpack_zi_report_status(Control, status);
+
+	if (status != UMFPACK_OK) {
+		error_report(status, __FILE__, __func__, __LINE__);
+		return EXIT_FAILURE;
+	}
+
+	umfpack_zi_numeric(Ap, Ai, Ax, Az, Symbolic, &Numeric, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);

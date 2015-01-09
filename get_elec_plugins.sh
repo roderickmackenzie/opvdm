@@ -40,6 +40,10 @@ echo "printf(\"Mode not recognized\n\");">>run_list.c
 echo "}" >>run_list.c
 
 echo -n >main_args.c
+for i in `find ./plugins/ |grep "main_args_first.c"$`; do
+cat $i  >>main_args.c
+done
+
 for i in `find ./plugins/ |grep "main_args.c"$`; do
 cat $i  >>main_args.c
 done

@@ -35,6 +35,119 @@
 static int unused __attribute__ ((unused));
 static char *unused_pchar __attribute__ ((unused));
 
+void inter_add_to_hist(struct istruct *in, double pos, double value)
+{
+	int ii = 0;
+	double min = in->x[0];
+	double max = in->x[in->len - 1];
+	double dx = (max - min) / ((double)in->len);
+
+	ii = (int)((pos - min) / dx);
+
+	if (ii < in->len) {
+		if (ii >= 0) {
+			in->data[ii] += value;
+		}
+	}
+
+}
+
+double inter_get_center_of_peak(struct istruct *in, int i, int window)
+{
+	int delta = window / 2;
+
+	if ((i - delta < 0) || (i + delta > in->len - 1)) {
+		return in->x[i];
+	}
+	double top = 0.0;
+	double btm = 0.0;
+	int ii;
+	for (ii = i - delta; ii < i + delta; ii++) {
+		top += in->x[ii] * in->data[ii];
+		btm += in->data[ii];
+	}
+	return top / btm;
+}
+
+void inter_find_peaks(struct istruct *out, struct istruct *in, int find_max)
+{
+	int i = 0;
+	int ii = 0;
+	int window = 2;
+	double yn = 0.0;
+	double yc = 0.0;
+	double yp = 0.0;
+	int min = 0;
+	int max = 0;
+	int grad_l = 0;
+	int grad_r = 0;
+	for (i = 0; i < in->len; i++) {
+		for (ii = 1; ii <= window; ii++) {
+			if ((i - ii) >= 0 && ((i - ii) < in->len))
+				yn = in->data[i - ii];
+
+			if ((i + ii) >= 0 && ((i + ii) < in->len))
+				yp = in->data[i + ii];
+
+			yc = in->data[i];
+
+			if ((yc - yn) < 0.0) {
+				grad_l = -1;
+			} else {
+				grad_l = 1;
+			}
+
+			if ((yp - yc) < 0.0) {
+				grad_r = -1;
+			} else {
+				grad_r = 1;
+			}
+
+			if ((grad_l == -1) && (grad_r == 1)) {
+				min++;
+			} else if ((grad_l == 1) && (grad_r == -1)) {
+				max++;
+			}
+		}
+
+		if (min == window) {
+			if (find_max == FALSE)
+				inter_append(out,
+					     inter_get_center_of_peak(in, i,
+								      20),
+					     in->data[i]);
+
+		} else if (max == window) {
+			if (find_max == TRUE)
+				inter_append(out,
+					     inter_get_center_of_peak(in, i,
+								      20),
+					     in->data[i]);
+		}
+		min = 0;
+		max = 0;
+	}
+}
+
+void inter_dft(double *real, double *imag, struct istruct *in, double fx)
+{
+	double r = 0.0;
+	double i = 0.0;
+	int j = 0;
+	double dt = in->x[1] - in->x[0];
+	double len = (double)in->len;
+	double n = (len) * fx * dt;
+
+	for (j = 0; j < in->len; j++) {
+		r += in->data[j] * cos(2.0 * 3.1415926 * ((double)j) * n /
+				       (len));
+		i += in->data[j] * sin(2.0 * 3.1415926 * ((double)j) * n /
+				       (len));
+	}
+	*real = r;
+	*imag = i;
+}
+
 int inter_sort_compare(const void *a, const void *b)
 {
 	double aa = *(double *)a;
@@ -481,6 +594,19 @@ double inter_get_max(struct istruct *in)
 	return max;
 }
 
+double inter_get_fabs_max(struct istruct *in)
+{
+	int i;
+	double max = fabs(in->data[0]);
+
+	for (i = 0; i < in->len; i++) {
+		if (fabs(in->data[i]) > max)
+			max = fabs(in->data[i]);
+	}
+
+	return max;
+}
+
 double inter_norm_to_one(struct istruct *in)
 {
 	int i;
@@ -528,6 +654,33 @@ void inter_log_x(struct istruct *in)
 	}
 }
 
+void inter_smooth_range(struct istruct *in, int points, double x)
+{
+	int i = 0;
+	int ii = 0;
+	int pos = 0;
+	double tot_point = 0.0;
+	double tot = 0;
+	for (i = 0; i < in->len; i++) {
+		for (ii = 0; ii < points; ii++) {
+
+			pos = i + ii;
+
+			if (pos < in->len) {
+				tot += in->data[pos];
+				tot_point += 1.0;
+			}
+		}
+
+		if (in->x[i] > x) {
+
+			in->data[i] = (tot / (double)tot_point);
+		}
+		tot = 0.0;
+		tot_point = 0.0;
+	}
+}
+
 void inter_smooth(struct istruct *in, int points)
 {
 	int i = 0;
@@ -540,24 +693,6 @@ void inter_smooth(struct istruct *in, int points)
 
 			pos = i + ii;
 
-			/*if (ii>0)
-			   {
-			   xl=in->x[pos-1];
-			   }else
-			   {
-			   xl=in->x[pos];
-			   }
-
-			   if (ii<(points-1))
-			   {
-			   xr=in->x[pos+1];
-			   }else
-			   {
-			   xr=in->x[pos];
-			   }
-
-			   dx=xr-xl;
-			   printf("%le\n",dx); */
 			if (pos < in->len) {
 				tot += in->data[pos];
 				tot_point += 1.0;
@@ -783,6 +918,24 @@ void inter_append(struct istruct *in, double x, double y)
 		in->max_len += 100;
 		in->x = (double *)realloc(in->x, in->max_len * sizeof(double));
 		inter_realloc_dd(in, in->max_len);
+	}
+
+}
+
+void inter_init_mesh(struct istruct *in, int len, double min, double max)
+{
+	int i;
+	in->m = 1;
+	in->len = len;
+	in->x = (double *)malloc(in->len * sizeof(double));
+	inter_alloc_dd(in, in->m, in->len);
+	memset(in->data, 0, in->len * sizeof(double));
+	double pos = min;
+	double dx = (max - min) / ((double)in->len);
+
+	for (i = 0; i < in->len; i++) {
+		in->x[i] = pos;
+		pos += dx;
 	}
 
 }

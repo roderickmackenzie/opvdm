@@ -103,7 +103,7 @@ int run_simulation(char *runpath)
 	cell.A = cell.xlen * cell.zlen;
 	cell.Vol = cell.xlen * cell.zlen * cell.ylen;
 
-	light_init();
+	light_init(&cell.mylight, &cell);
 	light_set_dx(&cell.mylight, cell.ymesh[1] - cell.ymesh[0]);
 	light_load_config(&cell.mylight, cell.outputpath);
 	if (get_dump_status(dump_iodump) == FALSE)
@@ -115,6 +115,10 @@ int run_simulation(char *runpath)
 	remesh_shrink(&cell);
 
 	solve_pos(&cell);
+
+	remove_dir(cell.outputpath, "snapshots");
+	remove_dir(cell.outputpath, "light_dump");
+	remove_dir(cell.outputpath, "dynamic");
 
 	time_init(&cell);
 

@@ -203,6 +203,11 @@ struct device {
 	double **xt;
 	double *tt;
 
+	double **nt_r1;
+	double **nt_r2;
+	double **nt_r3;
+	double **nt_r4;
+
 	double *pt_all;
 	double **pt;
 	double **dpt;
@@ -218,6 +223,11 @@ struct device {
 	double **xpt;
 	double *tpt;
 
+	double **pt_r1;
+	double **pt_r2;
+	double **pt_r3;
+	double **pt_r4;
+
 	double A;
 	double Vol;
 
@@ -225,7 +235,6 @@ struct device {
 	double Rcontact;
 
 	int Dphoton;
-	double Dphotoneff;
 	int lr_bias;
 
 	int *dostype;
@@ -239,7 +248,6 @@ struct device {
 	double vr_e;
 	double vr_h;
 	int stop_start;
-	int laser;
 	double externalv;
 	double Vapplied_last;
 	double Ilast;
@@ -276,19 +284,9 @@ struct device {
 	double ilast;
 
 	int newton_clever_exit;
-	int slave;
-	char slave_path[100];
 	char plot_file[100];
-	int master;
-#ifndef mindump
-	double *nr1;
-	double *nr2;
-	double *nr3;
-	double *nr4;
-#endif
-	double start_stop_time;
 
-	double fgen;
+	double start_stop_time;
 
 	double Is;
 	double n_id;
@@ -310,7 +308,6 @@ struct device {
 	double vbi;
 	double avg_gen;
 	int dump_slicepos;
-	double simplephotondensity;
-	double simple_alpha;
+	double pl;
 };
 #endif

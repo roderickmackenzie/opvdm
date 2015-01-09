@@ -25,96 +25,128 @@
 #include <math.h>
 #include <errno.h>
 #include <util.h>
+#include <unistd.h>
+#include <dlfcn.h>
+#include <sys/types.h>
+#include <dirent.h>
+
+#include "inp.h"
 #include "light_interface.h"
 #include "true_false.h"
 #include "device.h"
 #include "dump_ctrl.h"
+#include "config.h"
 
-static double last_Psun = -1000.0;
-static double last_laser_eff = -1000.0;
-static double last_wavelength_laser = -1000.0;
+static int unused __attribute__ ((unused));
 
-void light_init()
+void light_init(struct light *in, struct device *cell)
 {
-	last_Psun = -1000.0;
-	last_laser_eff = -1000.0;
-	last_wavelength_laser = -1000.0;
-}
+	char *error;
+	char mode[20];
+	char lib_path[200];
+	double ver;
+	double temp;
+	inp_load(cell->outputpath, "light.inp");
+	inp_check(1.21);
 
-void light_transfer_gen_rate_to_device(struct device *cell, struct light *in)
-{
-	int i = 0;
-	double Gn = 0.0;
-	double Gp = 0.0;
+	inp_search_double(&(temp), "#Psun");
+	cell->Psun = fabs(temp);
 
-	if (in->align_mesh == FALSE) {
-		for (i = 0; i < cell->ymeshpoints; i++) {
+	inp_search_string(mode, "#light_model");
 
-			if (in->function == 0) {
-				Gn = inter_get_raw(in->x, in->Gn, in->points,
-						   in->device_start +
-						   cell->ymesh[i]) *
-				    cell->Dphotoneff;
-				Gp = inter_get_raw(in->x, in->Gp, in->points,
-						   in->device_start +
-						   cell->ymesh[i]) *
-				    cell->Dphotoneff;
-			} else if (in->function == 1) {
-				if ((in->laser_eff > 0.0) || (in->Psun > 0.0)) {
-					Gn = cell->simplephotondensity;
-					Gp = cell->simplephotondensity;
+	inp_search_double(&(in->electron_eff), "#electron_eff");
 
-				}
-			} else if (in->function == 2) {
-				if ((in->laser_eff > 0.0) || (in->Psun > 0.0)) {
-					Gn = exp(-cell->simple_alpha *
-						 cell->ymesh[i]) *
-					    cell->simplephotondensity;
-					Gp = exp(-cell->simple_alpha *
-						 cell->ymesh[i]) *
-					    cell->simplephotondensity;
-				}
-			}
+	inp_search_double(&(in->hole_eff), "#hole_eff");
 
-			cell->Gn[i] = Gn * in->electron_eff;
-			cell->Gp[i] = Gp * in->hole_eff;
-			cell->Habs[i] = 0.0;
+	inp_search_double(&(in->Dphotoneff), "#Dphotoneff");
 
-		}
-	} else {
-		for (i = 0; i < cell->ymeshpoints; i++) {
-			cell->Gn[i] =
-			    in->Gn[in->device_start_i + i] * cell->Dphotoneff;
-			cell->Gp[i] =
-			    in->Gp[in->device_start_i + i] * cell->Dphotoneff;
-		}
+	inp_search_double(&(in->ND), "#NDfilter");
 
+	inp_search_double(&(temp), "#high_sun_scale");
+
+	if (cell->Psun > 5000.0)
+		cell->Psun *= fabs(temp);
+
+	inp_search_double(&(ver), "#ver");
+
+	inp_free();
+
+	sprintf(lib_path, "./light/%s.so", mode);
+
+	if (access(lib_path, F_OK) == -1) {
+		sprintf(lib_path, "/usr/lib64/opvdm/%s.so", mode);
 	}
 
-}
+	in->lib_handle = dlopen(lib_path, RTLD_LAZY);
+	if (!in->lib_handle) {
+		fprintf(stderr, "%s\n", dlerror());
+		exit(0);
+	}
 
-double light_convert_density(struct device *in, double start, double width)
-{
-	double ratio = 0.0;
-	return ratio;
+	in->fn_init = dlsym(in->lib_handle, "light_init");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	in->fn_load_config = dlsym(in->lib_handle, "light_load_config");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	in->fn_solve_and_update =
+	    dlsym(in->lib_handle, "light_solve_and_update");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	in->fn_free = dlsym(in->lib_handle, "light_free");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	in->fn_cal_photon_density =
+	    dlsym(in->lib_handle, "light_cal_photon_density");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	in->fn_solve_lam_slice = dlsym(in->lib_handle, "light_solve_lam_slice");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+
+	(*in->fn_init) ();
 }
 
 void light_solve_and_update(struct device *cell, struct light *in,
 			    double Psun_in, double laser_eff_in)
 {
-	in->Psun = Psun_in;
-	in->laser_eff = laser_eff_in;
+	(*in->fn_solve_and_update) (cell, in, Psun_in, laser_eff_in);
+}
 
-	if (in->function == 0) {
-		if ((last_laser_eff != in->laser_eff) || (last_Psun != in->Psun)
-		    || (last_wavelength_laser != in->laser_wavelength)) {
+void light_load_config(struct light *in, char *output_path)
+{
+	printf("Loading config\n");
+	(*in->fn_load_config) (in, output_path);
+}
 
-			light_solve_optical_problem(in);
-			last_laser_eff = in->laser_eff;
-			last_Psun = in->Psun;
-			last_wavelength_laser = in->laser_wavelength;
-		}
-	}
+double light_cal_photon_density(struct light *in)
+{
+	return (*in->fn_cal_photon_density) (in);
+}
 
-	light_transfer_gen_rate_to_device(cell, in);
+int light_solve_lam_slice(struct light *in, int lam)
+{
+	return (*in->fn_solve_lam_slice) (in, lam);
+}
+
+void light_free(struct light *in)
+{
+	dlclose(in->lib_handle);
 }

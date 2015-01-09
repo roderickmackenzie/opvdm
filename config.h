@@ -23,6 +23,7 @@
 #define config_h
 double config_get_token_val(char *file_name, char *token);
 int config_search_token(char *file_name, char *token);
+void config_read_line_to_string(char *data, FILE * in, char *id);
 void config_read_line_to_int(int *data, FILE * in, char *id);
 void config_read_line_to_double(double *data, FILE * in, char *id);
 void config_read_line_string_decode_to_int(int *data, FILE * in, char *id);

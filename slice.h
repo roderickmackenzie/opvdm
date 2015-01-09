@@ -25,6 +25,7 @@ struct slices {
 	int number;
 	double time[100];
 	int done[100];
+	int dump_number;
 };
 
 void slice_init(struct device *in);

@@ -5,6 +5,14 @@ ifndef DEST_DIR
 	DEST_DIR=./install/
 endif
 
+ifndef DEST_LIB
+	DEST_LIB=./install/lib64/
+endif
+
+ifndef OPT_ARCH
+	OPT_ARCH=x86_64
+endif
+
 ifdef OPT_FLAGS
 	opt_slow=$(OPT_FLAGS)
 	opt_normal=$(OPT_FLAGS)
@@ -13,30 +21,40 @@ ifdef OPT_FLAGS
 	debug_opt=
 else
 	opt_slow=-O0
-	opt_normal=-O2 -D nolock
+	opt_normal=-O2 
 	opt_fast=-O5
 	warn=-Werror -Wall
 	debug_opt=-pg  -ggdb -g
 endif
 
-
-ifeq ($(wildcard ~/.opvdm_hpc_flag),)
-
-else 
-	debug_opt=
+ifeq ($(wildcard secure.h),)
+	opt_normal+= -D nolock
+	llink=
+else
+	opt_normal+= -D no_debug
+	llink=-lpci
 endif
 
-	link=-lz 
-	flags=${debug_opt} -D dos_bin
-	inc=-I/usr/include/suitesparse/ -I ./plugins/i/
+inc=
+link=
 
+ifeq ($(wildcard ~/.opvdm_hpc_flag),)
+else
+        inc+= -I/users/sg/rod/libzip/libzip-0.11.2/lib/
+        link+= -L/users/sg/rod/libzip/libzip-0.11.2/install/usr/local/lib/
+        debug_opt=
+endif
+
+        link+= -lz
+        flags=${debug_opt} -D dos_bin
+        inc+=-I/usr/include/suitesparse/ -I ./plugins/i/
 .PHONY: clean
 
-main: main.c solver.o sim_find_n0.o sim_run.o newton_update.o  pos.o inital.o advmath.o config.o plot.o memory.o dos.o gendosfdgaus.o exp.o time.o fast.o anal.o dump.o ntricks.o dos_an.o startstop.o render1d.o complex_solver.o dump_slice.o thermal.o light_interface.o dump_ctrl.o
+main: main.c solver.o light_utils.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o  pos.o inital.o advmath.o config.o plot.o memory.o dos.o gendosfdgaus.o exp.o time.o fast.o anal.o dump.o ntricks.o dos_an.o startstop.o render1d.o complex_solver.o dump_slice.o thermal.o light_interface.o dump_ctrl.o light_dump.o light_test.o inp.o buffer.o
 	./build.sh
+	./buildplugins.sh "$(opt_normal) $(debug_opt)" "$(OPT_ARCH)"
 	./build_fit_plugins.sh
-	./buildplugins.sh "$(opt_normal) $(debug_opt)"
-	gcc main.c solver.o sim_find_n0.o sim_run.o newton_update.o pos.o inital.o advmath.o config.o plot.o memory.o dos.o gendosfdgaus.o exp.o time.o $(plugins) fast.o anal.o dump.o ntricks.o dos_an.o startstop.o render1d.o complex_solver.o dump_slice.o thermal.o light_interface.o dump_ctrl.o -o go.o  -lumfpack $(flags) $(link) $(inc) -lamd -Wall -export-dynamic -lm  -lgsl -lgslcblas -lblas -lcrypto -lcurl   -ldl -rdynamic
+	gcc main.c light_dump.o buffer.o light_utils.o light_test.o solver.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o pos.o inital.o advmath.o config.o plot.o memory.o dos.o gendosfdgaus.o exp.o time.o $(plugins) fast.o anal.o dump.o ntricks.o dos_an.o startstop.o render1d.o complex_solver.o dump_slice.o thermal.o light_interface.o dump_ctrl.o inp.o -o go.o  -lumfpack $(flags) $(link) $(inc) -lamd -Wall -lzip -export-dynamic -lm  -lgsl -lgslcblas -lblas -lcrypto -lcurl   -ldl -rdynamic $(opt_normal) $(llink)
 
 
 install:
@@ -45,44 +63,78 @@ install:
 	mkdir $(DEST_DIR)/usr/bin
 	mkdir $(DEST_DIR)/usr/share
 	mkdir $(DEST_DIR)/usr/share/opvdm
-	mkdir $(DEST_DIR)/usr/share/applications
-	mkdir $(DEST_DIR)/usr/share/opvdm/gui
+	mkdir $(DEST_DIR)/usr/$(DEST_LIB)
+	mkdir $(DEST_DIR)/usr/$(DEST_LIB)/opvdm
+
 	cp *.inp $(DEST_DIR)/usr/share/opvdm/
+	cp sim.opvdm $(DEST_DIR)/usr/share/opvdm/
 	cp README $(DEST_DIR)/usr/share/opvdm/
-	cp ./gui/image.jpg $(DEST_DIR)/usr/share/opvdm/gui/
-	cp ./gui/icon.png $(DEST_DIR)/usr/share/opvdm/gui/
-	cp ./gui/*.py $(DEST_DIR)/usr/share/opvdm/gui/
-	cp ./gui/opvdm.desktop $(DEST_DIR)/usr/share/applications/
+	cp ./light/*.so $(DEST_DIR)/usr/$(DEST_LIB)/opvdm/
+	cp ./phys $(DEST_DIR)/usr/share/opvdm/ -r
+	cp ./exp $(DEST_DIR)/usr/share/opvdm/ -r
 	cp plot $(DEST_DIR)/usr/share/opvdm/ -rf
 
-	cp opvdm_clone $(DEST_DIR)/usr/bin/
-	cp opvdm_import $(DEST_DIR)/usr/bin/
-	cp opvdm_dump_tab $(DEST_DIR)/usr/bin/
-	cp opvdm_load $(DEST_DIR)/usr/bin/
-	cp opvdm_save $(DEST_DIR)/usr/bin/
-
-	cp opvdm $(DEST_DIR)/usr/bin/opvdm
 	cp go.o $(DEST_DIR)/usr/bin/opvdm_core
 
 	mkdir $(DEST_DIR)/usr/share/man
 	mkdir $(DEST_DIR)/usr/share/man/man1
-	cp ./man_pages/*.gz $(DEST_DIR)/usr/share/man/man1/
+	cp ./man_pages/opvdm_core*.gz $(DEST_DIR)/usr/share/man/man1/
+
+
+	chmod 755 $(DEST_DIR)/usr/bin/opvdm_core
+	chmod 0644 $(DEST_DIR)/usr/share/opvdm/*.inp
+	chmod 0755 $(DEST_DIR)/usr/share/opvdm/plot
+	chmod 0644 $(DEST_DIR)/usr/share/opvdm/plot/*
+	chmod 755 $(DEST_DIR)/usr/share/opvdm/phys -R
+	chmod 755 $(DEST_DIR)/usr/share/opvdm/exp -R
+
+install_gui:
+
+	mkdir $(DEST_DIR)/usr
+	mkdir $(DEST_DIR)/usr/bin
+	mkdir $(DEST_DIR)/usr/share
+	mkdir $(DEST_DIR)/usr/share/opvdm
+	mkdir $(DEST_DIR)/usr/$(DEST_LIB)
+	mkdir $(DEST_DIR)/usr/$(DEST_LIB)/opvdm
+
+	mkdir $(DEST_DIR)/usr/share/applications
+	mkdir $(DEST_DIR)/usr/share/opvdm/gui
+	mkdir $(DEST_DIR)/usr/share/mime
+	mkdir $(DEST_DIR)/usr/share/mime/packages 
+	mkdir $(DEST_DIR)/usr/share/icons
+	mkdir $(DEST_DIR)/usr/share/icons/gnome
+	mkdir $(DEST_DIR)/usr/share/icons/gnome/scalable
+	mkdir $(DEST_DIR)/usr/share/icons/gnome/scalable/mimetypes
+
+	cp ./gui/*.jpg $(DEST_DIR)/usr/share/opvdm/gui/
+	cp ./gui/*.png $(DEST_DIR)/usr/share/opvdm/gui/
+	cp ./gui/*.svg $(DEST_DIR)/usr/share/opvdm/gui/
+	cp ./gui/*.pyc $(DEST_DIR)/usr/$(DEST_LIB)/opvdm/
+	cp ./gui/opvdm.desktop $(DEST_DIR)/usr/share/applications/
+	cp ./gui/opvdm-opvdm.xml $(DEST_DIR)/usr/share/mime/packages/
+	cp ./gui/application-opvdm.svg $(DEST_DIR)/usr/share/icons/gnome/scalable/mimetypes/
+
+	cp opvdm $(DEST_DIR)/usr/bin/opvdm
+
+	mkdir $(DEST_DIR)/usr/share/man
+	mkdir $(DEST_DIR)/usr/share/man/man1
+	cp ./man_pages/opvdm.1.gz $(DEST_DIR)/usr/share/man/man1/
 
 
 	chmod 755 $(DEST_DIR)/usr/bin/opvdm
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_core
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_clone
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_import
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_dump_tab
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_load
-	chmod 755 $(DEST_DIR)/usr/bin/opvdm_save
-	chmod 0644 $(DEST_DIR)/usr/share/opvdm/*.inp
 	chmod 0644 $(DEST_DIR)/usr/share/opvdm/gui/image.jpg
 	chmod 0644 $(DEST_DIR)/usr/share/opvdm/gui/icon.png
-	chmod 0644 $(DEST_DIR)/usr/share/opvdm/gui/*.py
+	chmod 0644 $(DEST_DIR)/usr/$(DEST_LIB)/opvdm/*.pyc
 	chmod 0644 $(DEST_DIR)/usr/share/applications/opvdm.desktop
-	chmod 0755 $(DEST_DIR)/usr/share/opvdm/plot
-	chmod 0644 $(DEST_DIR)/usr/share/opvdm/plot/*
+	chmod 0644 $(DEST_DIR)/usr/share/mime/packages/opvdm-opvdm.xml
+	chmod 0644 $(DEST_DIR)/usr/share/icons/gnome/scalable/mimetypes/application-opvdm.svg
+
+
+inp.o: inp.c
+	gcc -c inp.c -o inp.o  $(inc) $(flags) $(opt_normal) $(warn)
+
+gui_hooks.o: gui_hooks.c
+	gcc -c gui_hooks.c -o gui_hooks.o  $(inc) $(flags) $(opt_normal) $(warn)
 
 dump_ctrl.o: dump_ctrl.c
 	gcc -c dump_ctrl.c -o dump_ctrl.o  $(inc) $(flags) $(opt_normal) $(warn)
@@ -90,7 +142,14 @@ dump_ctrl.o: dump_ctrl.c
 stark_ntricks.o: stark_ntricks.c
 	gcc -c stark_ntricks.c -o stark_ntricks.o  $(inc) $(flags)  $(opt_normal) $(warn)
 
+light_utils.o: light_utils.c
+	gcc -c light_utils.c -o light_utils.o  $(inc) $(flags) $(opt_normal) $(warn)
 
+light_dump.o: light_dump.c
+	gcc -c light_dump.c -o light_dump.o  $(inc) $(flags) $(opt_normal) $(warn)
+
+light_test.o: light_test.c
+	gcc -c light_test.c -o light_test.o  $(inc) $(flags) $(opt_normal) $(warn)
 
 celiv_ntricks.o: celiv_ntricks.c
 	gcc -c celiv_ntricks.c -o celiv_ntricks.o  $(inc) $(flags) $(opt_normal) $(warn)
@@ -190,6 +249,9 @@ advmath.o: advmath.c
 
 complex_solver.o: complex_solver.c
 	gcc -c complex_solver.c -o complex_solver.o  $(flags) $(inc) $(opt_normal) $(warn)
+
+buffer.o: buffer.c
+	gcc -c buffer.c -o buffer.o  $(flags) $(inc) $(opt_normal) $(warn)
 
 clean:
 	./clean_all.sh

@@ -27,6 +27,8 @@
 #define fg_yellow	33
 #define fg_blue		34
 #define fg_purple	35
+void remove_dir(char *path, char *dir_name);
+int ewe(const char *format, ...);
 void waveprint(char *in, double wavelength);
 double read_value(char *file, int skip, int line);
 int strcmp_end(char *str, char *end);
@@ -50,4 +52,6 @@ void copy_file(char *out_name, char *in_name, char *front, int line,
 int get_file_len(char *file_name);
 int cmpstr_min(char *in1, char *in2);
 int english_to_bin(char *in);
+void write_x_y_to_file(char *name, double *x, double *y, int len);
+void write_x_y_z_to_file(char *name, double *x, double *y, double *z, int len);
 #endif

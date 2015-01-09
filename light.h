@@ -38,7 +38,10 @@ struct light {
 	double **alpha;
 	double **photons;
 	double **photons_asb;
+	double **pointing_vector;
 	double *photons_tot;
+	double **E_tot_r;
+	double **E_tot_i;
 	double **H;
 	int *layer;
 	double *sun_E;
@@ -89,13 +92,25 @@ struct light {
 	char output_path[300];
 	double electron_eff;
 	double hole_eff;
-	int function;
 	double Psun;
 	double laser_eff;
-
+	double simplephotondensity;
+	double simple_alpha;
+	char *outputpath;
+	double Dphotoneff;
+	void (*fn_init) ();
+	void (*fn_load_config) ();
+	void (*fn_solve_and_update) ();
+	void (*fn_free) ();
+	int (*fn_solve_lam_slice) ();
+	double (*fn_cal_photon_density) ();
+	void *lib_handle;
 };
 
-void light_get_mode(struct istruct *mode, double lam, struct light *in);
+void light_set_sun_power(struct light *in, double power, double laser_eff);
+void light_free_memory(struct light *in);
+void light_init_mesh(struct light *in, char *output_path);
+void light_get_mode(struct istruct *mode, int lam, struct light *in);
 double light_cal_photon_density(struct light *in);
 void light_set_unity_power(struct light *in);
 void light_solve_optical_problem(struct light *in);
@@ -106,5 +121,10 @@ void light_free(struct light *in);
 void light_dump(struct light *in);
 int light_solve_lam_slice(struct light *in, int lam);
 void light_set_dx(struct light *in, double dx);
-void light_dump_1d(struct light *in, int i);
+void light_dump_1d(struct light *in, int i, char *ext);
+int light_test_air_metal(struct light *in, int lam);
+int light_test_air_abs_interface(struct light *in, int lam);
+void light_get_mode(struct istruct *mode, int lam, struct light *in);
+int light_find_wavelength(struct light *in, double lam);
+void light_set_unity_laser_power(struct light *in, int lam);
 #endif

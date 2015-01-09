@@ -21,7 +21,6 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef advmath_h
 #define advmath_h
-inline double mod(double in);
 inline double B(double x);
 inline double dB(double x);
 #endif

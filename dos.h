@@ -22,12 +22,7 @@
 
 #ifndef dos_h
 #define dos_h
-
-#define dos_exp		0
-#define dos_an		1
-#define dos_fd		2
-#define dos_exp_fd 	3
-#define dos_read 	5
+#include "dos_types.h"
 
 struct dosconfig {
 	double edge;

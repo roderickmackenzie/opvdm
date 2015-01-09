@@ -20,12 +20,13 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 mydir=`pwd`
 for i in `find ./plugins/ |grep makefile$`; do
 newdir=`dirname $i`
 echo "Building plugin" $newdir
 cd $newdir
-make opt_normal="$1"
+make opt_normal="$1" OPT_ARCH="$2"
 if [ $? -ne 0 ]; then
 	exit
 fi
@@ -36,4 +37,19 @@ done
 echo -n >sim_menu.inp
 for i in `find ./plugins/ |grep gui_info.inp$`; do
 cat $i >>sim_menu.inp
+done
+
+for i in `find ./light/ |grep makefile$`; do
+newdir=`dirname $i`
+echo "Building optical plugin" $newdir
+cd $newdir
+make opt_normal="$1" OPT_ARCH="$2"
+nowdir=`pwd`
+curname=`basename $nowdir` 
+cp plugin.so ../${curname}.so
+if [ $? -ne 0 ]; then
+	exit
+fi
+cd $mydir
+
 done

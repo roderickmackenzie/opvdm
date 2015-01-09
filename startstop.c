@@ -49,32 +49,10 @@ void stop_start(struct device *in)
 			delay.tv_nsec = (long int)ns;
 
 			if (nanosleep(&delay, NULL) < 0) {
-				printf("Nano sleep failed \n");
-				exit(1);
+				ewe("Nano sleep failed \n");
 			}
 		}
 
-		if (in->master == TRUE) {
-			char command[1000];
-			sprintf(command, "rm %s", in->slave_path);
-			unused = system(command);
-		}
-
-		if (in->slave == TRUE) {
-			FILE *wait;
-			wait = fopen("wait.dat", "w");
-			fclose(wait);
-
-			do {
-				wait = fopen("wait.dat", "r");
-				if (wait == NULL) {
-					break;
-				}
-
-				fclose(wait);
-
-			} while (1);
-		}
 	}
 
 }

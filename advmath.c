@@ -43,7 +43,7 @@ inline double dB(double x)
 inline double B(double x)
 {
 	double ret;
-	if (mod(x) < 1e-16) {
+	if (fabs(x) < 1e-16) {
 
 		ret =
 		    1 - x / 2.0 + pow(x, 2.0) / 12.0 - pow(x,

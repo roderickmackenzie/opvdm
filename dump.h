@@ -24,6 +24,7 @@
 #include <frame.h>
 #include "sim.h"
 #include "dump_ctrl.h"
+void dump_remove_snapshots(struct device *in);
 void dump_dynamic_init(struct device *in);
 void dump_dynamic_save(struct device *in);
 void dump_dynamic_add_data(struct device *in);
@@ -38,6 +39,6 @@ void dump_energy_slice(struct device *in, int num, int i);
 
 void dump_write_2d_charge_single_map(struct map *in, struct device *dev);
 void dump_build_2d_charge_single_frame(struct map *mapin, struct device *in);
-void dump_device_map(struct device *in);
+void dump_device_map(char *out_dir, char *extra, struct device *in);
 void dump_for_plot(struct device *in, char *extra);
 #endif

@@ -27,6 +27,8 @@ struct jv {
 	double Vstart;
 	double Vstop;
 	double Vstep;
+	double jv_step_mul;
+	double jv_light_efficiency;
 };
 
 void sim_jv(struct device *in);

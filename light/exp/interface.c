@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <errno.h>
+#include <util.h>
+#include "true_false.h"
+#include "../../device.h"
+#include "../../dump_ctrl.h"
+
+void light_init()
+{
+}
+
+void light_transfer_gen_rate_to_device(struct device *cell,struct light *in)
+{
+int i=0;
+double Gn=0.0;
+double Gp=0.0;
+
+	for (i=0;i<cell->ymeshpoints;i++)
+	{
+
+
+		if ((in->laser_eff>0.0)||(in->Psun>0.0))
+		{
+		Gn=exp(-in->simple_alpha*cell->ymesh[i])*in->simplephotondensity*(in->laser_eff/100.0+in->Psun/1000.0);
+		Gp=exp(-in->simple_alpha*cell->ymesh[i])*in->simplephotondensity*(in->laser_eff/100.0+in->Psun/1000.0);
+		}
+
+		cell->Gn[i]=Gn*in->electron_eff*in->Dphotoneff;
+		cell->Gp[i]=Gp*in->hole_eff*in->Dphotoneff;
+		cell->Habs[i]=0.0;
+	}
+
+}
+
+void light_solve_and_update(struct device *cell,struct light *in,double Psun_in,double laser_eff_in)
+{
+	in->Psun=Psun_in;
+	in->laser_eff=laser_eff_in;
+	light_transfer_gen_rate_to_device(cell,in);
+}

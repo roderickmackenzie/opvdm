@@ -1,0 +1,63 @@
+1
+device.inp
+Device
+1
+jv.inp
+JV Curve
+1
+light.inp
+Light
+1
+dump.inp
+Output
+0
+celiv.inp
+CELIV
+0
+math.inp
+Numerics
+1
+optics.inp
+Optics
+1
+tof.inp
+ToF
+0
+stark.inp
+stark
+0
+lumo0.inp
+Bands
+0
+dump_time.inp
+Dump Time
+0
+server.inp
+HPC
+0
+pulse.inp
+Pulse
+1
+pulse_voc.inp
+Pulse voc
+0
+photokit.inp
+photokit
+1
+light_exp.inp
+Exp. Optical Model
+1
+dos0.inp
+DoS layer 0
+0
+jv_simple.inp
+JV simple
+1
+terminal.inp
+Terminal
+1
+dos1.inp
+DoS layer 1
+1
+dos2.inp
+DoS layer 2

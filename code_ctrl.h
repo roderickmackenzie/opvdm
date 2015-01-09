@@ -23,11 +23,12 @@
 #define code_ctrl_h
 #define enable_time
 #define enable_multi_layers
-#define enable_private
+#define private
 #define enable_clever_contacts
 #define enable_fast
 #define enable_define_contact
 #define enable_left_right_bias
 #define enable_dos_an
 #define enable_interface
+#define enable_direct_inp_file_read
 #endif

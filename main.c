@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,6 +41,11 @@
 #include "dump.h"
 #include "complex_solver.h"
 #include "elec_plugins.h"
+#include "license.h"
+#include "inp.h"
+#include "gui_hooks.h"
+
+static int unused __attribute__ ((unused));
 
 struct device cell;
 
@@ -59,13 +63,15 @@ void device_init(struct device *in)
 int main(int argc, char *argv[])
 {
 	cell.onlypos = FALSE;
+#ifndef nolock
+	antje0();
+#endif
 
 	set_plot_script_dir("./");
 
 	if (scanarg(argv, argc, "--help") == TRUE) {
 		printf("opvdm_core - Organic Photovoltaic Device Model\n");
-		printf
-		    ("Copyright Roderick MacKenzie 2012, released under GPLv2\n");
+		printf(copyright);
 		printf("\n");
 		printf("Usage: opvdm_core [options]\n");
 		printf("\n");
@@ -83,10 +89,8 @@ int main(int argc, char *argv[])
 	}
 	if (scanarg(argv, argc, "--version") == TRUE) {
 		printf("opvdm_core, Version %s\n", version);
-		printf
-		    ("Copyright and written by Roderick MacKenzie 2012, Releced under GPLv2\n\n");
-		printf
-		    ("This is free software; see the source code for copying conditions.\n");
+		printf(copyright);
+		printf(this_is_free_software);
 		printf
 		    ("There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or\n");
 		printf("FITNESS FOR A PARTICULAR PURPOSE.\n");
@@ -95,9 +99,10 @@ int main(int argc, char *argv[])
 	}
 
 	if (geteuid() == 0) {
-		printf("Don't run me as root!\n");
-		exit(0);
+		ewe("Don't run me as root!\n");
 	}
+	lock_command_line(argc, argv);
+
 	set_dump_status(dump_stop_plot, FALSE);
 	set_dump_status(dump_print_text, TRUE);
 
@@ -105,12 +110,13 @@ int main(int argc, char *argv[])
 	srand(time(0));
 	textcolor(fg_green);
 	randomprint("Organic Photovoltaic Device Model (www.opvdm.com)\n");
-	randomprint
-	    ("Released under GPL v2, Copyright Roderick MacKenzie 2012\n");
+	randomprint(copyright);
+#ifdef gnu_copyright
 	randomprint
 	    ("You should have received a copy of the GNU General Public License\n");
 	randomprint
 	    ("along with this software.  If not, see www.gnu.org/licenses/.\n");
+#endif
 	randomprint("\n");
 	randomprint
 	    ("If you wish to collaborate in anyway please get in touch:\n");
@@ -118,8 +124,6 @@ int main(int argc, char *argv[])
 	randomprint("www.roderickmackenzie.eu/contact.html\n");
 	randomprint("\n");
 	textcolor(fg_reset);
-
-	lock_main(argc, argv);
 
 	globalserver.on = FALSE;
 	globalserver.cpus = 1;
@@ -132,20 +136,38 @@ int main(int argc, char *argv[])
 		strcpy(sim_output_path(), "./");
 	}
 
+	gui_start();
+	if (scanarg(argv, argc, "--optics") == TRUE) {
+		struct light two;
+		light_init(&two, &cell);
+
+		light_load_config(&two, "./");
+		set_dump_status(dump_lock, FALSE);
+		set_dump_status(dump_optics, TRUE);
+		set_dump_status(dump_optics_verbose, FALSE);
+		light_solve_and_update(&cell, &two, 1000.0, 0.0);
+		light_dump(&two);
+		light_free(&two);
+		return 0;
+	}
+
 	if (scanarg(argv, argc, "--onlypos") == TRUE) {
 		cell.onlypos = TRUE;
 	}
 
-	char name[1000];
-	FILE *config = fopena(sim_output_path(), "ver.inp", "r");
-	if (config == NULL) {
-		printf
-		    ("No ver.inp file, I suspect there are no input files at all\n");
-		exit(0);
+	char lock_file[1000];
+
+	if (scanarg(argv, argc, "--lock") == TRUE) {
+		strcpy(lock_file, get_arg_plusone(argv, argc, "--lock"));
+	} else {
+		strcpy(lock_file, "");
 	}
 
-	fscanf(config, "%s", name);
-	fclose(config);
+	char name[200];
+	inp_load(sim_output_path(), "ver.inp");
+	inp_check(1.0);
+	inp_search_string(name, "#opvdm_version");
+	inp_free();
 
 	if (strcmp(name, version) != 0) {
 		printf
@@ -155,18 +177,22 @@ int main(int argc, char *argv[])
 	}
 
 	server_init(&globalserver);
+	int ret = 0;
 
 #include "main_args.c"
 	{
-
 		gen_dos_fd_gaus_fd();
 
 		server_add_job(&globalserver, "./");
 		print_jobs(&globalserver);
-		server_run_jobs(&globalserver);
+		ret = server_run_jobs(&globalserver);
+
 	}
 
-	server_shut_down(&globalserver);
-
+	server_shut_down(&globalserver, lock_file);
+	gui_stop();
+	if (ret != 0) {
+		return 1;
+	}
 	return 0;
 }

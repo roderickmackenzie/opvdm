@@ -2,8 +2,12 @@ ifndef opt_normal
 	opt_normal=-Wall
 endif
 
+ifndef OPT_ARCH
+	OPT_ARCH=x86_64
+endif
+
 main: i.o util.o list.o frame.o vec.o rnd.o
-	ld -r i.o util.o list.o frame.o vec.o rnd.o -o plugin.o
+	ld -m elf_$(OPT_ARCH) -r i.o util.o list.o frame.o vec.o rnd.o -o plugin.o
 i.o :i.c
 	gcc -c i.c -o i.o $(opt_normal)
 vec.o :vec.c

@@ -41,31 +41,31 @@ void pos_dump(struct device *in)
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./pos_Fi.dat", "w");
+		out = fopena(in->outputpath, "./equ_Fi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fi[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./pos_Ec.dat", "w");
+		out = fopena(in->outputpath, "./equ_Ec.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ec[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./pos_Ev.dat", "w");
+		out = fopena(in->outputpath, "./equ_Ev.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ev[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./pos_n.dat", "w");
+		out = fopena(in->outputpath, "./equ_n.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->n[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./pos_p.dat", "w");
+		out = fopena(in->outputpath, "./equ_p.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->p[i]);
 		}
@@ -108,7 +108,7 @@ double get_p_error(struct device *in, double *b)
 		    if ((in->interfaceright == TRUE)
 			&& (i == in->ymeshpoints - 1)) {
 		} else {
-			tot += mod(b[i]);
+			tot += fabs(b[i]);
 		}
 	}
 	return tot;

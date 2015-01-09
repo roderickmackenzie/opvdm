@@ -25,6 +25,4 @@
 
 void sim_jv(struct device *in);
 void newton_sim_jv(struct device *in);
-void remesh_shrink(struct device *in);
-void remesh_reset(struct device *in, double voltage);
 #endif

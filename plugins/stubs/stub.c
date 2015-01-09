@@ -29,11 +29,6 @@
 #include "../../sim.h"
 #include "../../server.h"
 
-int get_clamp_state()
-{
-	return TRUE;
-}
-
 void server_stop_and_exit()
 {
 	exit(0);
@@ -63,62 +58,23 @@ void server_add_job(struct server *myserver, char *command)
 	printf("Solved %d ODEs\n", odes);
 }
 
-void server_run_jobs(struct server *myserver)
+int server_run_jobs(struct server *myserver)
 {
+	return 0;
 }
 
-void get_max_layers(int in)
+void server_shut_down(struct server *myserver, char *lock_file)
 {
-}
+	FILE *out;
 
-void antje0()
-{
-}
+	if (strcmp(lock_file, "") != 0) {
+		out = fopen(lock_file, "w");
+		if (out != NULL) {
+			fprintf(out, "opvdm lock file\n");
+			fclose(out);
+		} else {
+			ewe("Error with lock file %s", lock_file);
+		}
+	}
 
-int antje1()
-{
-	return FALSE;
-}
-
-void antje2()
-{
-}
-
-void lock_main(int argc, char *argv[])
-{
-}
-
-void server_shut_down(struct server *myserver)
-{
-
-}
-
-void light_load_config(struct light *in, char *config_file)
-{
-	in->function = 2;
-	in->electron_eff = 1.0;
-	in->hole_eff = 1.0;
-}
-
-void light_free(struct light *in)
-{
-
-}
-
-void light_set_dx(struct light *in, double dx)
-{
-
-}
-
-void light_solve_optical_problem(struct light *in)
-{
-
-}
-
-void remesh_shrink(struct device *in)
-{
-}
-
-void remesh_reset(struct device *in, double voltage)
-{
 }

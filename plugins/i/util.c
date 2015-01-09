@@ -24,10 +24,69 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
 #include "util.h"
 #include "true_false.h"
 #include "../../sim_modes.h"
 #include "../../dump_ctrl.h"
+#include "../../dos_types.h"
+
+int ewe(const char *format, ...)
+{
+	char temp[1000];
+	va_list args;
+	va_start(args, format);
+
+	vsprintf(temp, format, args);
+	printf("%s\n", temp);
+	FILE *out = fopen("error.dat", "w");
+	fprintf(out, "%s\n", temp);
+	fclose(out);
+
+	va_end(args);
+
+	out = fopen("./server_stop.dat", "w");
+	fprintf(out, "solver\n");
+	fclose(out);
+
+	exit(1);
+}
+
+void write_x_y_to_file(char *name, double *x, double *y, int len)
+{
+	int i;
+	FILE *out;
+
+	out = fopen(name, "w");
+	if (out == NULL) {
+		ewe("Error writing file %s\n", name);
+	}
+
+	for (i = 0; i < len; i++) {
+		fprintf(out, "%le %le\n", x[i], y[i]);
+	}
+	fclose(out);
+}
+
+void write_x_y_z_to_file(char *name, double *x, double *y, double *z, int len)
+{
+	int i;
+	FILE *out;
+
+	out = fopen(name, "w");
+	if (out == NULL) {
+		ewe("Error writing file %s\n", name);
+	}
+
+	for (i = 0; i < len; i++) {
+		fprintf(out, "%le %le %le\n", x[i], y[i], z[i]);
+	}
+	fclose(out);
+}
 
 int check_int(char *in)
 {
@@ -55,6 +114,10 @@ int english_to_bin(char *in)
 	if (strcmp(in, "true") == 0) {
 		return TRUE;
 	} else if (strcmp(in, "false") == 0) {
+		return FALSE;
+	} else if (strcmp(in, "yes") == 0) {
+		return TRUE;
+	} else if (strcmp(in, "no") == 0) {
 		return FALSE;
 	} else if (strcmp(in, "left") == 0) {
 		return LEFT;
@@ -86,10 +149,25 @@ int english_to_bin(char *in)
 		return sim_mode_otrace;
 	} else if (strcmp(in, "celiv") == 0) {
 		return sim_mode_celiv;
+	} else if (strcmp(in, "stark") == 0) {
+		return sim_mode_stark;
+	} else if (strcmp(in, "pulse") == 0) {
+		return sim_mode_pulse;
+	} else if (strcmp(in, "photokit") == 0) {
+		return sim_mode_photokit;
+	} else if (strcmp(in, "pulse_voc") == 0) {
+		return sim_mode_pulse_voc;
+	} else if (strcmp(in, "jv_simple") == 0) {
+		return sim_mode_jv_simple;
+	} else if (strcmp(in, "find_voc") == 0) {
+		return sim_mode_find_voc;
+	} else if (strcmp(in, "exponential") == 0) {
+		return dos_exp;
+	} else if (strcmp(in, "complex") == 0) {
+		return dos_an;
 	}
 
-	printf("I don't understand the command %s\n", in);
-	exit(0);
+	ewe("I don't understand the command %s\n", in);
 	return 0;
 }
 
@@ -100,8 +178,7 @@ double read_value(char *file, int skip, int line)
 	double value;
 	in = fopen(file, "r");
 	if (in == NULL) {
-		printf("Can not read file %s\n", file);
-		exit(0);
+		ewe("Can not read file %s\n", file);
 	}
 	int l = 0;
 
@@ -127,9 +204,7 @@ void safe_file(char *name)
 	file = fopen(name, "rb");
 
 	if (!file) {
-		printf("File %s not found\n", name);
-		getchar();
-		exit(0);
+		ewe("File %s not found\n", name);
 	}
 
 	fclose(file);
@@ -303,13 +378,11 @@ void edit_file_int(char *in_name, char *front, int line, int value)
 	char buf[400];
 	in = fopen(in_name, "r");
 	if (in == NULL) {
-		printf("edit_file_int: error opening file %s\n", in_name);
-		exit(0);
+		ewe("edit_file_int: error opening file %s\n", in_name);
 	}
 	out = fopen("temp.tmp", "w");
 	if (out == NULL) {
-		printf("edit_file_int: error opening file temp.tmp\n");
-		exit(0);
+		ewe("edit_file_int: error opening file temp.tmp\n");
 	}
 	int l = 0;
 
@@ -343,13 +416,11 @@ void edit_file(char *in_name, char *front, int line, double value)
 	char buf[400];
 	in = fopen(in_name, "r");
 	if (in == NULL) {
-		printf("edit_file_int: error opening file %s\n", in_name);
-		exit(0);
+		ewe("edit_file_int: error opening file %s\n", in_name);
 	}
 	out = fopen("temp.tmp", "w");
 	if (out == NULL) {
-		printf("edit_file_int: error opening file temp.tmp\n");
-		exit(0);
+		ewe("edit_file_int: error opening file temp.tmp\n");
 	}
 	int l = 0;
 
@@ -434,10 +505,36 @@ void edit_file_by_var(char *in_name, char *token, char *newtext)
 	fclose(in);
 	fclose(out);
 	if (found == FALSE) {
-		printf("Token not found in file %s\n", token);
-		exit(0);
+		ewe("Token not found in file %s\n", token);
 	}
 	char command[1000];
 	sprintf(command, "mv temp.tmp %s", in_name);
 	unused = system(command);
+}
+
+void remove_dir(char *path, char *dir_name)
+{
+
+	struct dirent *next_file;
+	DIR *theFolder;
+	char filepath[256];
+	char out_dir[256];
+
+	sprintf(out_dir, "%s/%s", path, dir_name);
+
+	if (get_dump_status(dump_newton) == TRUE) {
+
+		theFolder = opendir(out_dir);
+		if (theFolder != NULL) {
+			while ((next_file = readdir(theFolder)) != NULL) {
+				sprintf(filepath, "%s/%s", out_dir,
+					next_file->d_name);
+
+				remove(filepath);
+			}
+
+			remove(out_dir);
+		}
+	}
+
 }
