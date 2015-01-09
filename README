@@ -1,0 +1,32 @@
+Opvdm is a drift diffusion model specifically designed to model organic photovoltaic (OPV) devices.
+I wrote the model during the very exciting and enjoyable time I spent working at Imperial College
+for Jenny Nelson. The model has been used to generate a number of publications. It can simulate the
+following experiments often used to characterize OPV devices:
+
+    *JV curves (Light/Dark)
+    *Charge extraction data (Light/Dark)
+    *Steady state recombination data (Light/Dark)
+
+It contains the following physical models:
+
+    *Drift diffusion of electrons and holes
+    *Shockley-Read-Hall recombination.
+    *Ohmic contacts
+    *Simulation of external circuit elements.
+
+The model can simulate an ideal solar cell as well as being able to
+simulate externalcircuit elements, such as capacitors and resistors.
+
+Running opvdm
+~~~~~~~~~~~~~
+
+I currently provide a precompiled rpm for Fedora Linux, a tar ball of the code and an srpm. You are welcome to compile the code it for other platforms if you wish. I don't plan on releasing a windows version but if someone compiles one for me I would host it. The electrical model (opvdm_core) is quite mature and has been used to publish a few papers, but to get it to work exactly how you want it to, you will have edit configuration files by hand. There is some documentation in the wiki, but I am still working on it - please help me finish it off! The graphical interface (opvdm) which sits on top of (opvdm_core) is a python script and is competently new/untested. At the moment, it can only access a hand full of the functions of opvdm_core, but is good enough to get an idea of what the model can do without having to edit text files.
+
+Help using opvdm
+~~~~~~~~~~~~~~~~
+I'm very happy to provide help in using OPVDM, or if you wold prefer I am equally happy to collaborate and model your data for you. See the contact page.
+
+More information
+~~~~~~~~~~~~~~~~
+More information can be found on the home page www.opvdm.com
+

@@ -1,0 +1,199 @@
+#!/bin/bash
+#    Organic Photovoltaic Device Model - a drift diffusion base/Shockley-Read-Hall
+#    model for organic solar cells. 
+#    Copyright (C) 2012 Roderick C. I. MacKenzie
+#
+#	roderick.mackenzie@nottingham.ac.uk
+#	www.roderickmackenzie.eu
+#	Room B86 Coats, University Park, Nottingham, NG7 2RD, UK
+#
+#    This program is free software; you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation; either version 2 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License along
+#    with this program; if not, write to the Free Software Foundation, Inc.,
+#    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+dos_file='dos1.inp'
+function get_value
+{
+
+
+a=`nl $1 |grep $2$|awk '{print $1}'`
+let a=$a+$3
+
+test=`cat $1|grep $2`
+if [ -z "$test" ]; then
+	cat $1
+    echo "$1 $2 not found a=$a"
+	exit
+fi
+
+sed -n "${a}p" < $1
+}
+
+function get_line {
+two=$(get_value $1 $2 $3)
+
+one=`printf '%.2g' $two`
+one=`echo $one| sed 's/+//'`
+one=`echo $one| sed 's/e/\\\e{/'`
+one=`echo $one| sed 's/{0/\\{/'`
+one=`echo $one| sed 's/{-0/\\{-/'`
+echo $one}
+}
+
+function get_line_mod {
+two=$(get_value $1 $2 $3)
+
+one=`printf '%.2g' $two`
+one=`echo $one| sed 's/+//'`
+one=`echo $one| sed 's/e/\\\e{/'`
+one=`echo $one| sed 's/{0/\\{/'`
+one=`echo $one| sed 's/{-0/\\{-/'`
+
+if [ ${one:0:1} = "-" ] ; then
+one=`echo $one|sed 's/^.//'`
+fi
+
+echo $one}
+}
+
+
+function get_line_mod_float {
+two=$(get_value $1 $2 $3)
+
+one=`printf '%.2f' $two`
+one=`echo $one| sed 's/+//'`
+one=`echo $one| sed 's/-//'`
+echo $one
+}
+
+function get_line_mod_float_thou {
+two=$(get_value $1 $2 $3)
+one=`printf '%.4f' $two`
+one=`echo $one*1000.0 |bc|sed 's/.\{2\}$//'`
+one=`echo $one| sed 's/+//'`
+one=`echo $one| sed 's/-//'`
+echo $one
+}
+
+function get_line_mod_float_nano {
+two=$(get_value $1 $2 $3)
+one=`printf '%.9f' $two`
+one=`echo $one*1000000000.0 |bc`
+one=`echo $one| sed 's/+//'|sed 's/.\{8\}$//'`
+one=`echo $one| sed 's/-//'`
+echo $one
+}
+
+if [ "$1" != "" ]
+then
+	if [ $1 == "--help" ]; then
+	echo "opvdm_dump_tab - Dumps the materail paramters for a opvdm simulation to ./tab/"
+	echo "as a jpg, latex file, and pdf."
+	echo "Copyright Roderick MacKenzie 2012, releced under GPLv2"
+	echo ""
+	echo "Usage: opvdm_dump_tab [options]"
+	echo ""
+	echo "Options:"
+	echo ""
+	echo "	--help		displays the help"
+	echo "	--version	displays the current version"
+	echo ""
+	echo "Additional information about opvdm is available at http://www.opvdm.com."
+	echo ""
+	echo "Report bugs to: roderick.mackenzie@nottingham.ac.uk"
+	exit
+	fi
+
+	if [ $1 == "--version" ]; then
+	echo "opvdm_dump_tab, Version 1.0"
+	echo "Copyright and written by Roderick MacKenzie 2012, Released under GPLv2"
+	echo ""
+	echo "This is free software; see the source code for copying conditions."
+	echo "There is ABSOLUTELY NO WARRANTY; not even for MERCHANTABILITY or"
+	echo "FITNESS FOR A PARTICULAR PURPOSE."
+	exit
+	fi
+fi
+if [ ! -f $dos_file ]; then
+	echo "No $dos_file file found"
+	exit
+fi
+
+echo -n > out.tex
+
+echo "Density of electron trap states & \$" `get_line $dos_file "#Ntrape" 1` "\$ & \$m^{-3} eV^{-1}\$ \\\\" >> out.tex
+echo "Density of hole trap states &   \$" `get_line $dos_file "#Ntraph" 1` "\$ & \$m^{-3} eV^{-1}\$ \\\\" >> out.tex
+echo "Free electron mobility & \$" `get_line $dos_file "#mueffe" 1` "$ & \$m^{2} V^{-1} s^{-1}\$ \\\\" >> out.tex
+echo "Free hole mobility & \$" `get_line $dos_file "#mueffh" 1` "\$ & \$m^{2} V^{-1} s^{-1}\$ \\\\" >> out.tex
+echo "Free electron-trapped electron capture cross section & \$" `get_line $dos_file "#srhsigman_e" 1` "\$ &  \$m^{2}\$ \\\\" >> out.tex
+echo "Trapped electron-free hole capture cross section & \$" `get_line $dos_file "#srhsigmap_e" 1` "\$ &  \$m^{2}\$ \\\\"  >> out.tex
+echo "Free electron-trapped hole capture cross section & \$" `get_line_mod $dos_file "#srhsigman_h" 1` "\$ &  \$m^{2}\$ \\\\" >> out.tex
+echo "Free hole-trapped hole capture cross section & \$" `get_line $dos_file "#srhsigmap_h" 1` "\$ & \$m^{2}\$ \\\\" >> out.tex
+echo "Density of carriers on the majority p-contact & \$" `get_line device.inp "#lcharge" 1` "\$ & \$m^{-3}\$ \\\\" >> out.tex
+echo "Density of carriers on the majority n-contact & \$" `get_line device.inp "#rcharge" 1` "\$ & \$m^{-3}\$ \\\\" >> out.tex
+echo "Effective density of free electron states & \$" `get_line $dos_file "#Nc" 1` "\$ & \$m^{-3}\$ \\\\" >> out.tex
+echo "Effective density of free hole states & \$" `get_line $dos_file "#Nv" 1` "\$ & \$m^{-3}\$ \\\\" >> out.tex
+echo "Electron tail slope & \$" `get_line_mod_float_thou $dos_file "#Etrape" 1` "\$  & meV \\\\" >> out.tex
+echo "Hole tail slope   & \$" `get_line_mod_float_thou $dos_file "#Etraph" 1` "\$  & meV \\\\" >> out.tex
+echo "Relative permittivity  & \$" `get_line_mod_float $dos_file "#epsilonr" 1` "\$  &  \\\\" >> out.tex
+echo "LUMO mobility edge  & \$" -`get_line_mod_float $dos_file "#Xi" 1` "\$  & eV \\\\" >> out.tex
+echo "Effective band gap & \$" `get_line_mod_float $dos_file "#Eg" 1` "\$  & eV \\\\" >> out.tex
+echo "Thermal velocity & \$" `get_line $dos_file "#srhvth_e" 1` "\$  & \$m s^{-1}\$ \\\\" >> out.tex 
+echo "Shunt resistance & \$" `get_line device.inp "#Rshunt" 1` "\$  & \$\\Omega\$ \\\\" >> out.tex
+echo "External series resistance & \$" `get_line_mod_float device.inp "#Rcontact" 1` "\$  & \$\\Omega\$ \\\\" >> out.tex
+echo "Laser eff & \$" `get_line_mod_float stark.inp "#lasereff" 1` "\$  & au \\\\" >> out.tex
+echo "Cell thickness & \$" `get_line_mod_float_nano device_epitaxy.inp "#mesh" 2` "\$  & \$nm\$ \\\\" >> out.tex
+echo "Density of trap states & \$" `get_line $dos_file "#doping" 1` "\$ & \$m^{-3}\$ \\\\" >> out.tex
+echo "CELIV laser efficency & \$" `get_line celiv.inp "#celiv_laser_eff" 1` "\$ & \$%\$ \\\\" >> out.tex
+
+mkdir tab
+cd tab
+mv ../out.tex ./
+
+echo -n > gen.sh
+cat <<EOF >> gen.sh
+main:
+	latex -interaction=batchmode doc 
+	#latex doc -interaction=nonstopmode
+	#latex doc -interaction=nonstopmode
+
+	dvipdf doc.dvi
+	convert -trim -bordercolor White -border 20x10 +repage -density 300 doc.dvi doc.jpg
+	#okular doc.pdf
+
+EOF
+chmod +x gen.sh
+cat <<EOF > doc.tex
+\documentclass{article}
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+\begin{document}
+\pagenumbering{gobble}
+
+\begin{table}[H]
+\begin{center}
+  \begin{tabular}{lll}
+  \hline                       
+  Parameter & label & description \\\\
+  \hline
+EOF
+cat out.tex >> doc.tex
+
+cat <<EOF >> doc.tex
+  \hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{document}
+EOF
+
+cd ..
