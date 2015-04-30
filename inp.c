@@ -24,84 +24,87 @@
 #include <string.h>
 #include <zip.h>
 #include <unistd.h>
+#include <fcntl.h>
+
 #include "inp.h"
 #include "util.h"
 #include "code_ctrl.h"
+#include "true_false.h"
 
-static char *data;
-static long fsize;
-static char full_name[1000];
-static int pos = 0;
-
-void reset_read()
+void inp_reset_read(struct inp_file *in)
 {
-	pos = 0;
+	in->pos = 0;
 }
 
-char *get_string()
+char *inp_get_string(struct inp_file *in)
 {
 	int i;
 	static char ret[100];
+	memset(ret, 0, 100);
 	int ii = 0;
-	if (pos >= fsize) {
-		return 0;
+	if (in->pos >= in->fsize) {
+		return NULL;
 	}
 
-	for (i = pos; i < fsize; i++) {
-		if ((data[i] == '\n') || (data[i] == 0)) {
+	for (i = in->pos; i < in->fsize; i++) {
+		if ((in->data[i] == '\n') || (in->data[i] == 0)) {
 			ret[ii] = 0;
-			pos++;
+			in->pos++;
 			break;
 		}
 
-		ret[ii] = data[i];
+		ret[ii] = in->data[i];
 		ii++;
-		pos++;
+		in->pos++;
 
 	}
 
 	return ret;
 }
 
-void inp_read_buffer(char **buf, long *len, char *path, char *file)
+void inp_read_buffer(char **buf, long *len, char *full_file_name)
 {
-	char full_file_name[1000];
-	sprintf(full_file_name, "%s/%s", path, file);
-	if (access(full_file_name, F_OK) != -1) {
-		FILE *f = fopen(full_file_name, "rb");
-		if (f == NULL) {
-			ewe("%s not found\n", file);
-		}
+
+	FILE *f = fopen(full_file_name, "rb");
+	if (f != NULL) {
 		fseek(f, 0, SEEK_END);
 		*len = ftell(f);
 		fseek(f, 0, SEEK_SET);
 
 		*buf = malloc(((*len) + 2) * sizeof(char));
+
 		fread(*buf, *len, 1, f);
 		fclose(f);
 
 		(*buf)[(int)*len] = '\n';
 		(*buf)[(int)(*len + 1)] = 0;
+
 	} else {
-		sprintf(full_file_name, "%s/sim.opvdm", path);
+		char zip_path[1000];
+		char *file_path = get_dir_name_from_path(full_file_name);
+		char *file_name = get_file_name_from_path(full_file_name);
+
+		sprintf(zip_path, "%s/sim.opvdm", file_path);
 		int err = 0;
-		struct zip *z = zip_open(full_file_name, 0, &err);
+		struct zip *z = zip_open(zip_path, 0, &err);
 
 		if (z != NULL) {
 
 			struct zip_stat st;
 			zip_stat_init(&st);
-			int ret = zip_stat(z, file, 0, &st);
+			int ret = zip_stat(z, file_name, 0, &st);
 
 			if (ret == 0) {
 
 				*len = st.size * sizeof(char);
 				*buf = (char *)malloc(*len);
 
-				struct zip_file *f = zip_fopen(z, file, 0);
+				struct zip_file *f = zip_fopen(z, file_name, 0);
 				zip_fread(f, *buf, st.size);
 				zip_fclose(f);
 
+			} else {
+				ewe("File %s not found\n", file_name);
 			}
 			zip_close(z);
 		} else {
@@ -109,75 +112,179 @@ void inp_read_buffer(char **buf, long *len, char *path, char *file)
 		}
 
 	}
+
 }
 
-void inp_load(char *path, char *file)
+void inp_init(struct inp_file *in)
 {
-	sprintf(full_name, "%s/%s", path, file);
-	inp_read_buffer(&data, &fsize, path, file);
+	strcpy(in->full_name, "");
+	in->data = NULL;
+	in->fsize = 0;
+	in->pos = 0;
+	in->edited = FALSE;
 }
 
-void inp_free()
+void inp_load_from_path(struct inp_file *in, char *path, char *file)
 {
-	free(data);
+	char temp[1000];
+	sprintf(temp, "%s/%s", path, file);
+	inp_load(in, temp);
 }
 
-void inp_search_double(double *out, char *token)
+void inp_load(struct inp_file *in, char *file)
 {
-	sscanf(inp_search(token), "%le", out);
+	in->pos = 0;
+
+	if (strcmp(in->full_name, file) != 0) {
+
+		if (in->data != NULL) {
+			inp_free(in);
+		}
+
+		strcpy(in->full_name, file);
+		inp_read_buffer(&(in->data), &(in->fsize), file);
+		in->edited = FALSE;
+	}
+
 }
 
-void inp_search_int(int *out, char *token)
+void inp_replace(struct inp_file *in, char *token, char *text)
 {
-	sscanf(inp_search(token), "%d", out);
+	char *temp = malloc(in->fsize + 100);
+	memset(temp, 0, in->fsize + 100);
+	char *line;
+	int len = 0;
+	line = strtok(in->data, "\n");
+	int found = FALSE;
+	while (line) {
+		if (strcmp(line, token) != 0) {
+			strcat(temp, line);
+			strcat(temp, "\n");
+		} else {
+			strcat(temp, line);
+			strcat(temp, "\n");
+			strcat(temp, text);
+			strcat(temp, "\n");
+			line = strtok(NULL, "\n");
+			found = TRUE;
+		}
+		line = strtok(NULL, "\n");
+	}
+
+	len = strlen(temp);
+	in->fsize = len;
+
+	if (found == TRUE) {
+		in->edited = TRUE;
+	}
+
+	in->data = realloc(in->data, (len + 1) * sizeof(char));
+	memcpy(in->data, temp, (len + 1) * sizeof(char));
+	free(temp);
 }
 
-void inp_search_string(char *out, char *token)
+void inp_save(struct inp_file *in)
 {
-	strcpy(out, inp_search(token));
+
+	if (in->edited == TRUE) {
+		int out_fd = open(in->full_name, O_WRONLY | O_CREAT, 0644);
+		if (out_fd == -1) {
+			ewe("File %s can not be opened\n", in->full_name);
+		}
+
+		write(out_fd, in->data, in->fsize * sizeof(char));
+
+		close(out_fd);
+
+		in->edited = FALSE;
+	}
+
 }
 
-void inp_check(double ver)
+void inp_free(struct inp_file *in)
+{
+
+	inp_save(in);
+
+	free(in->data);
+	inp_init(in);
+}
+
+void inp_search_double(struct inp_file *in, double *out, char *token)
+{
+	sscanf(inp_search(in, token), "%le", out);
+}
+
+void inp_search_int(struct inp_file *in, int *out, char *token)
+{
+	sscanf(inp_search(in, token), "%d", out);
+}
+
+void inp_search_string(struct inp_file *in, char *out, char *token)
+{
+	strcpy(out, inp_search(in, token));
+}
+
+void inp_check(struct inp_file *in, double ver)
 {
 	double read_ver = 0.0;
-	reset_read();
-	char *line = get_string();
-	while (line) {
+	inp_reset_read(in);
+	char *line = inp_get_string(in);
+	while (line != NULL) {
+
 		if (strcmp(line, "#ver") == 0) {
-			line = get_string();
+			line = inp_get_string(in);
 			sscanf(line, "%le", &read_ver);
+
 			if (ver != read_ver) {
 				ewe("File compatability problem %s\n",
-				    full_name);
+				    in->full_name);
 			}
-			line = get_string();
+			line = inp_get_string(in);
 
-			if (strcmp(line, "#end") != 0) {
-				ewe("#end token missing\n");
+			if ((line == NULL) || (strcmp(line, "#end") != 0)) {
+				ewe("#end token missing %s\n", in->full_name);
 			}
+
 			return;
 		}
 
-		line = get_string();
+		line = inp_get_string(in);
 	}
-	ewe("Token not found\n");
+	ewe("Token #ver not found in %s\n", in->full_name);
 	return;
 }
 
-char *inp_search(char *token)
+char *inp_search_part(struct inp_file *in, char *token)
 {
-	reset_read();
-	char *line = get_string();
-	while (line) {
+	inp_reset_read(in);
+	char *line = inp_get_string(in);
+	while (line != NULL) {
 
-		if (strcmp(line, token) == 0) {
-			line = get_string();
+		if (cmpstr_min(line, token) == 0) {
 			return line;
 		}
 
-		line = get_string();
+		line = inp_get_string(in);
 	}
-	ewe("Token %s not found in file %s", token, full_name);
+
+	return NULL;
+}
+
+char *inp_search(struct inp_file *in, char *token)
+{
+	inp_reset_read(in);
+	char *line = inp_get_string(in);
+	while (line != NULL) {
+
+		if (strcmp(line, token) == 0) {
+			line = inp_get_string(in);
+			return line;
+		}
+
+		line = inp_get_string(in);
+	}
+	ewe("Token %s not found in file %s", token, in->full_name);
 	exit(0);
-	return 0;
+	return NULL;
 }
