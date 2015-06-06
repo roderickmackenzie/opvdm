@@ -26,119 +26,271 @@
 #include <errno.h>
 #include <util.h>
 #include <unistd.h>
+
+#ifndef windows
 #include <dlfcn.h>
+#else
+#include <windows.h>
+#endif
+
 #include <sys/types.h>
 #include <dirent.h>
-
 #include "inp.h"
 #include "light_interface.h"
 #include "true_false.h"
 #include "device.h"
 #include "dump_ctrl.h"
 #include "config.h"
+#include "complex_solver.h"
 
 static int unused __attribute__ ((unused));
 
-void light_init(struct light *in, struct device *cell)
+void light_transfer_gen_rate_to_device(struct device *cell, struct light *in)
 {
-	char *error;
-	char mode[20];
+	int i = 0;
+	double Gn = 0.0;
+	double Gp = 0.0;
+
+	if (in->align_mesh == FALSE) {
+		for (i = 0; i < cell->ymeshpoints; i++) {
+
+			Gn = inter_get_raw(in->x, in->Gn, in->points,
+					   in->device_start +
+					   cell->ymesh[i]) * in->Dphotoneff;
+			Gp = inter_get_raw(in->x, in->Gp, in->points,
+					   in->device_start +
+					   cell->ymesh[i]) * in->Dphotoneff;
+			cell->Gn[i] = Gn * in->electron_eff;
+			cell->Gp[i] = Gp * in->hole_eff;
+			cell->Habs[i] = 0.0;
+
+		}
+	} else {
+		for (i = 0; i < cell->ymeshpoints; i++) {
+			cell->Gn[i] =
+			    in->Gn[in->device_start_i + i] * in->Dphotoneff;
+			cell->Gp[i] =
+			    in->Gp[in->device_start_i + i] * in->Dphotoneff;
+		}
+
+	}
+
+}
+
+void light_init(struct light *in, struct device *cell, char *output_path)
+{
+	printf("Light init\n");
+	in->pulse_width = 0.0;
+	strcpy(in->output_path, output_path);
+	strcpy(in->input_path, cell->inputpath);
+
 	char lib_path[200];
 	double ver;
 	double temp;
-	inp_load(cell->outputpath, "light.inp");
-	inp_check(1.21);
+	in->disable_transfer_to_electrical_mesh = FALSE;
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, cell->inputpath, "light.inp");
+	inp_check(&inp, 1.23);
 
-	inp_search_double(&(temp), "#Psun");
+	inp_search_double(&inp, &(temp), "#Psun");
 	cell->Psun = fabs(temp);
 
-	inp_search_string(mode, "#light_model");
+	inp_search_string(&inp, in->mode, "#light_model");
 
-	inp_search_double(&(in->electron_eff), "#electron_eff");
+	inp_search_double(&inp, &(in->electron_eff), "#electron_eff");
+	in->electron_eff = fabs(in->electron_eff);
 
-	inp_search_double(&(in->hole_eff), "#hole_eff");
+	inp_search_double(&inp, &(in->hole_eff), "#hole_eff");
+	in->hole_eff = fabs(in->hole_eff);
 
-	inp_search_double(&(in->Dphotoneff), "#Dphotoneff");
+	inp_search_double(&inp, &(in->Dphotoneff), "#Dphotoneff");
+	in->Dphotoneff = fabs(in->Dphotoneff);
 
-	inp_search_double(&(in->ND), "#NDfilter");
+	inp_search_double(&inp, &(in->ND), "#NDfilter");
 
-	inp_search_double(&(temp), "#high_sun_scale");
+	inp_search_double(&inp, &(temp), "#high_sun_scale");
 
-	if (cell->Psun > 5000.0)
-		cell->Psun *= fabs(temp);
+	cell->Psun *= fabs(temp);
 
-	inp_search_double(&(ver), "#ver");
+	inp_search_double(&inp, &(ver), "#ver");
 
-	inp_free();
+	inp_free(&inp);
 
-	sprintf(lib_path, "./light/%s.so", mode);
+	char lib_name[100];
+#ifdef windows
+	sprintf(lib_name, "%s.dll", in->mode);
+#else
+	sprintf(lib_name, "%s.so", in->mode);
+#endif
+
+#ifndef windows
+	sprintf(lib_path, "./light/%s", lib_name);
 
 	if (access(lib_path, F_OK) == -1) {
-		sprintf(lib_path, "/usr/lib64/opvdm/%s.so", mode);
+		sprintf(lib_path, "/usr/lib64/opvdm/%s", lib_name);
 	}
+#else
+	char pwd[1000];
+	getcwd(pwd, 1000);
+	join_path(3, lib_path, pwd, "light", lib_name);
+
+	FILE *fp = fopen(lib_path, "r");
+	if (fp) {
+		fclose(fp);
+	} else {
+		join_path(2, lib_path, "c:\\opvdm\\light\\", lib_name);
+	}
+#endif
+
+#ifndef windows
+
+	char *error;
 
 	in->lib_handle = dlopen(lib_path, RTLD_LAZY);
+
 	if (!in->lib_handle) {
 		fprintf(stderr, "%s\n", dlerror());
 		exit(0);
 	}
 
-	in->fn_init = dlsym(in->lib_handle, "light_init");
-	if ((error = dlerror()) != NULL) {
-		fprintf(stderr, "%s\n", error);
-		exit(0);
-	}
-
-	in->fn_load_config = dlsym(in->lib_handle, "light_load_config");
+	in->fn_init = dlsym(in->lib_handle, "light_dll_init");
 	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
 
 	in->fn_solve_and_update =
-	    dlsym(in->lib_handle, "light_solve_and_update");
+	    dlsym(in->lib_handle, "light_dll_solve_and_update");
 	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
 
-	in->fn_free = dlsym(in->lib_handle, "light_free");
+	in->fn_free = dlsym(in->lib_handle, "light_dll_free");
 	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
 
-	in->fn_cal_photon_density =
-	    dlsym(in->lib_handle, "light_cal_photon_density");
+	in->fn_solve_lam_slice =
+	    dlsym(in->lib_handle, "light_dll_solve_lam_slice");
 	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
 
-	in->fn_solve_lam_slice = dlsym(in->lib_handle, "light_solve_lam_slice");
+	in->light_ver = dlsym(in->lib_handle, "light_dll_ver");
 	if ((error = dlerror()) != NULL) {
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
 
+	in->fn_fixup = dlsym(in->lib_handle, "light_dll_fixup");
+	if ((error = dlerror()) != NULL) {
+		fprintf(stderr, "%s\n", error);
+		exit(0);
+	}
+#else
+
+	in->lib_handle = LoadLibrary(lib_path);
+	if (in->lib_handle == NULL) {
+		ewe("dll not loaded %s\n", lib_path);
+	}
+
+	in->light_ver = (void *)GetProcAddress(in->lib_handle, "light_dll_ver");
+	if (in->light_ver == NULL) {
+		ewe("dll function not found\n");
+	}
+
+	in->fn_init = (void *)GetProcAddress(in->lib_handle, "light_dll_init");
+	if (in->fn_init == NULL) {
+		ewe("dll function not found\n");
+	}
+
+	in->fn_solve_and_update =
+	    (void *)GetProcAddress(in->lib_handle,
+				   "light_dll_solve_and_update");
+	if (in->fn_solve_and_update == NULL) {
+		ewe("dll function not found\n");
+	}
+
+	in->fn_free = (void *)GetProcAddress(in->lib_handle, "light_dll_free");
+	if (in->fn_solve_and_update == NULL) {
+		ewe("dll function not found\n");
+	}
+
+	in->fn_solve_lam_slice =
+	    (void *)GetProcAddress(in->lib_handle, "light_dll_solve_lam_slice");
+	if (in->fn_solve_and_update == NULL) {
+		ewe("dll function not found\n");
+	}
+
+	in->fn_fixup =
+	    (void *)GetProcAddress(in->lib_handle, "light_dll_fixup");
+	if (in->fn_fixup == NULL) {
+		ewe("dll function not found\n");
+	}
+
+#endif
+
+	(*in->fn_fixup) ("waveprint", &waveprint);
+	(*in->fn_fixup) ("get_dump_status", &get_dump_status);
+	(*in->fn_fixup) ("light_dump_1d", &light_dump_1d);
+	(*in->fn_fixup) ("light_solve_optical_problem",
+			 &light_solve_optical_problem);
+	(*in->fn_fixup) ("light_free_memory", &light_free_memory);
+	(*in->fn_fixup) ("light_transfer_gen_rate_to_device",
+			 &light_transfer_gen_rate_to_device);
+	(*in->fn_fixup) ("complex_solver", &complex_solver);
+
+	(*in->light_ver) ();
 	(*in->fn_init) ();
 }
 
 void light_solve_and_update(struct device *cell, struct light *in,
-			    double Psun_in, double laser_eff_in)
+			    double Psun_in, double laser_eff_in,
+			    double pulse_width)
 {
+	int i = 0;
+	in->pulse_width = pulse_width;
+
+	if (in->disable_transfer_to_electrical_mesh == FALSE) {
+		if (fabs(in->device_ylen - cell->ylen) > 0.01e-9) {
+			ewe("The electrical mesh (%.9le) and the optical mesh (%.9le) don't match. %le", cell->ylen, in->device_ylen);
+		}
+	}
+
 	(*in->fn_solve_and_update) (cell, in, Psun_in, laser_eff_in);
+
+	if (in->flip_field == TRUE) {
+		double *Gn =
+		    (double *)malloc(cell->ymeshpoints * sizeof(double));
+		double *Gp =
+		    (double *)malloc(cell->ymeshpoints * sizeof(double));
+
+		for (i = 0; i < cell->ymeshpoints; i++) {
+			Gn[i] = cell->Gn[i];
+			Gp[i] = cell->Gp[i];
+
+		}
+
+		for (i = 0; i < cell->ymeshpoints; i++) {
+			cell->Gn[cell->ymeshpoints - i - 1] = Gn[i];
+			cell->Gp[cell->ymeshpoints - i - 1] = Gp[i];
+
+		}
+
+		free(Gn);
+		free(Gp);
+	}
+
 }
 
-void light_load_config(struct light *in, char *output_path)
+void light_load_config(struct light *in)
 {
-	printf("Loading config\n");
-	(*in->fn_load_config) (in, output_path);
-}
-
-double light_cal_photon_density(struct light *in)
-{
-	return (*in->fn_cal_photon_density) (in);
+	light_load_epitaxy(in, "optics_epitaxy.inp");
+	light_init_mesh(in);
 }
 
 int light_solve_lam_slice(struct light *in, int lam)
@@ -148,5 +300,10 @@ int light_solve_lam_slice(struct light *in, int lam)
 
 void light_free(struct light *in)
 {
+	light_free_memory(in);
+#ifdef windows
+	FreeLibrary(in->lib_handle);
+#else
 	dlclose(in->lib_handle);
+#endif
 }

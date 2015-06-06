@@ -27,11 +27,15 @@
 #include <openssl/md5.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <sys/wait.h>
+
+#ifndef windows
 #include <zlib.h>
+#endif
+
 #include "code_ctrl.h"
 #include "sim.h"
 #include "inp.h"
+#include "util.h"
 
 static int unused __attribute__ ((unused));
 
@@ -48,8 +52,8 @@ double pick_dx;
 #endif
 
 static int gendos = TRUE;
-static struct dosconfig confige[3];
-static struct dosconfig configh[3];
+static struct dosconfig confige[10];
+static struct dosconfig configh[10];
 
 void dos_double_res()
 {
@@ -67,9 +71,11 @@ void md5write(char *file_name)
 	unsigned long len;
 	long l;
 	char chkfile[100];
+	char temp_path[1000];
+	sprintf(temp_path, "%s/%s", sim_input_path(), file_name);
 	sprintf(chkfile, "md5.%s.dat", file_name);
 
-	inp_read_buffer(&buffer, &l, "./", file_name);
+	inp_read_buffer(&buffer, &l, temp_path);
 	len = (unsigned int)l;
 
 	unsigned char md5[16];
@@ -99,10 +105,11 @@ int md5check(char *file_name)
 	char chkfile[100];
 	char newcheck[100];
 	char fromfile[100];
-
+	char temp_path[1000];
+	sprintf(temp_path, "%s/%s", sim_input_path(), file_name);
 	sprintf(chkfile, "md5.%s.dat", file_name);
 	long l;
-	inp_read_buffer(&buffer, &l, "./", file_name);
+	inp_read_buffer(&buffer, &l, temp_path);
 
 	len = (unsigned int)l;
 	MD5((const unsigned char *)buffer, len, md5);
@@ -136,12 +143,9 @@ void dump_qe()
 {
 	struct istruct n;
 	struct istruct p;
-	int fit_len = 0;
 
-	fit_len = get_file_len("./dosoutn.dat") - 1;
-	inter_load(&n, "./dosoutn.dat", fit_len, 0, 1);
-	fit_len = get_file_len("./dosoutp.dat") - 1;
-	inter_load(&p, "./dosoutp.dat", fit_len, 0, 1);
+	inter_load(&n, "./dosoutn.dat");
+	inter_load(&p, "./dosoutp.dat");
 	inter_swap(&p);
 
 	double start = n.x[0];
@@ -287,20 +291,18 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 	double *srh_x = (double *)malloc(sizeof(double) * in->srh_bands);
 	double *srh_mid = (double *)malloc(sizeof(double) * in->srh_bands);
+	double *band_E_mesh = (double *)malloc(sizeof(double) * in->Esteps);
+	int *band_i = (int *)malloc(sizeof(int) * in->Esteps);
 
 	int e = 0;
-	double Esteps = in->Esteps;
-	double Estart = -in->Xi;
-	double Estop = 0.0;
-	double dE = (Estop - Estart) / Esteps;
-	double E = Estart;
+	double E = 0.0;
+	double dE = fabs(in->srh_start) / ((double)in->Esteps);
 	double rho = 0.0;
 	double rho2 = 0.0;
 	double sum = 0.0;
 	double f = 0.0;
 	double last_n0 = 0;
 	double *xmesh = NULL;
-
 	tstart = in->Tstart;
 	tstop = in->Tstop;
 	tsteps = in->Tsteps;
@@ -380,6 +382,26 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 		srh_pos += srh_delta / 2.0;
 		srh_x[band] = srh_pos;
+
+	}
+
+	int i;
+	int band_pos = 0;
+	int cur_band = 0;
+	int points_per_band = in->Esteps / in->srh_bands;
+	double pos = in->srh_start;
+
+	for (i = 0; i < in->Esteps; i++) {
+		band_E_mesh[i] = pos;
+		band_i[i] = cur_band;
+
+		pos += dE;
+		band_pos++;
+		if (band_pos >= points_per_band) {
+			band_pos = 0;
+			cur_band++;
+		}
+
 	}
 
 	tpos = tstart;
@@ -411,8 +433,6 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	if (munfile == NULL) {
 		ewe("problem\n");
 	}
-
-	tpos = 300;
 
 	FILE *plotbands;
 	plotbands = fopen("./plotbandsn.dat", "w");
@@ -447,7 +467,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 		for (x = 0; x < in->npoints; x++) {
 			xpos = xmesh[x];
-			E = Estart;
+			E = 0.0;
 			sum = 0.0;
 			sum2 = 0.0;
 
@@ -464,37 +484,28 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 			srh_band = 0;
 
-			for (e = 0; e < (Esteps); e++) {
-
-				if (E > srh_x[srh_band]) {
-
-					if (srh_band < ((in->srh_bands) - 1)) {
-
-						srh_band++;
-
-					}
-
-				}
-
+			for (e = 0; e < in->Esteps; e++) {
+				E = band_E_mesh[e];
+				srh_band = band_i[e];
 				srh_E = srh_mid[srh_band];
 
 				f = 1.0 / (1.0 +
-					   exp((E - xpos) * q / (kb * tpos)));
+					   exp((E - xpos) * Q / (kb * tpos)));
 				f2 = 1.0 / (1.0 +
 					    exp((E -
-						 (-1.0 * (in->Eg + xpos))) * q /
+						 (-1.0 * (in->Eg + xpos))) * Q /
 						(kb * tpos)));
 
 				srh_f =
 				    1.0 / (1.0 +
 					   exp((srh_E -
-						xpos) * q / (kb * tpos)));
+						xpos) * Q / (kb * tpos)));
 
 				if (in->dostype == dos_fd) {
 					if (E > 0) {
 						rho =
 						    (sqrt(E) /
-						     (4.0 * pi * pi)) *
+						     (4.0 * PI * PI)) *
 						    pow((2.0 * in->m * m0) /
 							(hbar * hbar),
 							3.0 / 2.0);
@@ -507,13 +518,13 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 					if (E > 0) {
 						rho =
 						    2.0 * (sqrt(E) /
-							   (4.0 * pi * pi)) *
+							   (4.0 * PI * PI)) *
 						    pow((2.0 * in->m * m0) /
 							(hbar * hbar),
 							3.0 / 2.0);
 						rho2 =
 						    2.0 * (sqrt(E) /
-							   (4.0 * pi * pi)) *
+							   (4.0 * PI * PI)) *
 						    pow((2.0 * in2->m * m0) /
 							(hbar * hbar),
 							3.0 / 2.0);
@@ -571,7 +582,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						srh_r2[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigman * in->Nc *
-						    exp((srh_E * q) /
+						    exp((srh_E * Q) /
 							(tpos * kb)) * rho *
 						    srh_f * dE;
 						srh_r3[srh_band] +=
@@ -581,8 +592,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						srh_r4[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigmap * in->Nv *
-						    exp((-in->Eg * q -
-							 srh_E * q) / (tpos *
+						    exp((-in->Eg * Q -
+							 srh_E * Q) / (tpos *
 								       kb)) *
 						    rho * (1.0 - srh_f) * dE;
 						srh_n[srh_band] +=
@@ -597,7 +608,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						srh_r2[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigmap * in->Nv *
-						    exp((srh_E * q) /
+						    exp((srh_E * Q) /
 							(tpos * kb)) * rho *
 						    srh_f * dE;
 						srh_r3[srh_band] +=
@@ -607,8 +618,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						srh_r4[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigman * in->Nc *
-						    exp((-in->Eg * q -
-							 (srh_E * q)) / (tpos *
+						    exp((-in->Eg * Q -
+							 (srh_E * Q)) / (tpos *
 									 kb)) *
 						    rho * (1.0 - srh_f) * dE;
 						srh_n[srh_band] +=
@@ -658,8 +669,6 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 				}
 #endif
-
-				E += dE;
 
 			}
 
@@ -717,19 +726,19 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 			    || (in->dostype == dos_an)) {
 				if (electrons == TRUE) {
 					sum =
-					    in->Nc * exp((xpos * q) /
+					    in->Nc * exp((xpos * Q) /
 							 (kb * tpos));
 					sum2 =
 					    in->Nv *
-					    exp((-(in->Eg + xpos) * q) /
+					    exp((-(in->Eg + xpos) * Q) /
 						(kb * tpos));
 				} else {
 					sum =
-					    in->Nv * exp((xpos * q) /
+					    in->Nv * exp((xpos * Q) /
 							 (kb * tpos));
 					sum2 =
 					    in->Nc *
-					    exp((-(in->Eg + xpos) * q) /
+					    exp((-(in->Eg + xpos) * Q) /
 						(kb * tpos));
 				}
 
@@ -737,7 +746,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 			double w0 = sum / ((sum - last_n0) / (dxr));
 			if (x == 0)
-				w0 = kb * tpos / q;
+				w0 = kb * tpos / Q;
 #ifdef dos_bin
 			buf[buf_pos++] = sum;
 			buf[buf_pos++] = w0;
@@ -752,14 +761,14 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
-					(3.0 / 2.0) * kb * tpos / q);
+					(3.0 / 2.0) * kb * tpos / Q);
 				fclose(freetest);
 			} else {
 				freetest = fopen("./freetestp.dat", "a");
 
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
-					(3.0 / 2.0) * kb * tpos / q);
+					(3.0 / 2.0) * kb * tpos / Q);
 				fclose(freetest);
 			}
 #endif
@@ -806,11 +815,17 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	if (buf_len != buf_pos) {
 		ewe("Expected dos size is different from generated\n");
 	}
+#ifndef windows
 	gzFile file;
 	file = gzopen(outfile, "w9b");
 	gzwrite(file, (char *)buf, buf_len * sizeof(double));
 	gzclose(file);
-
+#else
+	FILE *file;
+	file = fopen(outfile, "wb");
+	fwrite((char *)buf, buf_len * sizeof(double), 1, file);
+	fclose(file);
+#endif
 	FILE *yes;
 	yes = fopen(outfile, "ab");
 	int temp1 = buf_len * sizeof(double);
@@ -830,6 +845,9 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	free(srh_den);
 	free(srh_dE_sum);
 	free(srh_read);
+
+	free(band_E_mesh);
+	free(band_i);
 
 	free(srh_x);
 	free(srh_mid);
@@ -861,25 +879,31 @@ void gen_load_dos(int mat)
 	char temp[100];
 
 	sprintf(file_name, "dos%d.inp", mat);
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, "./", file_name);
+	inp_check(&inp, 1.2);
 
-	inp_load("./", file_name);
-	inp_check(1.2);
-
-	inp_search_string(temp, "#dostype");
+	inp_search_string(&inp, temp, "#dostype");
 	confige[mat].dostype = english_to_bin(temp);
 	configh[mat].dostype = confige[mat].dostype;
 
-	inp_search_double(&(confige[mat].m), "#me");
-	inp_search_double(&(configh[mat].m), "#mh");
+	inp_search_double(&inp, &(confige[mat].m), "#me");
+	inp_search_double(&inp, &(configh[mat].m), "#mh");
 
-	inp_search_double(&(confige[mat].Nt), "#Ntrape");
-	inp_search_double(&(configh[mat].Nt), "#Ntraph");
+	inp_search_double(&inp, &(confige[mat].Nt), "#Ntrape");
+	inp_search_double(&inp, &(configh[mat].Nt), "#Ntraph");
 
 	confige[mat].Nt = fabs(confige[mat].Nt);
 	configh[mat].Nt = fabs(configh[mat].Nt);
 
-	inp_search_double(&(confige[mat].Et), "#Etrape");
-	inp_search_double(&(configh[mat].Et), "#Etraph");
+	if (confige[mat].Nt < 1e7)
+		confige[mat].Nt = 1e7;
+	if (configh[mat].Nt < 1e7)
+		configh[mat].Nt = 1e7;
+
+	inp_search_double(&inp, &(confige[mat].Et), "#Etrape");
+	inp_search_double(&inp, &(configh[mat].Et), "#Etraph");
 
 	confige[mat].Et = fabs(confige[mat].Et);
 	configh[mat].Et = fabs(configh[mat].Et);
@@ -889,97 +913,113 @@ void gen_load_dos(int mat)
 	if (configh[mat].Et < 2e-3)
 		configh[mat].Et = 2e-3;
 
-	inp_search_int(&(gendos), "#gendos");
+	if (confige[mat].Et > 200e-3)
+		confige[mat].Et = 200e-3;
+	if (configh[mat].Et > 200e-3)
+		configh[mat].Et = 200e-3;
 
-	inp_search_double(&(confige[mat].mu), "#mueffe");
-	inp_search_double(&(configh[mat].mu), "#mueffh");
+	inp_search_int(&inp, &(gendos), "#gendos");
+
+	inp_search_double(&inp, &(confige[mat].mu), "#mueffe");
+	inp_search_double(&inp, &(configh[mat].mu), "#mueffh");
 
 	confige[mat].mu = fabs(confige[mat].mu);
 	configh[mat].mu = fabs(configh[mat].mu);
 
-	inp_search_double(&(confige[mat].epsilonr), "#epsilonr");
+	inp_search_double(&inp, &(confige[mat].epsilonr), "#epsilonr");
+	confige[mat].epsilonr = fabs(confige[mat].epsilonr);
+	hard_limit("#epsilonr", &(confige[mat].epsilonr));
+
 	confige[mat].epsilonr = fabs(confige[mat].epsilonr);
 	configh[mat].epsilonr = fabs(confige[mat].epsilonr);
 
-	inp_search_double(&(confige[mat].doping), "#doping");
+	inp_search_double(&inp, &(confige[mat].doping), "#doping");
 	configh[mat].doping = confige[mat].doping;
 
-	inp_search_double(&(confige[mat].Tstart), "#Tstart");
-	inp_search_double(&(confige[mat].Tstop), "#Tstop");
-	inp_search_int(&(confige[mat].Tsteps), "#Tpoints");
+	inp_search_double(&inp, &(confige[mat].Tstart), "#Tstart");
+	inp_search_double(&inp, &(confige[mat].Tstop), "#Tstop");
+	inp_search_int(&inp, &(confige[mat].Tsteps), "#Tpoints");
 
 	configh[mat].Tstart = confige[mat].Tstart;
 	configh[mat].Tstop = confige[mat].Tstop;
 	configh[mat].Tsteps = confige[mat].Tsteps;
 
-	inp_search_double(&(confige[mat].nstart), "#nstart");
-	inp_search_double(&(confige[mat].nstop), "#nstop");
-	inp_search_int(&(confige[mat].npoints), "#npoints");
+	inp_search_double(&inp, &(confige[mat].nstart), "#nstart");
+	inp_search_double(&inp, &(confige[mat].nstop), "#nstop");
+	inp_search_int(&inp, &(confige[mat].npoints), "#npoints");
 
-	inp_search_double(&(configh[mat].nstart), "#pstart");
-	inp_search_double(&(configh[mat].nstop), "#pstop");
-	inp_search_int(&(configh[mat].npoints), "#ppoints");
+	inp_search_double(&inp, &(configh[mat].nstart), "#pstart");
+	inp_search_double(&inp, &(configh[mat].nstop), "#pstop");
+	inp_search_int(&inp, &(configh[mat].npoints), "#ppoints");
+	int bands = 0;
+	inp_search_int(&inp, &(bands), "#srh_bands");
+	confige[mat].srh_bands = bands;
+	configh[mat].srh_bands = bands;
 
-	inp_search_int(&(confige[mat].srh_bands), "#srh_bands");
-	configh[mat].srh_bands = confige[mat].srh_bands;
-
-	inp_search_double(&(confige[mat].srh_start), "#srh_start");
+	inp_search_double(&inp, &(confige[mat].srh_start), "#srh_start");
 	configh[mat].srh_start = confige[mat].srh_start;
 
-	inp_search_double(&(confige[mat].srh_sigman), "#srhsigman_e");
+	inp_search_double(&inp, &(confige[mat].srh_sigman), "#srhsigman_e");
 	confige[mat].srh_sigman = fabs(confige[mat].srh_sigman);
 
-	inp_search_double(&(confige[mat].srh_sigmap), "#srhsigmap_e");
+	inp_search_double(&inp, &(confige[mat].srh_sigmap), "#srhsigmap_e");
 	confige[mat].srh_sigmap = fabs(confige[mat].srh_sigmap);
 
-	inp_search_double(&(confige[mat].srh_vth), "#srhvth_e");
+	inp_search_double(&inp, &(confige[mat].srh_vth), "#srhvth_e");
 	confige[mat].srh_vth = fabs(confige[mat].srh_vth);
 	if (confige[mat].srh_vth < 1e2)
 		confige[mat].srh_vth = 1e2;
 
-	inp_search_double(&(configh[mat].srh_sigman), "#srhsigman_h");
+	inp_search_double(&inp, &(configh[mat].srh_sigman), "#srhsigman_h");
 	configh[mat].srh_sigman = fabs(configh[mat].srh_sigman);
 
-	inp_search_double(&(configh[mat].srh_sigmap), "#srhsigmap_h");
+	inp_search_double(&inp, &(configh[mat].srh_sigmap), "#srhsigmap_h");
 	configh[mat].srh_sigmap = fabs(configh[mat].srh_sigmap);
 
-	inp_search_double(&(configh[mat].srh_vth), "#srhvth_h");
+	inp_search_double(&inp, &(configh[mat].srh_vth), "#srhvth_h");
 	configh[mat].srh_vth = fabs(configh[mat].srh_vth);
 	if (configh[mat].srh_vth < 1e2)
 		configh[mat].srh_vth = 1e2;
 
-	inp_search_double(&(confige[mat].Nc), "#Nc");
+	inp_search_double(&inp, &(confige[mat].Nc), "#Nc");
 
-	inp_search_double(&(confige[mat].Nv), "#Nv");
+	inp_search_double(&inp, &(confige[mat].Nv), "#Nv");
 
-	inp_search_double(&(confige[mat].srh_cut), "#srh_cut");
+	inp_search_double(&inp, &(confige[mat].srh_cut), "#srh_cut");
 	confige[mat].srh_cut = -fabs(confige[mat].srh_cut);
 	configh[mat].srh_cut = confige[mat].srh_cut;
 
-	inp_search_double(&(confige[mat].del_start), "#lumodelstart");
+	inp_search_double(&inp, &(confige[mat].del_start), "#lumodelstart");
 
-	inp_search_double(&(confige[mat].del_stop), "#lumodelstop");
+	inp_search_double(&inp, &(confige[mat].del_stop), "#lumodelstop");
 
-	inp_search_double(&(configh[mat].del_start), "#homodelstart");
+	inp_search_double(&inp, &(configh[mat].del_start), "#homodelstart");
 
-	inp_search_double(&(configh[mat].del_stop), "#homodelstop");
+	inp_search_double(&inp, &(configh[mat].del_stop), "#homodelstop");
 
-	inp_search_double(&(confige[mat].Xi), "#Xi");
+	inp_search_double(&inp, &(confige[mat].Xi), "#Xi");
 
-	inp_search_double(&(confige[mat].Eg), "#Eg");
+	inp_search_double(&inp, &(confige[mat].Eg), "#Eg");
 	confige[mat].Eg = fabs(confige[mat].Eg);
+	hard_limit("#Eg", &(confige[mat].Eg));
 
-	inp_search_double(&(confige[mat].gaus_mull), "#gaus_mull");
+	inp_search_double(&inp, &(confige[mat].gaus_mull), "#gaus_mull");
 	configh[mat].gaus_mull = confige[mat].gaus_mull;
 
-	inp_search_int(&(confige[mat].Esteps), "#Esteps");
+	int Esteps = 0;
+	inp_search_int(&inp, &(Esteps), "#Esteps");
+	int Estep_div = (Esteps / bands) * bands;
+	if (Estep_div != Esteps) {
+		printf("Esteps wanted= %d, given= %d \n", Esteps, Estep_div);
+	}
 
-	configh[mat].Esteps = confige[mat].Esteps;
+	confige[mat].Esteps = Estep_div;
+	configh[mat].Esteps = Estep_div;
 	int dump;
-	inp_search_int(&dump, "#dump_band_structure");
+	inp_search_int(&inp, &dump, "#dump_band_structure");
 	set_dump_status(dump_band_structure, dump);
 
-	inp_free();
+	inp_free(&inp);
 
 	configh[mat].Xi = confige[mat].Xi;
 	configh[mat].Eg = confige[mat].Eg;
@@ -992,10 +1032,10 @@ void gen_load_dos(int mat)
 		confige[mat].Nv = 1e16;
 	confige[mat].m =
 	    pow(confige[mat].Nc / 2.0,
-		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / pi;
+		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / PI;
 	configh[mat].m =
 	    pow(confige[mat].Nv / 2.0,
-		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / pi;
+		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / PI;
 
 	configh[mat].Nc = confige[mat].Nc;
 	configh[mat].Nv = confige[mat].Nv;
@@ -1068,10 +1108,10 @@ void gen_dos_fd_gaus_fd()
 		sprintf(name, "gendosn%d.inp", mat);
 
 		if (file_bandn == TRUE)
-			server_add_job(&globalserver, name);
+			server_add_job(&globalserver, name, name);
 		sprintf(name, "gendosp%d.inp", mat);
 		if (file_bandp == TRUE)
-			server_add_job(&globalserver, name);
+			server_add_job(&globalserver, name, name);
 
 		pick_dump();
 		sprintf(name, "dos%d.inp", mat);

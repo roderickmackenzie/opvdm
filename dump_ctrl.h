@@ -28,19 +28,24 @@
 #define dump_plot 3
 #define dump_stop_plot 4
 #define dump_opt_for_fit 5
+#define dump_write_converge 6
 #define dump_print_text 7
 #define dump_exit_on_dos_error 8
 #define dump_energy_slice_switch 9
+#define dump_zip_files 10
 #define dump_lock 11
-#define dump_lock_enable 12
+#define dump_norm_time_to_one 12
 #define dump_band_structure 14
 #define dump_print_newtonerror 15
 #define dump_print_converge 16
-#define dump_slices_by_time 17
-#define dump_all_slices 18
+#define dump_1d_slices 18
 #define dump_print_pos_error 19
 #define dump_optics_verbose 20
 #define dump_pl 21
+#define dump_dynamic 22
+#define dump_print_hardware_info 23
+#define dump_norm_y_axis 24
+
 void set_io_dump(int in);
 int get_io_dump();
 int get_dump_status(int a);

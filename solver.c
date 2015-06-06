@@ -34,6 +34,8 @@ static int *Ai = NULL;
 static double *Ax = NULL;
 static int solver_dump_every_matrix = 0;
 
+static double total_time = 0.0;
+
 void set_solver_dump_every_matrix(int dump)
 {
 	solver_dump_every_matrix = dump;
@@ -123,7 +125,8 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 		solver_dump_every_matrix++;
 	}
 
-	int i;
+	double stats[2];
+	umfpack_tic(stats);
 	void *Symbolic, *Numeric;
 	int status;
 
@@ -136,6 +139,10 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 		last_nz = nz;
 	}
 
+	double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
+
+	umfpack_di_defaults(Control);
+
 	status =
 	    umfpack_di_triplet_to_col(col, col, nz, Ti, Tj, Tx, Ap, Ai, Ax,
 				      NULL);
@@ -146,14 +153,14 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 	}
 
 	status =
-	    umfpack_di_symbolic(col, col, Ap, Ai, Ax, &Symbolic, NULL, NULL);
+	    umfpack_di_symbolic(col, col, Ap, Ai, Ax, &Symbolic, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
 
-	umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, NULL, NULL);
+	umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
@@ -162,7 +169,7 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 
 	umfpack_di_free_symbolic(&Symbolic);
 
-	umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, x, b, Numeric, NULL, NULL);
+	umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, x, b, Numeric, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
@@ -171,10 +178,13 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 
 	umfpack_di_free_numeric(&Numeric);
 
-	for (i = 0; i < col; i++) {
-		b[i] = x[i];
-
-	}
-
+	memcpy(b, x, col * sizeof(double));
+	umfpack_toc(stats);
+	total_time += stats[0];
 	return 0;
+}
+
+void solver_print_time()
+{
+	printf("Time in umfpack %lf\n", total_time);
 }

@@ -19,12 +19,13 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#ifndef windows
 #include <zlib.h>
+#endif
 #include "code_ctrl.h"
 #include "server.h"
 #include "sim.h"
@@ -68,7 +69,7 @@ double get_dos_filled_p(struct device *in)
 	return p_tot;
 }
 
-double dos_srh_get_fermi_n(double n, double p, int band, int mat)
+double dos_srh_get_fermi_n(double n, double p, int band, int mat, double T)
 {
 	double srh_sigman = dosn[mat].config.srh_sigman;
 	double srh_sigmap = dosn[mat].config.srh_sigmap;
@@ -77,22 +78,22 @@ double dos_srh_get_fermi_n(double n, double p, int band, int mat)
 	double srh_vth = dosn[mat].config.srh_vth;
 
 	double srh_en =
-	    srh_vth * srh_sigman * Nc * exp((q * dosn[mat].srh_E[band]) /
-					    (300.0 * kb));
+	    srh_vth * srh_sigman * Nc * exp((Q * dosn[mat].srh_E[band]) /
+					    (T * kb));
 	double srh_ep =
 	    srh_vth * srh_sigmap * Nv *
-	    exp((q * (-1.0 - dosn[mat].srh_E[band])) / (300.0 * kb));
+	    exp((Q * (-1.0 - dosn[mat].srh_E[band])) / (T * kb));
 
 	double f = 0.0;
 	f = (n * srh_vth * srh_sigman + srh_ep) / (n * srh_vth * srh_sigman +
 						   p * srh_vth * srh_sigmap +
 						   srh_en + srh_ep);
 	double level = 0.0;
-	level = dosn[mat].srh_E[band] - 300.0 * kb * log((1.0 / f) - 1.0) / q;
+	level = dosn[mat].srh_E[band] - T * kb * log((1.0 / f) - 1.0) / Q;
 	return level;
 }
 
-double dos_srh_get_fermi_p(double n, double p, int band, int mat)
+double dos_srh_get_fermi_p(double n, double p, int band, int mat, double T)
 {
 	double srh_sigmap = dosp[mat].config.srh_sigmap;
 	double srh_sigman = dosp[mat].config.srh_sigman;
@@ -101,17 +102,17 @@ double dos_srh_get_fermi_p(double n, double p, int band, int mat)
 	double srh_vth = dosp[mat].config.srh_vth;
 
 	double srh_ep =
-	    srh_vth * srh_sigmap * Nv * exp((q * dosp[mat].srh_E[band]) /
-					    (300.0 * kb));
+	    srh_vth * srh_sigmap * Nv * exp((Q * dosp[mat].srh_E[band]) /
+					    (T * kb));
 	double srh_en =
 	    srh_vth * srh_sigman * Nc *
-	    exp((q * (-1.0 - dosp[mat].srh_E[band])) / (300.0 * kb));
+	    exp((Q * (-1.0 - dosp[mat].srh_E[band])) / (T * kb));
 	double f = 0.0;
 	f = (p * srh_vth * srh_sigmap + srh_en) / (p * srh_vth * srh_sigmap +
 						   n * srh_vth * srh_sigman +
 						   srh_ep + srh_en);
 	double level = 0.0;
-	level = dosp[mat].srh_E[band] - 300.0 * kb * log((1.0 / f) - 1.0) / q;
+	level = dosp[mat].srh_E[band] - T * kb * log((1.0 / f) - 1.0) / Q;
 	return level;
 }
 
@@ -201,7 +202,11 @@ void load_dos_file(struct dos *mydos, char *file)
 		printf("Loading %s\n", file);
 
 #ifdef dos_bin
+#ifndef windows
 	gzFile in;
+#else
+	FILE *in;
+#endif
 #else
 	FILE *in;
 #endif
@@ -233,21 +238,32 @@ void load_dos_file(struct dos *mydos, char *file)
 
 	fclose(tl);
 
+#ifndef windows
 	in = gzopen(file, "rb");
 	if (in == Z_NULL) {
 		printf("DOS file not found\n");
 		exit(0);
 	}
+#else
+	in = fopen(file, "rb");
+	if (in == NULL) {
+		printf("DOS file not found\n");
+		exit(0);
+	}
+#endif
 
 	int buf_len = len / sizeof(double);
 
 	double *buf = (double *)malloc(sizeof(double) * buf_len);
 
 	int buf_pos = 0;
-
+#ifndef windows
 	gzread(in, (char *)buf, len);
-
 	gzclose(in);
+#else
+	fread((char *)buf, len, 1, in);
+	fclose(in);
+#endif
 
 #else
 	in = fopen(file, "r");
@@ -482,7 +498,7 @@ double get_dpdT_den(double top, double T, int mat)
 {
 	double ret = 0.0;
 	double N = dosp[mat].config.Nv;
-	ret = -((top * q) / kb) * N * exp((top * q) / (kb * T)) * pow(T, -2.0);
+	ret = -((top * Q) / kb) * N * exp((top * Q) / (kb * T)) * pow(T, -2.0);
 	return ret;
 }
 
@@ -490,31 +506,31 @@ double get_dndT_den(double top, double T, int mat)
 {
 	double ret = 0.0;
 	double N = dosn[mat].config.Nc;
-	ret = -((top * q) / kb) * N * exp((top * q) / (kb * T)) * pow(T, -2.0);
+	ret = -((top * Q) / kb) * N * exp((top * Q) / (kb * T)) * pow(T, -2.0);
 	return ret;
 }
 
 double get_top_from_n(double n, double T, int mat)
 {
-	double ret = (kb * T / q) * log((fabs(n)) / dosn[mat].config.Nc);
+	double ret = (kb * T / Q) * log((fabs(n)) / dosn[mat].config.Nc);
 	return ret;
 }
 
 double get_top_from_p(double p, double T, int mat)
 {
-	double ret = (kb * T / q) * log((fabs(p)) / dosp[mat].config.Nv);
+	double ret = (kb * T / Q) * log((fabs(p)) / dosp[mat].config.Nv);
 	return ret;
 }
 
 double get_n_den(double top, double T, int mat)
 {
-	double ret = dosn[mat].config.Nc * exp((q * top) / (T * kb));
+	double ret = dosn[mat].config.Nc * exp((Q * top) / (T * kb));
 	return ret;
 }
 
 double get_p_den(double top, double T, int mat)
 {
-	double ret = dosp[mat].config.Nv * exp((q * top) / (T * kb));
+	double ret = dosp[mat].config.Nv * exp((Q * top) / (T * kb));
 	return ret;
 }
 
@@ -531,14 +547,14 @@ double get_p_mu(int mat)
 double get_dn_den(double top, double T, int mat)
 {
 	double ret =
-	    (q / (T * kb)) * dosn[mat].config.Nc * exp((q * top) / (T * kb));
+	    (Q / (T * kb)) * dosn[mat].config.Nc * exp((Q * top) / (T * kb));
 	return ret;
 }
 
 double get_dp_den(double top, double T, int mat)
 {
 	double ret =
-	    (q / (T * kb)) * dosp[mat].config.Nv * exp((q * top) / (T * kb));
+	    (Q / (T * kb)) * dosp[mat].config.Nv * exp((Q * top) / (T * kb));
 	return ret;
 }
 
@@ -563,11 +579,9 @@ double get_n_srh(double top, double T, int trap, int r, int mat)
 
 #ifdef dos_warn
 	if ((dosn[mat].x[0] > top) || (dosn[mat].x[dosn[mat].xlen - 1] < top)) {
-		printf("Electrons asking for %e but range %e %e\n", top,
-		       dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE) {
-			server_stop_and_exit();
-		}
+		ewe("Electrons asking for %e but range %e %e\n", top,
+		    dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
+
 	}
 #endif
 
@@ -666,10 +680,8 @@ double get_p_srh(double top, double T, int trap, int r, int mat)
 
 #ifdef dos_warn
 	if ((dosp[mat].x[0] > top) || (dosp[mat].x[dosp[mat].xlen - 1] < top)) {
-		printf("Holes asking for %e but range %e %e\n", top,
-		       dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Holes asking for %e but range %e %e\n", top,
+		    dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
 
 	}
 #endif
@@ -770,10 +782,8 @@ double get_dn_srh(double top, double T, int trap, int r, int mat)
 
 #ifdef dos_warn
 	if ((dosn[mat].x[0] > top) || (dosn[mat].x[dosn[mat].xlen - 1] < top)) {
-		printf("Electrons asking for %e but range %e %e\n", top,
-		       dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Electrons asking for %e but range %e %e\n", top,
+		    dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
 
 	}
 #endif
@@ -873,10 +883,8 @@ double get_dp_srh(double top, double T, int trap, int r, int mat)
 
 #ifdef dos_warn
 	if ((dosp[mat].x[0] > top) || (dosp[mat].x[dosp[mat].xlen - 1] < top)) {
-		printf("Holes asking for %e but range %e %e\n", top,
-		       dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Holes asking for %e but range %e %e\n", top,
+		    dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
 
 	}
 #endif
@@ -974,10 +982,8 @@ double get_n_pop_srh(double top, double T, int trap, int mat)
 
 #ifdef dos_warn
 	if ((dosn[mat].x[0] > top) || (dosn[mat].x[dosn[mat].xlen - 1] < top)) {
-		printf("Electrons asking for %e but range %e %e\n", top,
-		       dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Electrons asking for %e but range %e %e\n", top,
+		    dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
 
 	}
 #endif
@@ -1034,10 +1040,8 @@ double get_p_pop_srh(double top, double T, int trap, int mat)
 
 #ifdef dos_warn
 	if ((dosp[mat].x[0] > top) || (dosp[mat].x[dosp[mat].xlen - 1] < top)) {
-		printf("Holes asking for %e but range %e %e\n", top,
-		       dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Holes asking for %e but range %e %e\n", top,
+		    dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
 
 	}
 #endif
@@ -1094,10 +1098,8 @@ double get_dn_pop_srh(double top, double T, int trap, int mat)
 
 #ifdef dos_warn
 	if ((dosn[mat].x[0] > top) || (dosn[mat].x[dosn[mat].xlen - 1] < top)) {
-		printf("Electrons asking for %e but range %e %e\n", top,
-		       dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Electrons asking for %e but range %e %e\n", top,
+		    dosn[mat].x[0], dosn[mat].x[dosn[mat].xlen - 1]);
 
 	}
 #endif
@@ -1156,10 +1158,8 @@ double get_dp_pop_srh(double top, double T, int trap, int mat)
 
 #ifdef dos_warn
 	if ((dosp[mat].x[0] > top) || (dosp[mat].x[dosp[mat].xlen - 1] < top)) {
-		printf("Holes asking for %e but range %e %e\n", top,
-		       dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
-		if (get_dump_status(dump_exit_on_dos_error) == TRUE)
-			server_stop_and_exit();
+		ewe("Holes asking for %e but range %e %e\n", top,
+		    dosp[mat].x[0], dosp[mat].x[dosp[mat].xlen - 1]);
 
 	}
 #endif

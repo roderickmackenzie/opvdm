@@ -97,11 +97,11 @@ void update_heat(struct device *in)
 		Jn = in->Jn[i];
 		Jp = in->Jp[i];
 		in->He[i] =
-		    q * (Ecr - Ecl) * Jn / dh + in->Habs[i] / 2.0 +
-		    q * in->Eg[i] * (in->Rn[i] + in->Rp[i]) / 2.0 / 2.0;
+		    Q * (Ecr - Ecl) * Jn / dh + in->Habs[i] / 2.0 +
+		    Q * in->Eg[i] * (in->Rn[i] + in->Rp[i]) / 2.0 / 2.0;
 		in->Hh[i] =
-		    q * (Evr - Evl) * Jp / dh + in->Habs[i] / 2.0 +
-		    q * in->Eg[i] * (in->Rn[i] + in->Rp[i]) / 2.0 / 2.0;
+		    Q * (Evr - Evl) * Jp / dh + in->Habs[i] / 2.0 +
+		    Q * in->Eg[i] * (in->Rn[i] + in->Rp[i]) / 2.0 / 2.0;
 
 	}
 

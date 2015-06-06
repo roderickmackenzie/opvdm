@@ -27,7 +27,7 @@
 #define sim_mode_li_sc	3
 #define sim_mode_tpc	4
 #define sim_mode_li	5
-#define sim_mode_find_voc 7
+#define sim_mode_sun_voc 7
 #define sim_mode_jvone 	8
 #define sim_mode_tof 	11
 #define sim_mode_fft 	12
@@ -38,7 +38,9 @@
 #define sim_mode_qe 21
 #define sim_mode_pulse 	22
 #define sim_mode_shg	24
-#define sim_mode_photokit 25
+#define sim_mode_imps 25
 #define sim_mode_pulse_voc	27
 #define sim_mode_jv_simple	28
+#define sim_mode_optics		33
+#define sim_mode_stark_spectrum 34
 #endif

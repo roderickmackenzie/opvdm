@@ -23,9 +23,23 @@
 #define h_light_interface
 #include "device.h"
 
-void light_init(struct light *in, struct device *cell);
-void light_transfer_gen_rate_to_device(struct device *cell, struct light *in);
-void light_solve_and_update(struct device *cell, struct light *in,
-			    double Psun_in, double Plaser_in);
+#ifdef windows
+#ifdef BUILDING_EXAMPLE_DLL
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT __declspec(dllimport)
+#endif
+#else
+#define EXPORT
+#endif
+
+EXPORT void light_dll_init();
+EXPORT void light_dll_free(struct light *in);
+EXPORT void light_dll_solve_and_update(struct device *cell, struct light *in,
+				       double Psun_in, double laser_eff_in,
+				       double pulse_width);
+EXPORT int light_dll_solve_lam_slice(struct light *in, int lam);
 double light_convert_density(struct device *in, double start, double width);
+EXPORT void light_dll_ver();
+EXPORT void light_fixup(char *name, void (*in));
 #endif

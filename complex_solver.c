@@ -26,6 +26,8 @@
 #include "sim.h"
 #include "complex_solver.h"
 #include <math.h>
+#include "buffer.h"
+#include <string.h>
 
 static int last_col = 0;
 static int last_nz = 0;
@@ -56,23 +58,30 @@ void complex_error_report(int status, const char *file, const char *func,
 void complex_solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
 				double *Txz, double *b, double *bz)
 {
-	FILE *matrix;
-	matrix = fopen("./matrix.dat", "w");
-
+	char build[100];
+	struct buffer buf;
+	buffer_init(&buf);
+	buffer_malloc(&buf);
+	strcpy(buf.type, "map");
+	buffer_add_info(&buf);
 	int i;
 	for (i = 0; i < nz; i++) {
-		fprintf(matrix, "%d %d %le\n", Tj[i], Ti[i],
-			pow(pow(Tx[i], 2.0) + pow(Txz[i], 2.0), 2.0));
+		sprintf(build, "%d %d %le\n", Tj[i], Ti[i],
+			sqrt(pow(Tx[i], 2.0) + pow(Txz[i], 2.0)));
+		buffer_add_string(&buf, build);
+
 	}
 
 	for (i = 0; i < col; i++) {
-		fprintf(matrix, "%d %d %le\n", 0, i,
-			fabs(pow(b[i], 2.0) + pow(bz[i], 2.0)));
+		sprintf(build, "%d %d %le\n", col, i,
+			sqrt(pow(b[i], 2.0) + pow(bz[i], 2.0)));
+		buffer_add_string(&buf, build);
 	}
 
-	printf("Matrix dumped\n");
+	buffer_dump("./", "matrix.dat", &buf);
 
-	fclose(matrix);
+	buffer_free(&buf);
+	printf("Matrix dumped\n");
 }
 
 void complex_solver_free()
@@ -91,6 +100,7 @@ void complex_solver_free()
 	Az = NULL;
 	last_col = 0;
 	last_nz = 0;
+	printf("Complex solver free\n");
 }
 
 void complex_solver_print(int col, int nz, int *Ti, int *Tj, double *Tx,

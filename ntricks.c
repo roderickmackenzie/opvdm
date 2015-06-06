@@ -64,7 +64,7 @@ void ramp_externalv(struct device *in, double from, double to)
 	do {
 		V += dV;
 		if (get_dump_status(dump_print_text) == TRUE)
-			printf("ramp: %lf %lf %d\n", V, to, in->newton_cur);
+			printf("ramp: %lf %lf %d\n", V, to, in->kl_in_newton);
 		sim_externalv(in, V);
 
 		plot_now(in, "jv.plot");
@@ -85,7 +85,7 @@ void ramp_externalv(struct device *in, double from, double to)
 
 void ramp(struct device *in, double from, double to, double steps)
 {
-	in->newton_cur = FALSE;
+	in->kl_in_newton = FALSE;
 	solver_realloc(in);
 
 	in->Vapplied = from;
@@ -109,7 +109,7 @@ void ramp(struct device *in, double from, double to, double steps)
 
 		if (get_dump_status(dump_print_text) == TRUE)
 			printf("ramp: %lf %lf %d\n", in->Vapplied, to,
-			       in->newton_cur);
+			       in->kl_in_newton);
 		solve_all(in);
 		plot_now(in, "jv_vars.plot");
 
@@ -249,7 +249,7 @@ double sim_externalv_ittr(struct device *in, double wantedv)
 
 double sim_externalv(struct device *in, double wantedv)
 {
-	in->newton_cur = FALSE;
+	in->kl_in_newton = FALSE;
 	solver_realloc(in);
 	sim_externalv_ittr(in, wantedv);
 	return 0.0;
@@ -262,7 +262,7 @@ void solve_all(struct device *in)
 
 void newton_sim_jv(struct device *in)
 {
-	in->newton_cur = FALSE;
+	in->kl_in_newton = FALSE;
 	solver_realloc(in);
 
 	solve_all(in);

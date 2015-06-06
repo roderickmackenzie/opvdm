@@ -19,12 +19,21 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#ifndef solver_h
-#define solver_h
-void set_solver_dump_every_matrix(int dump);
-void solver_precon(int col, int nz, int *Ti, int *Tj, double *Tx, double *b);
-int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b);
-void solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
-			double *b, char *index);
-void solver_print_time();
-#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+#include "sim.h"
+#include "dump.h"
+#include "buffer.h"
+
+static int unused __attribute__ ((unused));
+
+void dump_device_map(char *out_dir, char *extra, struct device *in)
+{
+}

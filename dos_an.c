@@ -28,4 +28,6 @@
 #include "const.h"
 #include "code_ctrl.h"
 #include "util.h"
+#include "inp.h"
+
 static int unused __attribute__ ((unused));

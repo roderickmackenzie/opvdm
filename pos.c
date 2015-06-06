@@ -26,11 +26,16 @@
 #include <math.h>
 #include "sim.h"
 #include "solver.h"
+#include "buffer.h"
+
 double min_pos_error = 1e-4;
 
 void pos_dump(struct device *in)
 {
 	if (get_dump_status(dump_iodump) == TRUE) {
+		struct buffer buf;
+		buffer_init(&buf);
+		char name[200];
 		int band = 0;
 		int i = 0;
 		FILE *out;
@@ -47,17 +52,39 @@ void pos_dump(struct device *in)
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_Ec.dat", "w");
-		for (i = 0; i < in->ymeshpoints; i++) {
-			fprintf(out, "%e %e\n", in->ymesh[i], in->Ec[i]);
-		}
-		fclose(out);
+		buffer_malloc(&buf);
+		sprintf(name, "%s%s", "equ_Ec", ".dat");
+		buf.y_mul = 1.0;
+		buf.x_mul = 1e9;
+		strcpy(buf.title, "LUMO energy - position");
+		strcpy(buf.type, "xy");
+		strcpy(buf.x_label, "Position");
+		strcpy(buf.y_label, "LUMO");
+		strcpy(buf.x_units, "nm");
+		strcpy(buf.y_units, "$E_{LUMO}$");
+		buf.logscale_x = 0;
+		buf.logscale_y = 0;
+		buffer_add_info(&buf);
+		buffer_add_xy_data(&buf, in->ymesh, in->Ec, in->ymeshpoints);
+		buffer_dump("./", name, &buf);
+		buffer_free(&buf);
 
-		out = fopena(in->outputpath, "./equ_Ev.dat", "w");
-		for (i = 0; i < in->ymeshpoints; i++) {
-			fprintf(out, "%e %e\n", in->ymesh[i], in->Ev[i]);
-		}
-		fclose(out);
+		buffer_malloc(&buf);
+		sprintf(name, "%s%s", "equ_Ev", ".dat");
+		buf.y_mul = 1.0;
+		buf.x_mul = 1e9;
+		strcpy(buf.title, "HOMO energy - position");
+		strcpy(buf.type, "xy");
+		strcpy(buf.x_label, "Position");
+		strcpy(buf.y_label, "LUMO");
+		strcpy(buf.x_units, "nm");
+		strcpy(buf.y_units, "$E_{HOMO}$");
+		buf.logscale_x = 0;
+		buf.logscale_y = 0;
+		buffer_add_info(&buf);
+		buffer_add_xy_data(&buf, in->ymesh, in->Ev, in->ymeshpoints);
+		buffer_dump("./", name, &buf);
+		buffer_free(&buf);
 
 		out = fopena(in->outputpath, "./equ_n.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
@@ -146,13 +173,13 @@ int solve_pos(struct device *in)
 	double e0 = 0.0;
 	double e1 = 0.0;
 	int pos_max_ittr = 250;
-	if (antje1() == TRUE) {
-		pos_max_ittr = 2000;
-		min_pos_error = 1e-15;
-	}
-	in->enabled = get_dump_status(dump_lock_enable);
+
+	int quit = FALSE;
+	int adv_step = 0;
 	int adv = FALSE;
 	int band;
+
+	double kTq = (in->Te[0] * kb / Q);
 
 	do {
 
@@ -205,10 +232,9 @@ int solve_pos(struct device *in)
 			double dphidn = 0.0;
 			if (adv == FALSE) {
 				dphidn =
-				    (q / (kb * in->Tl[i])) * in->Nc[i] *
+				    (Q / (kb * in->Tl[i])) * in->Nc[i] *
 				    exp(((in->Fi[i] -
-					  (-in->phi[i] -
-					   in->Xi[i]))) / (in->kTq));
+					  (-in->phi[i] - in->Xi[i]))) / (kTq));
 
 			} else {
 				dphidn =
@@ -220,10 +246,9 @@ int solve_pos(struct device *in)
 			double dphidp = 0.0;
 			if (adv == FALSE) {
 				dphidp =
-				    -(q / (kb * in->Tl[i])) * in->Nv[i] *
+				    -(Q / (kb * in->Tl[i])) * in->Nv[i] *
 				    exp((((-in->phi[i] - in->Xi[i] -
-					   in->Eg[i]) -
-					  in->Fi[i])) / (in->kTq));
+					   in->Eg[i]) - in->Fi[i])) / (kTq));
 			} else {
 				dphidp =
 				    -get_dp_den(in->xp[i] - in->tp[i],
@@ -272,7 +297,7 @@ int solve_pos(struct device *in)
 			double dphi =
 			    dphil * phil + dphic * phic + dphir * phir;
 
-			dphic_d += -q * (dphidn - dphidp);
+			dphic_d += -Q * (dphidn - dphidp);
 
 			if (i != 0) {
 				Ti[pos] = i;
@@ -304,8 +329,16 @@ int solve_pos(struct device *in)
 			} else {
 				b[i] =
 				    -(dphi -
-				      q * (in->n[i] - in->p[i] - in->Nad[i]));
-
+				      Q * (in->n[i] - in->p[i] - in->Nad[i]));
+				if (adv == TRUE) {
+					for (band = 0; band < in->srh_bands;
+					     band++) {
+						b[i] +=
+						    -(-Q *
+						      (in->nt[i][band] -
+						       in->pt[i][band]));
+					}
+				}
 			}
 
 		}
@@ -322,14 +355,12 @@ int solve_pos(struct device *in)
 			} else {
 				double update;
 
-				if (get_clamp_state() == TRUE) {
-					update =
-					    b[i] / (1.0 +
-						    fabs(b[i] / in->posclamp /
-							 (300.0 * kb / q)));
-				} else {
-					update = b[i];
-				}
+				double clamp_temp = 300.0;
+				update =
+				    b[i] / (1.0 +
+					    fabs(b[i] / in->posclamp /
+						 (clamp_temp * kb / Q)));
+
 				in->phi[i] += update;
 
 			}
@@ -343,10 +374,10 @@ int solve_pos(struct device *in)
 				in->n[i] =
 				    in->Nc[i] *
 				    exp(((in->Fi[i] -
-					  in->Ec[i]) * q) / (kb * in->Tl[i]));
+					  in->Ec[i]) * Q) / (kb * in->Tl[i]));
 				in->dn[i] =
-				    (q / (kb * in->Tl[i])) * in->Nc[i] *
-				    exp((q * (in->Fi[i] - in->Ec[i])) /
+				    (Q / (kb * in->Tl[i])) * in->Nc[i] *
+				    exp((Q * (in->Fi[i] - in->Ec[i])) /
 					(kb * in->Tl[i]));
 			} else {
 				in->n[i] =
@@ -359,19 +390,19 @@ int solve_pos(struct device *in)
 
 			in->Fn[i] = in->Fi[i];
 			in->Fp[i] = in->Fi[i];
-			in->x[i] = in->phi[i] + in->Fn[i];
 
+			in->x[i] = in->phi[i] + in->Fn[i];
 			in->xp[i] = -(in->phi[i] + in->Fp[i]);
 
 			if (adv == FALSE) {
 				in->p[i] =
 				    in->Nv[i] *
 				    exp(((in->xp[i] -
-					  in->tp[i]) * q) / (kb * in->Tl[i]));
+					  in->tp[i]) * Q) / (kb * in->Tl[i]));
 				in->dp[i] =
-				    (q / (kb * in->Tl[i])) * in->Nv[i] *
+				    (Q / (kb * in->Tl[i])) * in->Nv[i] *
 				    exp(((in->xp[i] -
-					  in->tp[i]) * q) / (kb * in->Tl[i]));
+					  in->tp[i]) * Q) / (kb * in->Tl[i]));
 			} else {
 				in->p[i] =
 				    get_p_den(in->xp[i] - in->tp[i], in->Tl[i],
@@ -382,10 +413,18 @@ int solve_pos(struct device *in)
 			}
 
 			for (band = 0; band < in->srh_bands; band++) {
+
 				in->Fnt[i][band] =
 				    -in->phi[i] - in->Xi[i] +
 				    dos_srh_get_fermi_n(in->n[i], in->p[i],
-							band, in->imat[i]);
+							band, in->imat[i],
+							in->Te[i]);
+				in->Fpt[i][band] =
+				    -in->phi[i] - in->Xi[i] - in->Eg[i] -
+				    dos_srh_get_fermi_p(in->n[i], in->p[i],
+							band, in->imat[i],
+							in->Th[i]);
+
 				in->xt[i][band] = in->phi[i] + in->Fnt[i][band];
 				in->nt[i][band] =
 				    get_n_pop_srh(in->xt[i][band] + in->tt[i],
@@ -395,10 +434,6 @@ int solve_pos(struct device *in)
 						   in->Te[i], band,
 						   in->imat[i]);
 
-				in->Fpt[i][band] =
-				    -in->phi[i] - in->Xi[i] - in->Eg[i] -
-				    dos_srh_get_fermi_p(in->n[i], in->p[i],
-							band, in->imat[i]);
 				in->xpt[i][band] =
 				    -(in->phi[i] + in->Fpt[i][band]);
 				in->pt[i][band] =
@@ -432,7 +467,19 @@ int solve_pos(struct device *in)
 
 		ittr++;
 
-	} while ((ittr < pos_max_ittr) && (error > min_pos_error));
+		if (adv == TRUE) {
+			adv_step++;
+		}
+
+		if (ittr > pos_max_ittr) {
+			quit = TRUE;
+		}
+
+		if ((error < min_pos_error) && (adv_step > 3)) {
+			quit = TRUE;
+		}
+
+	} while (quit == FALSE);
 
 	pos_dump(in);
 
@@ -446,20 +493,16 @@ int solve_pos(struct device *in)
 	in->odes += in->ymeshpoints;
 
 	for (i = 0; i < in->ymeshpoints; i++) {
-		in->nfinit[i] = in->n[i];
-		in->pfinit[i] = in->p[i];
-		in->ntinit[i] = 0.0;
-		in->ptinit[i] = 0.0;
+		in->nf_save[i] = in->n[i];
+		in->pf_save[i] = in->p[i];
+		in->nt_save[i] = 0.0;
+		in->pt_save[i] = 0.0;
 	}
 
 	free(Ti);
 	free(Tj);
 	free(Tx);
 	free(b);
-
-	if (in->enabled == FALSE) {
-		antje2();
-	}
 
 	if (get_dump_status(dump_iodump) == TRUE) {
 		printf("Solved pos\n");

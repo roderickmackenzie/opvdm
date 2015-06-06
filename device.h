@@ -66,6 +66,9 @@ struct device {
 	double *mun;
 	double *mup;
 
+	double *Dn;
+	double *Dp;
+
 	double *epsilonr;
 
 	double *Fn;
@@ -81,6 +84,13 @@ struct device {
 	int *imat;
 	double *Jn;
 	double *Jp;
+
+	double *Jn_diffusion;
+	double *Jn_drift;
+
+	double *Jp_diffusion;
+	double *Jp_drift;
+
 	double Vapplied;
 	int ymeshpoints;
 	double Vl;
@@ -123,24 +133,24 @@ struct device {
 	double *Dex;
 	double *Hex;
 
-	double *nfinit;
-	double *pfinit;
-	double *ntinit;
-	double *ptinit;
+	double *nf_save;
+	double *pf_save;
+	double *nt_save;
+	double *pt_save;
 
 	double *nfequlib;
 	double *pfequlib;
 	double *ntequlib;
 	double *ptequlib;
 
-	double **ntbinit;
-	double **ptbinit;
+	double **ntb_save;
+	double **ptb_save;
+
+	double *phi_save;
 
 	double xlen;
 	double ylen;
 	double zlen;
-
-	double kTq;
 
 	struct layers mat;
 
@@ -161,8 +171,11 @@ struct device {
 	double electrical_clamp;
 	int max_electrical_itt0;
 	double electrical_clamp0;
+	double electrical_error0;
+	int math_enable_pos_solver;
 	double min_cur_error;
 	double Pmax_voltage;
+	int pos_max_ittr;
 
 	double Voc;
 	double Jsc;
@@ -251,9 +264,9 @@ struct device {
 	double externalv;
 	double Vapplied_last;
 	double Ilast;
-	int plottime;
 	int timedumpcount;
 	char outputpath[200];
+	char inputpath[200];
 	int simmode;
 	double area;
 
@@ -265,6 +278,11 @@ struct device {
 	double lcharge;
 	double rcharge;
 
+	double l_electrons;
+	double l_holes;
+	double r_electrons;
+	double r_holes;
+
 	int dumpitdos;
 
 	double t_big_offset;
@@ -273,7 +291,8 @@ struct device {
 	double other_layers;
 	int last_ittr;
 
-	int newton_cur;
+	int kl_in_newton;
+	int config_kl_in_newton;
 	void (*newton_aux) (struct device *, double, double *, double *,
 			    double *, double *, double *, double *, double *,
 			    double *);
@@ -303,11 +322,17 @@ struct device {
 	int nofluxl;
 
 	double Vbi;
-	int enabled;
 	int newton_min_itt;
 	double vbi;
 	double avg_gen;
 	int dump_slicepos;
-	double pl;
+	double pl_intensity;
+
+	double Rext;
+	double Cext;
+	double VCext_last;
+	double VCext;
+	int newton_last_ittr;
+
 };
 #endif

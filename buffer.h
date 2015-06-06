@@ -23,12 +23,35 @@
 #define buffer_h
 
 struct buffer {
+	char title[100];
+	char type[100];
+	double x_mul;
+	double y_mul;
+	char x_label[100];
+	char y_label[100];
+	char x_units[100];
+	char y_units[100];
+	char section_one[100];
+	char section_two[100];
+	int logscale_x;
+	int logscale_y;
+	int write_to_zip;
+	int norm_x_axis;
+	int norm_y_axis;
 	char *buf;
 	int len;
 	int max_len;
+	char zip_file_name[400];
+
 };
 
+void buffer_zip_set_name(struct buffer *in, char *name);
 void buffer_init(struct buffer *in);
+void buffer_malloc(struct buffer *in);
+void buffer_add_xy_data(struct buffer *in, double *x, double *y, int len);
 void buffer_add_string(struct buffer *in, char *string);
+void buffer_add_info(struct buffer *in);
+void buffer_dump(char *path, char *file, struct buffer *in);
 void buffer_free(struct buffer *in);
+void buffer_dump_aes(char *path, char *file, struct buffer *in, char *key_text);
 #endif

@@ -27,7 +27,6 @@
 #include <time.h>
 #include <dirent.h>
 #include "util.h"
-#include <pwd.h>
 #include <unistd.h>
 #include "sim.h"
 #include "dos.h"
@@ -43,25 +42,31 @@ void find_n0(struct device *in)
 	double B_temp;
 	in->Vapplied = 0;
 	in->Psun = 0;
-
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
-	dump_for_plot(in, "");
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0, 0.0);
+	if (get_dump_status(dump_newton) == TRUE) {
+		dump_1d_slice(in, "");
+	}
 
 	B_temp = in->B;
 	in->B = 0.0;
 	double save_clamp = in->electrical_clamp;
 	int save_ittr = in->max_electrical_itt;
+	double save_electricalerror = in->min_cur_error;
+
 	in->electrical_clamp = in->electrical_clamp0;
 	in->max_electrical_itt = in->max_electrical_itt0;
+	in->min_cur_error = in->electrical_error0;
 
 	solve_all(in);
 
 	in->max_electrical_itt = save_ittr;
 	in->electrical_clamp = save_clamp;
+	in->min_cur_error = save_electricalerror;
+
 	solve_all(in);
 	in->B = B_temp;
 
-	reset_npinit(in);
+	reset_np_save(in);
 	reset_npequlib(in);
 
 	FILE *outfile;
@@ -75,6 +80,6 @@ void find_n0(struct device *in)
 
 	in->Psun = oldsun;
 	in->Vapplied = oldv;
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
-
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0, 0.0);
+	printf("Exit finding n0\n");
 }

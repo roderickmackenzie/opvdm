@@ -1,3 +1,24 @@
+//    Organic Photovoltaic Device Model - a drift diffusion base/Shockley-Read-Hall
+//    model for organic solar cells. 
+//    Copyright (C) 2012 Roderick C. I. MacKenzie
+//
+//	roderick.mackenzie@nottingham.ac.uk
+//	www.roderickmackenzie.eu
+//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//
+//    This program is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License along
+//    with this program; if not, write to the Free Software Foundation, Inc.,
+//    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,76 +30,14 @@
 #include "sim.h"
 #include "dump.h"
 
-static int unused __attribute__((unused));
+static int unused __attribute__ ((unused));
 static int dump_number;
-void dump_init(struct device* in)
+void dump_init(struct device *in)
 {
-dump_number=0;
-set_dump_status(dump_lock, FALSE);
-#ifdef enable_time
-FILE *config;
-config=fopena(in->outputpath,"/snapshots/dump_slice_info.dat","w");
-if (config!=NULL)
-{
-	fclose(config);
-}
-#endif
+	dump_number = 0;
+	set_dump_status(dump_lock, FALSE);
 }
 
-void dump_write_to_disk(struct device* in)
+void dump_write_to_disk(struct device *in)
 {
-#ifdef enable_time
-char prefix[100];
-char out_dir[200];
-FILE* out;
-int dumped=FALSE;
-struct stat st = {0};
-
-	sprintf(prefix,"_%d",dump_number);
-
-
-	sprintf(out_dir,"%s/snapshots/",in->outputpath);
-
-
-	if (stat(out_dir, &st) == -1)
-	{
-	#ifdef windows
-		mkdir(out_dir);
-	#else
-		mkdir(out_dir, 0700);
-	#endif
-	}
-
-	if (get_dump_status(dump_1d_slices)==TRUE)
-	{
-		dump_1d_slice(in,prefix);
-		dumped=TRUE;
-	}
-
-	if (get_dump_status(dump_energy_slice_switch)==TRUE)
-	{
-		dump_energy_slice(in,dump_number,in->dump_slicepos);
-		dumped=TRUE;
-	}
-
-	if (get_dump_status(dump_pl)==TRUE)
-	{
-		exp_cal_emission(dump_number,in);
-		dumped=TRUE;
-	}
-
-	if (dumped==TRUE)
-	{
-		out=fopena(in->outputpath,"/snapshots/dump_slice_info.dat","a");
-		if (out!=NULL)
-		{
-			fprintf(out,"%.4lf %le\n",get_equiv_V(in),in->time);
-			fclose(out);
-		}
-		dump_number++;
-	}
-
-
-#endif
 }
-

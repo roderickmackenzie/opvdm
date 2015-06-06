@@ -27,7 +27,6 @@
 #include <time.h>
 #include <dirent.h>
 #include <util.h>
-#include <pwd.h>
 #include <unistd.h>
 #include "sim.h"
 #include "dos.h"
@@ -38,40 +37,52 @@
 
 struct device cell;
 
-int run_simulation(char *runpath)
+int run_simulation(char *outputpath, char *inputpath)
 {
-
 	printf("Run_simulation\n");
 
-	cell.newton_cur = FALSE;
+	cell.kl_in_newton = FALSE;
 
-	if (strcmp(runpath, "") != 0)
-		strcpy(cell.outputpath, runpath);
+	if (strcmp(outputpath, "") != 0)
+		strcpy(cell.outputpath, outputpath);
+
+	if (strcmp(inputpath, "") != 0)
+		strcpy(cell.inputpath, inputpath);
+
+	dump_init(&cell);
+	dump_load_config(&cell);
+
 	int i;
 
-	cell.kTq = (300.0 * kb / q);
 	printf("Load config\n");
 	load_config("device.inp", &cell);
 
-	printf("Loading DoS for %d layers\n", cell.mat_layers);
-	char tempn[100];
-	char tempp[100];
-	i = 0;
-	dos_init(i);
-	printf("Load DoS %d/%d\n", i, cell.mat_layers);
-	sprintf(tempn, "dosn%d.dat", i);
-	sprintf(tempp, "dosp%d.dat", i);
-	load_dos(&cell, tempn, tempp, i);
+	if (cell.simmode != sim_mode_optics) {
+		printf("Loading DoS for %d layers\n", cell.mat_layers);
+		char tempn[100];
+		char tempp[100];
+		i = 0;
+		dos_init(i);
+		printf("Load DoS %d/%d\n", i, cell.mat_layers);
+		sprintf(tempn, "dosn%d.dat", i);
+		sprintf(tempp, "dosp%d.dat", i);
+		load_dos(&cell, tempn, tempp, i);
+
+		if (get_dump_status(dump_write_converge) == TRUE) {
+			cell.converge =
+			    fopena(cell.outputpath, "./converge.dat", "w");
+			fclose(cell.converge);
+
+			cell.tconverge =
+			    fopena(cell.outputpath, "./tconverge.dat", "w");
+			fclose(cell.tconverge);
+		}
+	}
 	device_init(&cell);
 
-	if (get_dump_status(dump_print_converge) == TRUE) {
-		cell.converge = fopena(cell.outputpath, "./converge.dat", "w");
-		fclose(cell.converge);
-
-		cell.tconverge =
-		    fopena(cell.outputpath, "./tconverge.dat", "w");
-		fclose(cell.tconverge);
-	}
+	remove_dir(cell.outputpath, "snapshots", TRUE);
+	remove_dir(cell.outputpath, "light_dump", TRUE);
+	remove_dir(cell.outputpath, "dynamic", FALSE);
 
 	int curlayer = 0;
 	double end = cell.mat.l[0].height;
@@ -88,72 +99,73 @@ int run_simulation(char *runpath)
 
 	init_mat_arrays(&cell);
 
-	for (i = 0; i < cell.ymeshpoints; i++) {
-		cell.phi[i] = 0.0;
-		cell.R[i] = 0.0;
-		cell.n[i] = 0.0;
+	if (cell.simmode != sim_mode_optics) {
+		for (i = 0; i < cell.ymeshpoints; i++) {
+			cell.phi[i] = 0.0;
+			cell.R[i] = 0.0;
+			cell.n[i] = 0.0;
+		}
+
+		cell.C =
+		    cell.xlen * cell.zlen * epsilon0 * cell.epsilonr[0] /
+		    (cell.ylen + cell.other_layers);
+		if (get_dump_status(dump_print_text) == TRUE)
+			printf("C=%le\n", cell.C);
+		cell.A = cell.xlen * cell.zlen;
+		cell.Vol = cell.xlen * cell.zlen * cell.ylen;
+
+		light_init(&cell.mylight, &cell, cell.outputpath);
+		light_set_dx(&cell.mylight, cell.ymesh[1] - cell.ymesh[0]);
+		light_load_config(&cell.mylight);
+		if (get_dump_status(dump_iodump) == FALSE)
+			set_dump_status(dump_optics, FALSE);
+
+		cell.Vapplied = 0.0;
+		get_initial(&cell);
+
+		remesh_shrink(&cell);
+
+		if (cell.math_enable_pos_solver == TRUE)
+			solve_pos(&cell);
+
+		time_init(&cell);
+
+		cell.N = 0;
+		cell.M = 0;
+
+		solver_realloc(&cell);
+
+		plot_open(&cell);
+
+		cell.stop = FALSE;
+
+		plot_now(&cell, "plot");
+
+		find_n0(&cell);
+
+		draw_gaus(&cell);
+
+		if (cell.onlypos == TRUE) {
+			dump_1d_slice(&cell, "");
+			device_free(&cell);
+			return 0;
+		}
 	}
-
-	cell.C =
-	    cell.xlen * cell.zlen * epsilon0 * cell.epsilonr[0] / (cell.ylen +
-								   cell.
-								   other_layers);
-	if (get_dump_status(dump_print_text) == TRUE)
-		printf("C=%le\n", cell.C);
-	cell.A = cell.xlen * cell.zlen;
-	cell.Vol = cell.xlen * cell.zlen * cell.ylen;
-
-	light_init(&cell.mylight, &cell);
-	light_set_dx(&cell.mylight, cell.ymesh[1] - cell.ymesh[0]);
-	light_load_config(&cell.mylight, cell.outputpath);
-	if (get_dump_status(dump_iodump) == FALSE)
-		set_dump_status(dump_optics, FALSE);
-
-	cell.Vapplied = 0.0;
-	get_initial(&cell);
-
-	remesh_shrink(&cell);
-
-	solve_pos(&cell);
-
-	remove_dir(cell.outputpath, "snapshots");
-	remove_dir(cell.outputpath, "light_dump");
-	remove_dir(cell.outputpath, "dynamic");
-
-	time_init(&cell);
-
-	cell.N = 0;
-	cell.M = 0;
-
-	solver_realloc(&cell);
-
-	if (cell.onlypos == TRUE) {
-		device_free(&cell);
-		return 0;
-	}
-
-	plot_open(&cell);
-
-	cell.stop = FALSE;
-
-	plot_now(&cell, "plot");
-
-	find_n0(&cell);
-
-	draw_gaus(&cell);
-
 #include "run_list.c"
 
 	device_free(&cell);
 
-	plot_close(&cell);
+	if (cell.simmode != sim_mode_optics) {
+		plot_close(&cell);
 
-	for (i = 0; i < cell.mat_layers; i++) {
-		dos_free(i);
+		for (i = 0; i < cell.mat_layers; i++) {
+			dos_free(i);
+		}
+
+		solver_free_memory(&cell);
+
+		light_free(&cell.mylight);
 	}
-
-	solver_free_memory(&cell);
-	light_free(&cell.mylight);
 
 	return cell.odes;
 }
@@ -161,4 +173,9 @@ int run_simulation(char *runpath)
 char *sim_output_path()
 {
 	return cell.outputpath;
+}
+
+char *sim_input_path()
+{
+	return cell.inputpath;
 }

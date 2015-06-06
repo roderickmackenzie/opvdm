@@ -35,7 +35,6 @@ int get_dump_status(int a)
 
 void set_dump_status(int name, int a)
 {
-	if ((dump_array[dump_lock] == FALSE) || (name == dump_lock)
-	    || (name == dump_lock_enable))
+	if ((dump_array[dump_lock] == FALSE) || (name == dump_lock))
 		dump_array[name] = a;
 }

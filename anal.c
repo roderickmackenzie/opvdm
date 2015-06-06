@@ -47,7 +47,7 @@ void process_ce_data(int col, char *input, char *output)
 
 	for (x = 0; x < col; x++) {
 		printf("loading.... %d\n", x);
-		inter_load_a(&data, input, x, col);
+		inter_load_by_col(&data, input, x);
 
 		double tot = 0.0;
 
@@ -59,13 +59,13 @@ void process_ce_data(int col, char *input, char *output)
 			}
 		}
 
-		capq = (data.x[0] * cap) / q;
+		capq = (data.x[0] * cap) / Q;
 		capq /= area;
 		capq /= d;
 
 		tot /= area;
 		tot /= d;
-		tot /= q;
+		tot /= Q;
 
 		fprintf(out, "%e %e\n", data.data[0], tot - capq);
 		inter_free(&data);

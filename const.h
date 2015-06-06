@@ -19,12 +19,12 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
+#define PATHLEN	512
 #define epsilon0 8.85418782e-12
 #define hp 6.62606896e-34
-#define hbar (6.62606896e-34/(2.0*M_PI))
+#define PI 3.14159265358979323846
+#define hbar (6.62606896e-34/(2.0*PI))
 #define kb 1.3806504e-23
-#define pi M_PI
-#define q 1.602176487e-19
+#define Q 1.602176487e-19
 #define m0 9.10938215e-31
 #define cl  2.99792458e8

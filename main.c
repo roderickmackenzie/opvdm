@@ -23,6 +23,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#ifdef windows
+#define _USE_MATH_DEFINES
+#else
+#include <pwd.h>
+#endif
+
 #include <math.h>
 #include <time.h>
 #include <dirent.h>
@@ -31,8 +37,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <sys/stat.h>
+
 #include "util.h"
-#include <pwd.h>
+
 #include "sim.h"
 #include "dos.h"
 #include "server.h"
@@ -44,6 +51,7 @@
 #include "license.h"
 #include "inp.h"
 #include "gui_hooks.h"
+#include "timer.h"
 
 static int unused __attribute__ ((unused));
 
@@ -62,10 +70,14 @@ void device_init(struct device *in)
 
 int main(int argc, char *argv[])
 {
+	timer_init();
+	set_ewe_lock_file("", "");
 	cell.onlypos = FALSE;
-#ifndef nolock
-	antje0();
-#endif
+
+	remove("./snapshots.zip");
+	remove("./light_dump.zip");
+
+	hard_limit_init();
 
 	set_plot_script_dir("./");
 
@@ -77,8 +89,12 @@ int main(int argc, char *argv[])
 		printf("\n");
 		printf("Options:\n");
 		printf("\n");
-		printf("\t--outputpath\tdirectory to run (default ./)\n");
+		printf("\t--outputpath\tdirectory to run (default ./)");
+		printf("\t--inputpath\t sets the input path\n");
 		printf("\t--version\tdisplays the current version\n");
+		printf("\t--zip_results\t zip the results\n");
+		printf("\t--optics\t runs only optical simulation\n");
+		printf("\t--cpus\t sets the number of CPUs\n");
 		printf("\n");
 		printf
 		    ("Additional information about opvdm is available at www.opvdm.com.\n");
@@ -88,7 +104,7 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 	if (scanarg(argv, argc, "--version") == TRUE) {
-		printf("opvdm_core, Version %s\n", version);
+		printf("opvdm_core, Version %s\n", opvdm_ver);
 		printf(copyright);
 		printf(this_is_free_software);
 		printf
@@ -98,10 +114,11 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
+#ifndef windows
 	if (geteuid() == 0) {
 		ewe("Don't run me as root!\n");
 	}
-	lock_command_line(argc, argv);
+#endif
 
 	set_dump_status(dump_stop_plot, FALSE);
 	set_dump_status(dump_print_text, TRUE);
@@ -136,20 +153,15 @@ int main(int argc, char *argv[])
 		strcpy(sim_output_path(), "./");
 	}
 
-	gui_start();
-	if (scanarg(argv, argc, "--optics") == TRUE) {
-		struct light two;
-		light_init(&two, &cell);
-
-		light_load_config(&two, "./");
-		set_dump_status(dump_lock, FALSE);
-		set_dump_status(dump_optics, TRUE);
-		set_dump_status(dump_optics_verbose, FALSE);
-		light_solve_and_update(&cell, &two, 1000.0, 0.0);
-		light_dump(&two);
-		light_free(&two);
-		return 0;
+	if (scanarg(argv, argc, "--inputpath") == TRUE) {
+		strcpy(sim_input_path(),
+		       get_arg_plusone(argv, argc, "--inputpath"));
+	} else {
+		strcpy(sim_input_path(), sim_output_path());
 	}
+
+	dump_init(&cell);
+	dump_load_config(&cell);
 
 	if (scanarg(argv, argc, "--onlypos") == TRUE) {
 		cell.onlypos = TRUE;
@@ -164,32 +176,120 @@ int main(int argc, char *argv[])
 	}
 
 	char name[200];
-	inp_load(sim_output_path(), "ver.inp");
-	inp_check(1.0);
-	inp_search_string(name, "#opvdm_version");
-	inp_free();
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, sim_input_path(), "ver.inp");
+	inp_check(&inp, 1.0);
+	inp_search_string(&inp, name, "#core");
+	inp_free(&inp);
 
-	if (strcmp(name, version) != 0) {
+	if (strcmp(name, opvdm_ver) != 0) {
 		printf
 		    ("Software is version %s and the input files are version %s\n",
-		     version, name);
+		     opvdm_ver, name);
 		exit(0);
 	}
 
-	server_init(&globalserver);
+	gui_start();
+	if (scanarg(argv, argc, "--optics") == FALSE)
+		server_init(&globalserver);
 	int ret = 0;
 
+	int do_fit = FALSE;
+
+	if (scanarg(argv, argc, "--fit") == TRUE)
+		do_fit = TRUE;
+
+	FILE *f = fopen("./fit.inp", "r");
+	if (f != NULL) {
+		fclose(f);
+		inp_init(&inp);
+		inp_load_from_path(&inp, "./", "fit.inp");
+		int fit_temp;
+		inp_search_int(&inp, &fit_temp, "#do_fit");
+		if (fit_temp == 1) {
+			do_fit = TRUE;
+		}
+
+		inp_free(&inp);
+	}
+
+	if (do_fit == TRUE) {
+		set_dump_status(dump_lock, FALSE);
+		set_dump_status(dump_print_text, FALSE);
+		set_dump_status(dump_iodump, FALSE);
+		set_dump_status(dump_optics, FALSE);
+		set_dump_status(dump_newton, FALSE);
+		set_dump_status(dump_plot, FALSE);
+		set_dump_status(dump_stop_plot, FALSE);
+		set_dump_status(dump_opt_for_fit, FALSE);
+		set_dump_status(dump_print_newtonerror, FALSE);
+		set_dump_status(dump_print_converge, FALSE);
+		set_dump_status(dump_print_pos_error, FALSE);
+		set_dump_status(dump_lock, TRUE);
+	}
 #include "main_args.c"
-	{
+	if (scanarg(argv, argc, "--optics") == TRUE) {
+		gui_start();
+		struct light two;
+		light_init(&two, &cell, "./");
+
+		light_load_config(&two);
+		two.disable_transfer_to_electrical_mesh = TRUE;
+		set_dump_status(dump_lock, FALSE);
+		set_dump_status(dump_optics, TRUE);
+		set_dump_status(dump_optics_verbose, TRUE);
+		double Psun;
+		inp_init(&inp);
+		inp_load_from_path(&inp, "./", "light.inp");
+		inp_search_double(&inp, &(Psun), "#Psun");
+		Psun = 1.0;
+		inp_free(&inp);
+
+		light_solve_and_update(&cell, &two, Psun, 0.0, 0.0);
+		light_dump(&two);
+		light_free(&two);
+		complex_solver_free();
+	} else {
 		gen_dos_fd_gaus_fd();
 
-		server_add_job(&globalserver, "./");
+		server_add_job(&globalserver, cell.outputpath, cell.inputpath);
 		print_jobs(&globalserver);
 		ret = server_run_jobs(&globalserver);
 
 	}
 
 	server_shut_down(&globalserver, lock_file);
+
+	if (scanarg(argv, argc, "--zip_results") == TRUE) {
+		printf("zipping results\n");
+		int ret;
+		DIR *dir = opendir("./snapshots");
+		if (dir) {
+			closedir(dir);
+			ret =
+			    system("zip -r -j -q snapshots.zip ./snapshots/*");
+			if (ret == -1) {
+				printf("tar returned error\n");
+			}
+			remove_dir(cell.outputpath, "snapshots", TRUE);
+		}
+
+		dir = opendir("./light_dump");
+		if (dir) {
+			closedir(dir);
+			ret =
+			    system
+			    ("zip -r -j -q light_dump.zip ./light_dump/*");
+			if (ret == -1) {
+				printf("tar returned error\n");
+			}
+			remove_dir(cell.outputpath, "light_dump", TRUE);
+		}
+
+	}
+
+	hard_limit_free();
 	gui_stop();
 	if (ret != 0) {
 		return 1;

@@ -49,6 +49,7 @@
 #include "newton.h"
 
 char *sim_output_path();
+char *sim_input_path();
 
 int solve_cur(struct device *in);
 int solve_cur_thermal(struct device *in, int thermal);
@@ -77,7 +78,7 @@ void init_mat_arrays(struct device *in);
 void device_init(struct device *in);
 void load_config(char *simfile, struct device *in);
 void update(struct device *cell);
-int run_simulation(char *name);
+int run_simulation(char *outputpath, char *inputpath);
 void solve_all(struct device *in);
 void solver_free_memory(struct device *in);
 void solver_realloc(struct device *in);
@@ -87,8 +88,11 @@ void gen_dos_fd_gaus_fd();
 
 void solve_light(struct device *cell, struct light *in, double Psun_in,
 		 double Plaser_in);
+void light_init(struct light *in, struct device *cell, char *output_path);
+void light_transfer_gen_rate_to_device(struct device *cell, struct light *in);
 void light_solve_and_update(struct device *cell, struct light *in,
-			    double Psun_in, double Plaser_in);
+			    double Psun_in, double laser_eff_in,
+			    double pulse_width);
 
 void stop_start(struct device *in);
 #endif

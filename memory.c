@@ -63,6 +63,8 @@ void device_free(struct device *in)
 	free(in->Ec);
 	free(in->mun);
 	free(in->mup);
+	free(in->Dn);
+	free(in->Dp);
 	free(in->ymesh);
 	free(in->Fn);
 	free(in->Fp);
@@ -80,6 +82,10 @@ void device_free(struct device *in)
 	free(in->Fi);
 	free(in->Jn);
 	free(in->Jp);
+	free(in->Jn_drift);
+	free(in->Jn_diffusion);
+	free(in->Jp_drift);
+	free(in->Jp_diffusion);
 	free(in->x);
 	free(in->t);
 	free(in->xp);
@@ -119,7 +125,7 @@ void device_free(struct device *in)
 	free_srh_bands(in, in->dsrh_n_r3);
 	free_srh_bands(in, in->dsrh_n_r4);
 	free_srh_bands(in, in->Fnt);
-	free_srh_bands(in, in->ntbinit);
+	free_srh_bands(in, in->ntb_save);
 
 	free_srh_bands(in, in->nt_r1);
 	free_srh_bands(in, in->nt_r2);
@@ -143,7 +149,7 @@ void device_free(struct device *in)
 	free_srh_bands(in, in->dsrh_p_r3);
 	free_srh_bands(in, in->dsrh_p_r4);
 	free_srh_bands(in, in->Fpt);
-	free_srh_bands(in, in->ptbinit);
+	free_srh_bands(in, in->ptb_save);
 
 	free_srh_bands(in, in->pt_r1);
 	free_srh_bands(in, in->pt_r2);
@@ -152,10 +158,10 @@ void device_free(struct device *in)
 
 	free(in->tpt);
 
-	free(in->nfinit);
-	free(in->pfinit);
-	free(in->ntinit);
-	free(in->ptinit);
+	free(in->nf_save);
+	free(in->pf_save);
+	free(in->nt_save);
+	free(in->pt_save);
 
 	free(in->nfequlib);
 	free(in->pfequlib);
@@ -179,6 +185,9 @@ void device_free(struct device *in)
 	free(in->p_orig_f);
 	free(in->n_orig_t);
 	free(in->p_orig_t);
+
+	free(in->phi_save);
+
 	printf("Solved %i Equations\n", in->odes);
 }
 
@@ -186,17 +195,17 @@ void device_get_memory(struct device *in)
 {
 	in->odes = 0;
 
-	in->nfinit = malloc(in->ymeshpoints * sizeof(double));
-	memset(in->nfinit, 0, in->ymeshpoints * sizeof(double));
+	in->nf_save = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->nf_save, 0, in->ymeshpoints * sizeof(double));
 
-	in->pfinit = malloc(in->ymeshpoints * sizeof(double));
-	memset(in->pfinit, 0, in->ymeshpoints * sizeof(double));
+	in->pf_save = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->pf_save, 0, in->ymeshpoints * sizeof(double));
 
-	in->ntinit = malloc(in->ymeshpoints * sizeof(double));
-	memset(in->ntinit, 0, in->ymeshpoints * sizeof(double));
+	in->nt_save = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->nt_save, 0, in->ymeshpoints * sizeof(double));
 
-	in->ptinit = malloc(in->ymeshpoints * sizeof(double));
-	memset(in->ptinit, 0, in->ymeshpoints * sizeof(double));
+	in->pt_save = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->pt_save, 0, in->ymeshpoints * sizeof(double));
 
 	in->nfequlib = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->nfequlib, 0, in->ymeshpoints * sizeof(double));
@@ -261,6 +270,12 @@ void device_get_memory(struct device *in)
 	in->mup = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->mup, 0, in->ymeshpoints * sizeof(double));
 
+	in->Dn = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Dn, 0, in->ymeshpoints * sizeof(double));
+
+	in->Dp = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Dp, 0, in->ymeshpoints * sizeof(double));
+
 	in->Nc = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->Nc, 0, in->ymeshpoints * sizeof(double));
 
@@ -296,6 +311,18 @@ void device_get_memory(struct device *in)
 
 	in->Jp = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->Jp, 0, in->ymeshpoints * sizeof(double));
+
+	in->Jn_drift = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Jn_drift, 0, in->ymeshpoints * sizeof(double));
+
+	in->Jn_diffusion = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Jn_diffusion, 0, in->ymeshpoints * sizeof(double));
+
+	in->Jp_drift = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Jp_drift, 0, in->ymeshpoints * sizeof(double));
+
+	in->Jp_diffusion = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Jp_diffusion, 0, in->ymeshpoints * sizeof(double));
 
 	in->x = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->x, 0, in->ymeshpoints * sizeof(double));
@@ -366,6 +393,9 @@ void device_get_memory(struct device *in)
 	in->nt_all = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->nt_all, 0, in->ymeshpoints * sizeof(double));
 
+	in->phi_save = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->phi_save, 0, in->ymeshpoints * sizeof(double));
+
 	malloc_srh_bands(in, &(in->nt));
 	malloc_srh_bands(in, &(in->xt));
 	malloc_srh_bands(in, &(in->dnt));
@@ -378,7 +408,7 @@ void device_get_memory(struct device *in)
 	malloc_srh_bands(in, &(in->dsrh_n_r3));
 	malloc_srh_bands(in, &(in->dsrh_n_r4));
 	malloc_srh_bands(in, &(in->Fnt));
-	malloc_srh_bands(in, &(in->ntbinit));
+	malloc_srh_bands(in, &(in->ntb_save));
 
 	malloc_srh_bands(in, &(in->nt_r1));
 	malloc_srh_bands(in, &(in->nt_r2));
@@ -405,7 +435,7 @@ void device_get_memory(struct device *in)
 	malloc_srh_bands(in, &(in->dsrh_p_r2));
 	malloc_srh_bands(in, &(in->dsrh_p_r3));
 	malloc_srh_bands(in, &(in->dsrh_p_r4));
-	malloc_srh_bands(in, &(in->ptbinit));
+	malloc_srh_bands(in, &(in->ptb_save));
 	malloc_srh_bands(in, &(in->Fpt));
 
 	malloc_srh_bands(in, &(in->pt_r1));
@@ -448,6 +478,4 @@ void device_get_memory(struct device *in)
 
 	in->p_orig_t = (double *)malloc(sizeof(double) * in->ymeshpoints);
 	memset(in->p_orig_t, 0, in->ymeshpoints * sizeof(double));
-
-	antje0();
 }

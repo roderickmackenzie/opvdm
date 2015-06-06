@@ -116,21 +116,26 @@ void my_guess(struct device *in)
 
 	Ef = -(top_l + Xi + Eg);
 
+	double Lp =
+	    get_p_den((-in->Xi[0] - in->phi[0] - Eg) - Ef, in->Th[0],
+		      in->imat[0]);
+	double Ln =
+	    get_n_den(Ef - (-in->Xi[0] - in->phi[0]), in->Te[0], in->imat[0]);
+	double Rp =
+	    get_p_den((-in->Xi[in->ymeshpoints - 1] - delta_phi - Eg) - Ef,
+		      in->Th[in->ymeshpoints - 1],
+		      in->imat[in->ymeshpoints - 1]);
+	double Rn =
+	    get_n_den(Ef - (-in->Xi[in->ymeshpoints - 1] - delta_phi),
+		      in->Te[in->ymeshpoints - 1],
+		      in->imat[in->ymeshpoints - 1]);
+
+	in->l_electrons = Ln;
+	in->l_holes = Lp;
+	in->r_electrons = Rn;
+	in->r_holes = Rp;
+
 	if (get_dump_status(dump_iodump) == TRUE) {
-		double Lp =
-		    get_p_den((-in->Xi[0] - in->phi[0] - Eg) - Ef, in->Th[0],
-			      in->imat[0]);
-		double Ln =
-		    get_n_den(Ef - (-in->Xi[0] - in->phi[0]), in->Te[0],
-			      in->imat[0]);
-		double Rp =
-		    get_p_den((-in->Xi[in->ymeshpoints - 1] - delta_phi - Eg) -
-			      Ef, in->Th[in->ymeshpoints - 1],
-			      in->imat[in->ymeshpoints - 1]);
-		double Rn =
-		    get_n_den(Ef - (-in->Xi[in->ymeshpoints - 1] - delta_phi),
-			      in->Te[in->ymeshpoints - 1],
-			      in->imat[in->ymeshpoints - 1]);
 		printf("Ef=%e\n", Ef);
 		printf("Holes on left contact = %e\n", Lp);
 		printf("Electrons on left contact = %e\n", Ln);
@@ -147,6 +152,7 @@ void my_guess(struct device *in)
 		fclose(contacts);
 	}
 
+	int band;
 	for (i = 0; i < in->ymeshpoints; i++) {
 		phi_ramp =
 		    delta_phi * (in->ymesh[i] / in->ymesh[in->ymeshpoints - 1]);
@@ -157,6 +163,10 @@ void my_guess(struct device *in)
 		in->Fp[i] = Ef;
 
 		in->phi[i] = phi_ramp;
+
+		in->x[i] = in->phi[i] + in->Fn[i];
+		in->xp[i] = -(in->phi[i] + in->Fp[i]);
+
 		in->Ec[i] = -in->phi[i] - in->Xi[i];
 		if (in->Ec[i] < in->Fi[i]) {
 			in->phi[i] = -(in->Fi[i] + in->Xi[i]);
@@ -174,13 +184,41 @@ void my_guess(struct device *in)
 		double t = in->Fi[i] - in->Ec[i];
 		double tp = in->Ev[i] - in->Fi[i];
 
-		in->n[i] = in->Nc[i] * exp(((t) * q) / (kb * in->Te[i]));
-		in->p[i] = in->Nv[i] * exp(((tp) * q) / (kb * in->Th[i]));
+		in->n[i] = in->Nc[i] * exp(((t) * Q) / (kb * in->Te[i]));
+		in->p[i] = in->Nv[i] * exp(((tp) * Q) / (kb * in->Th[i]));
 
 		in->mun[i] = get_n_mu(in->imat[i]);
 		in->mup[i] = get_p_mu(in->imat[i]);
 
+		for (band = 0; band < in->srh_bands; band++) {
+			in->Fnt[i][band] =
+			    -in->phi[i] - in->Xi[i] +
+			    dos_srh_get_fermi_n(in->n[i], in->p[i], band,
+						in->imat[i], in->Te[i]);
+			in->Fpt[i][band] =
+			    -in->phi[i] - in->Xi[i] - in->Eg[i] -
+			    dos_srh_get_fermi_p(in->n[i], in->p[i], band,
+						in->imat[i], in->Th[i]);
+
+			in->xt[i][band] = in->phi[i] + in->Fnt[i][band];
+			in->nt[i][band] =
+			    get_n_pop_srh(in->xt[i][band] + in->tt[i],
+					  in->Te[i], band, in->imat[i]);
+			in->dnt[i][band] =
+			    get_dn_pop_srh(in->xt[i][band] + in->tt[i],
+					   in->Te[i], band, in->imat[i]);
+
+			in->xpt[i][band] = -(in->phi[i] + in->Fpt[i][band]);
+			in->pt[i][band] =
+			    get_p_pop_srh(in->xpt[i][band] - in->tpt[i],
+					  in->Th[i], band, in->imat[i]);
+			in->dpt[i][band] =
+			    get_dp_pop_srh(in->xpt[i][band] - in->tpt[i],
+					   in->Th[i], band, in->imat[i]);
+		}
+
 	}
+
 	in->Vl = 0.0;
 	in->Vr = delta_phi;
 	in->Vbi = delta_phi;

@@ -25,10 +25,10 @@
 #include <string.h>
 #include "sim.h"
 #include "dump.h"
-#include "slice.h"
 #include "config.h"
 #include <math.h>
 #include "inp.h"
+#include "util.h"
 
 static int unused __attribute__ ((unused));
 
@@ -140,35 +140,38 @@ void load_config(char *simfile, struct device *in)
 {
 	double ver;
 	int i;
-	int dump;
 	FILE *config;
 	char temp[100];
 	char name[1000];
-	slice_init(in);
+	char token0[200];
+	char token1[200];
 
 	char device_epitaxy[100];
 
-	inp_load(in->outputpath, "sim.inp");
-	inp_check(1.2);
-	inp_search_string(name, "#simmode");
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->inputpath, "sim.inp");
+	inp_check(&inp, 1.2);
+
+	inp_search_string(&inp, name, "#simmode");
+
 	in->simmode = english_to_bin(name);
 
-	inp_search_int(&(in->stoppoint), "#stoppoint");
-	inp_search_string(device_epitaxy, "#epitaxy");
+	inp_search_int(&inp, &(in->stoppoint), "#stoppoint");
+	inp_search_string(&inp, device_epitaxy, "#epitaxy");
 
 	in->srh_sim = TRUE;
 	in->ntrapnewton = TRUE;
 	in->ptrapnewton = TRUE;
 
-	inp_free();
+	inp_free(&inp);
 
-	config = fopena(in->outputpath, device_epitaxy, "r");
+	config = fopena(in->inputpath, device_epitaxy, "r");
 	if (config == NULL) {
 		ewe("epitaxy file not found\n");
 	}
 
 	config_read_line_to_int(&(in->mat.number), config, "#layers");
-	get_max_layers(in->mat.number);
 
 	in->mat_layers = in->mat.number;
 	in->mat.l = malloc(in->mat.number * sizeof(struct layer));
@@ -177,10 +180,12 @@ void load_config(char *simfile, struct device *in)
 		unused =
 		    fscanf(config, "%s %le", in->mat.l[i].name,
 			   &(in->mat.l[i].height));
+		in->mat.l[i].height = fabs(in->mat.l[i].height);
+		hard_limit(in->mat.l[i].name, &(in->mat.l[i].height));
 
 	}
 
-	config_read_line_to_int(&(in->ymeshlayers), config, "#mesh");
+	config_read_line_to_int(&(in->ymeshlayers), config, "#mesh_layers");
 
 	in->meshdata = malloc(in->ymeshlayers * sizeof(struct mesh));
 
@@ -188,8 +193,12 @@ void load_config(char *simfile, struct device *in)
 
 	for (i = 0; i < in->ymeshlayers; i++) {
 		unused =
-		    fscanf(config, "%lf %lf", &(in->meshdata[i].len),
+		    fscanf(config, "%s %lf %s %lf", token0,
+			   &(in->meshdata[i].len), token1,
 			   &(in->meshdata[i].number));
+
+		in->meshdata[i].len = fabs(in->meshdata[i].len);
+		hard_limit(token0, &(in->meshdata[i].len));
 		in->meshdata[i].den =
 		    in->meshdata[i].len / in->meshdata[i].number;
 		in->ymeshpoints += in->meshdata[i].number;
@@ -214,7 +223,7 @@ void load_config(char *simfile, struct device *in)
 	}
 
 	config_read_line_to_double(&(ver), config, "#ver");
-	if (ver != 1.0) {
+	if (ver != 1.1) {
 		ewe("File compatability problem %s\n", "epitaxy file");
 	}
 
@@ -225,76 +234,101 @@ void load_config(char *simfile, struct device *in)
 
 	fclose(config);
 
-	inp_load(in->outputpath, "device.inp");
-	inp_check(1.14);
-	inp_search_string(temp, "#lr_bias");
+	in->ylen = 0.0;
+	double mesh_len = 0.0;
+	for (i = 0; i < in->mat.number; i++) {
+		in->ylen += in->mat.l[i].height;
+	}
+
+	for (i = 0; i < in->ymeshlayers; i++) {
+		mesh_len += in->meshdata[i].len;
+	}
+
+	if (fabs(in->ylen - mesh_len) > 1e-14) {
+		ewe("Mesh length (%le) and device length (%le) do not match\n",
+		    mesh_len, in->ylen);
+	}
+
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->inputpath, "device.inp");
+	inp_check(&inp, 1.14);
+	inp_search_string(&inp, temp, "#lr_bias");
 	in->lr_bias = english_to_bin(temp);
 
-	inp_search_string(temp, "#lr_pcontact");
+	inp_search_string(&inp, temp, "#lr_pcontact");
 	in->lr_pcontact = english_to_bin(temp);
 
-	inp_search_string(temp, "#invert_applied_bias");
+	inp_search_string(&inp, temp, "#invert_applied_bias");
 	in->invert_applied_bias = english_to_bin(temp);
 
-	inp_search_double(&(in->xlen), "#xlen");
-	inp_search_double(&(in->zlen), "#zlen");
+	inp_search_double(&inp, &(in->xlen), "#xlen");
+	inp_search_double(&inp, &(in->zlen), "#zlen");
 	in->area = in->xlen * in->zlen;
 
-	inp_search_double(&(in->Rshunt), "#Rshunt");
+	inp_search_double(&inp, &(in->Rshunt), "#Rshunt");
 	in->Rshunt = fabs(in->Rshunt);
 
-	inp_search_double(&(in->Rcontact), "#Rcontact");
+	inp_search_double(&inp, &(in->Rcontact), "#Rcontact");
 	in->Rcontact = fabs(in->Rcontact);
 
-	inp_search_double(&(in->Rshort), "#Rshort");
+	inp_search_double(&inp, &(in->Rshort), "#Rshort");
 	in->Rshort = fabs(in->Rshort);
 
-	inp_search_int(&(in->Dphoton), "#Dphoton");
+	inp_search_int(&inp, &(in->Dphoton), "#Dphoton");
 
-	inp_search_double(&(in->lcharge), "#lcharge");
+	inp_search_double(&inp, &(in->lcharge), "#lcharge");
 	in->lcharge = fabs(in->lcharge);
 
-	inp_search_double(&(in->rcharge), "#rcharge");
+	inp_search_double(&inp, &(in->rcharge), "#rcharge");
 	in->rcharge = fabs(in->rcharge);
 
-	inp_search_double(&(in->other_layers), "#otherlayers");
+	inp_search_double(&inp, &(in->other_layers), "#otherlayers");
 
-	inp_search_double(&(in->B), "#free_to_free_recombination");
+	inp_search_double(&inp, &(in->B), "#free_to_free_recombination");
 	in->B = fabs(in->B);
 
-	inp_search_int(&(in->interfaceleft), "#interfaceleft");
-	inp_search_int(&(in->interfaceright), "#interfaceright");
-	inp_search_double(&(in->phibleft), "#phibleft");
-	inp_search_double(&(in->phibright), "#phibright");
+	inp_search_int(&inp, &(in->interfaceleft), "#interfaceleft");
+	inp_search_int(&inp, &(in->interfaceright), "#interfaceright");
+	inp_search_double(&inp, &(in->phibleft), "#phibleft");
+	inp_search_double(&inp, &(in->phibright), "#phibright");
 
-	inp_search_double(&(in->vl_e), "#vl_e");
+	inp_search_double(&inp, &(in->vl_e), "#vl_e");
 	in->vl_e = fabs(in->vl_e);
 
-	inp_search_double(&(in->vl_h), "#vl_h");
+	inp_search_double(&inp, &(in->vl_h), "#vl_h");
 	in->vl_h = fabs(in->vl_h);
 
-	inp_search_double(&(in->vr_e), "#vr_e");
+	inp_search_double(&inp, &(in->vr_e), "#vr_e");
 	in->vr_e = fabs(in->vr_e);
 
-	inp_search_double(&(in->vr_h), "#vr_h");
+	inp_search_double(&inp, &(in->vr_h), "#vr_h");
 	in->vr_h = fabs(in->vr_h);
-	inp_free();
+	inp_free(&inp);
 
-	inp_load(in->outputpath, "math.inp");
-	inp_check(1.4);
-	inp_search_int(&(in->max_electrical_itt0), "#maxelectricalitt_first");
-	inp_search_double(&(in->electrical_clamp0), "#electricalclamp_first");
-	inp_search_int(&(in->max_electrical_itt), "#maxelectricalitt");
-	inp_search_double(&(in->electrical_clamp), "#electricalclamp");
-	inp_search_double(&(in->posclamp), "#posclamp");
-	inp_search_double(&(in->min_cur_error), "#electricalerror");
-	inp_search_int(&(in->newton_clever_exit), "#newton_clever_exit");
-	inp_search_int(&(in->newton_min_itt), "#newton_min_itt");
-	inp_search_int(&(in->remesh), "#remesh");
-	inp_search_int(&(in->newmeshsize), "#newmeshsize");
-	inp_free();
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->inputpath, "math.inp");
+	inp_check(&inp, 1.44);
+	inp_search_int(&inp, &(in->max_electrical_itt0),
+		       "#maxelectricalitt_first");
+	inp_search_double(&inp, &(in->electrical_clamp0),
+			  "#electricalclamp_first");
+	inp_search_double(&inp, &(in->electrical_error0),
+			  "#math_electrical_error_first");
+	inp_search_int(&inp, &(in->math_enable_pos_solver),
+		       "#math_enable_pos_solver");
+	inp_search_int(&inp, &(in->max_electrical_itt), "#maxelectricalitt");
+	inp_search_double(&inp, &(in->electrical_clamp), "#electricalclamp");
+	inp_search_double(&inp, &(in->posclamp), "#posclamp");
+	inp_search_double(&inp, &(in->min_cur_error), "#electricalerror");
+	inp_search_int(&inp, &(in->newton_clever_exit), "#newton_clever_exit");
+	inp_search_int(&inp, &(in->newton_min_itt), "#newton_min_itt");
+	inp_search_int(&inp, &(in->remesh), "#remesh");
+	inp_search_int(&inp, &(in->newmeshsize), "#newmeshsize");
+	inp_search_int(&inp, &(in->pos_max_ittr), "#pos_max_ittr");
+	inp_search_int(&inp, &(in->config_kl_in_newton), "#kl_in_newton");
+	inp_free(&inp);
 
-	config = fopena(in->outputpath, "thermal.inp", "r");
+	config = fopena(in->inputpath, "thermal.inp", "r");
 	if (config == NULL) {
 		ewe("thermal.inp not found\n");
 	}
@@ -317,77 +351,4 @@ void load_config(char *simfile, struct device *in)
 	}
 	fclose(config);
 
-	inp_load(in->outputpath, "dump.inp");
-	inp_check(1.24);
-
-	inp_search_int(&(dump), "#plot");
-	set_dump_status(dump_plot, dump);
-
-	inp_search_int(&(dump), "#newton_dump");
-	set_dump_status(dump_newton, dump);
-
-	inp_search_int(&(in->plottime), "#plottime");
-
-	inp_search_int(&(in->stop_start), "#startstop");
-
-	inp_search_int(&(in->dumpitdos), "#dumpitdos");
-
-	inp_search_string(in->plot_file, "#plotfile");
-
-	inp_search_double(&(in->start_stop_time), "#start_stop_time");
-
-	inp_search_int(&(dump), "#dump_iodump");
-	set_dump_status(dump_iodump, dump);
-
-	inp_search_int(&(in->dump_movie), "#dump_movie");
-
-	inp_search_int(&(dump), "#dump_optics");
-	set_dump_status(dump_optics, dump);
-
-	inp_search_int(&(dump), "#dump_optics_verbose");
-	set_dump_status(dump_optics_verbose, dump);
-
-	inp_search_int(&(dump), "#dump_slices_by_time");
-	set_dump_status(dump_slices_by_time, dump);
-
-	inp_search_int(&(dump), "#dump_all_slices");
-	set_dump_status(dump_all_slices, dump);
-
-	inp_search_int(&(dump), "#dump_energy_slice_switch");
-	set_dump_status(dump_energy_slice_switch, dump);
-
-	inp_search_int(&(in->dump_slicepos), "#dump_energy_slice_pos");
-	if (in->dump_slicepos >= in->ymeshpoints)
-		in->dump_slicepos = 0;
-
-	inp_search_int(&(dump), "#dump_print_newtonerror");
-	set_dump_status(dump_print_newtonerror, dump);
-
-	inp_search_int(&(dump), "#dump_print_converge");
-	set_dump_status(dump_print_converge, dump);
-
-	inp_search_int(&(dump), "#dump_print_pos_error");
-	set_dump_status(dump_print_pos_error, dump);
-
-	inp_search_int(&(dump), "#dump_pl");
-	set_dump_status(dump_pl, dump);
-
-	inp_free();
-
-	if (get_dump_status(dump_iodump) == FALSE) {
-		in->dumpitdos = FALSE;
-		set_dump_status(dump_optics, FALSE);
-		set_dump_status(dump_slices_by_time, FALSE);
-		set_dump_status(dump_all_slices, FALSE);
-	}
-
-	in->ylen = 0.0;
-	double mesh_len = 0.0;
-	for (i = 0; i < in->mat.number; i++) {
-		in->ylen += in->mat.l[i].height;
-		mesh_len += in->meshdata[i].len;
-	}
-	if (in->ylen != mesh_len) {
-		printf("Mesh and device length do not match\n");
-	}
 }

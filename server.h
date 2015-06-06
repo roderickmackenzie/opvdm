@@ -41,6 +41,7 @@ struct my_msgbuf {
 struct server {
 
 	char command[server_max][200];
+	char output[server_max][200];
 	int state[server_max];
 	int jobs;
 	int jobs_running;
@@ -57,7 +58,7 @@ struct server {
 };
 void server_stop_and_exit();
 void server_shut_down(struct server *myserver, char *lock_file);
-void server_add_job(struct server *myserver, char *command);
+void server_add_job(struct server *myserver, char *command, char *path);
 void print_jobs(struct server *myserver);
 void server_init(struct server *myserver);
 void server_exe_jobs(struct server *myserver);

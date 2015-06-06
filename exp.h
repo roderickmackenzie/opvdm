@@ -21,18 +21,29 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef exp_h
 #define exp_h
-void exp_cal_emission(char *extra, struct device *in);
+
+double get_jn_avg(struct device *in);
+double get_jp_avg(struct device *in);
+double get_charge_change(struct device *in);
+void cal_J_drift_diffusion(struct device *in);
+double get_Jn_diffusion(struct device *in);
+double get_Jn_drift(struct device *in);
+double get_Jp_diffusion(struct device *in);
+double get_Jp_drift(struct device *in);
+void exp_cal_emission(int number, struct device *in);
 double get_avg_field(struct device *in);
 double get_np_tot(struct device *in);
 void reset_npequlib(struct device *in);
 void get_avg_np_pos(struct device *in, double *nx, double *px);
 double get_background_charge(struct device *in);
-void reset_npinit(struct device *in);
+void reset_np_save(struct device *in);
 double get_n_trapped_charge(struct device *in);
 double get_p_trapped_charge(struct device *in);
 double get_avg_recom(struct device *in);
 double get_avg_recom_n(struct device *in);
 double get_avg_recom_p(struct device *in);
+double get_avg_Rn(struct device *in);
+double get_avg_Rp(struct device *in);
 double get_J_recom_n(struct device *in);
 double get_J_recom_p(struct device *in);
 double get_avg_k(struct device *in);
@@ -76,4 +87,6 @@ double get_charge(struct device *in);
 double get_avg_gen(struct device *in);
 void set_orig_charge_den(struct device *in);
 double get_total_np(struct device *in);
+double get_charge_tot(struct device *in);
+double get_i_intergration(struct device *in);
 #endif

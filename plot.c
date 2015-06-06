@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <sys/time.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -51,15 +50,16 @@ void plot_open(struct device *in)
 
 		fflush(in->gnuplot);
 
-		if (in->plottime == TRUE) {
-			in->gnuplot_time = popen("gnuplot -persist", "w");
-			fprintf(in->gnuplot_time,
-				"set terminal x11 title 'Organic Photovoltaic Device Model - www.opvdm.com' \n");
-
-			fflush(in->gnuplot_time);
-		}
 	}
 }
+
+#ifdef windows
+void timersub(struct timeval *a, struct timeval *b, struct timeval *r)
+{
+	r->tv_sec = a->tv_sec - b->tv_sec;
+	r->tv_usec = a->tv_usec - b->tv_usec;
+}
+#endif
 
 void plot_now(struct device *in, char *name)
 {
@@ -100,10 +100,6 @@ void plot_replot(struct device *in)
 		fprintf(in->gnuplot, "replot\n");
 		fflush(in->gnuplot);
 
-		if (in->plottime == TRUE) {
-			fprintf(in->gnuplot_time, "replot\n");
-			fflush(in->gnuplot_time);
-		}
 	}
 }
 
@@ -115,9 +111,5 @@ void plot_close(struct device *in)
 		fflush(in->gnuplot_time);
 		pclose(in->gnuplot);
 
-		if (in->plottime == TRUE) {
-			fprintf(in->gnuplot_time, "quit\n");
-			fflush(in->gnuplot_time);
-		}
 	}
 }

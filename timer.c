@@ -19,12 +19,26 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#ifndef solver_h
-#define solver_h
-void set_solver_dump_every_matrix(int dump);
-void solver_precon(int col, int nz, int *Ti, int *Tj, double *Tx, double *b);
-int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b);
-void solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
-			double *b, char *index);
-void solver_print_time();
-#endif
+#include <sys/time.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+
+static double start_time;
+
+void timer_init()
+{
+	struct timeval result;
+	gettimeofday(&result, NULL);
+	start_time = result.tv_sec + result.tv_usec / 1000000.0;
+}
+
+double timer_get_time()
+{
+	struct timeval result;
+	gettimeofday(&result, NULL);
+	double cur_time = result.tv_sec + result.tv_usec / 1000000.0;
+	return cur_time - start_time;
+}
