@@ -32,7 +32,9 @@ do
 done
 
 cp plugins $dest/ -r
-#cp light $dest/ -r
+mkdir $dest/light
+cp ./light/exp $dest/light/ -r
+cp ./light/flat $dest/light/ -r
 
 cd $dest
 
