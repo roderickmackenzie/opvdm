@@ -21,15 +21,29 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef h_util
 #define h_util
+#ifdef windows
+#include <windows.h>
+#define fg_reset	15
+#define fg_red		12
+#define fg_green	10
+#define fg_yellow	14
+#define fg_blue		9
+#define fg_purple	13
+
+#else
 #define fg_reset	0
 #define fg_red		31
 #define fg_green	32
 #define fg_yellow	33
 #define fg_blue		34
 #define fg_purple	35
-void remove_dir(char *path, char *dir_name);
+
+#endif
+
+void set_ewe_lock_file(char *lockname, char *data);
+void print_hex(unsigned char *data);
+void remove_dir(char *path, char *dir_name, int remove_base_dir);
 int ewe(const char *format, ...);
-void waveprint(char *in, double wavelength);
 double read_value(char *file, int skip, int line);
 int strcmp_end(char *str, char *end);
 int extract_str_number(char *in, char *cut);
@@ -47,11 +61,19 @@ FILE *fopenaaa(char *path, char *add0, char *add1, char *name,
 void edit_file_int(char *in_name, char *front, int line, int value);
 void edit_file(char *in_name, char *front, int line, double value);
 void edit_file_by_var(char *in_name, char *token, char *newtext);
-void copy_file(char *out_name, char *in_name, char *front, int line,
-	       double value);
+void copy_file(char *output, char *input);
 int get_file_len(char *file_name);
 int cmpstr_min(char *in1, char *in2);
 int english_to_bin(char *in);
 void write_x_y_to_file(char *name, double *x, double *y, int len);
 void write_x_y_z_to_file(char *name, double *x, double *y, double *z, int len);
+void join_path(int max, ...);
+int file_exists(char *in);
+void hard_limit(char *token, double *value);
+void hard_limit_init();
+void hard_limit_free();
+char *get_dir_name_from_path(char *in);
+char *get_file_name_from_path(char *in);
+void mass_copy_file(char **output, char *input, int n);
+int random_int(int in);
 #endif

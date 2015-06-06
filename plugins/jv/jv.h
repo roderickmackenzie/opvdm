@@ -29,6 +29,7 @@ struct jv {
 	double Vstep;
 	double jv_step_mul;
 	double jv_light_efficiency;
+	double jv_max_j;
 };
 
 void sim_jv(struct device *in);

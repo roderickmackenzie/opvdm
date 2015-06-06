@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
 #include <stdio.h>
@@ -114,14 +113,14 @@ void inter_find_peaks(struct istruct *out, struct istruct *in, int find_max)
 			if (find_max == FALSE)
 				inter_append(out,
 					     inter_get_center_of_peak(in, i,
-								      20),
+								      21),
 					     in->data[i]);
 
 		} else if (max == window) {
 			if (find_max == TRUE)
 				inter_append(out,
 					     inter_get_center_of_peak(in, i,
-								      20),
+								      21),
 					     in->data[i]);
 		}
 		min = 0;
@@ -163,13 +162,14 @@ int inter_sort_compare(const void *a, const void *b)
 
 void inter_sort(struct istruct *in)
 {
-
 	int i = 0;
 	double *data = (double *)malloc(in->len * 2 * sizeof(double));
+
 	for (i = 0; i < in->len; i++) {
 		data[i * 2] = in->x[i];
 		data[(i * 2) + 1] = in->data[i];
 	}
+
 	qsort(data, in->len, sizeof(double) * 2, inter_sort_compare);
 
 	for (i = 0; i < in->len; i++) {
@@ -234,10 +234,15 @@ int get_file_len(char *file_name)
 		buffer[0] = 0;
 		unused_pchar = fgets(buffer, 1000, file);
 		p = buffer;
-		while (*p == ' ' || *p == '\t')
-			p++;
-		if ((*p == '\r') || (*p == '\n') || (*p == 0))
+		if (buffer[0] == '#') {
 			i--;
+		} else {
+
+			while (*p == ' ' || *p == '\t')
+				p++;
+			if ((*p == '\r') || (*p == '\n') || (*p == 0))
+				i--;
+		}
 		i++;
 	} while (!feof(file));
 
@@ -301,17 +306,10 @@ void inter_add(struct istruct *out, struct istruct *in)
 
 }
 
-void inter_alloc_dd(struct istruct *in, int m, int len)
+void inter_alloc(struct istruct *in, int len)
 {
-	int i = 0;
-	in->m = m;
-	in->dd = (double **)malloc(in->m * sizeof(double));
-
-	for (i = 0; i < in->m; i++) {
-		in->dd[i] = (double *)malloc(len * sizeof(double));
-	}
-
-	in->data = in->dd[0];
+	in->x = (double *)malloc(len * sizeof(double));
+	in->data = (double *)malloc(len * sizeof(double));
 }
 
 void inter_to_log_mesh(struct istruct *out, struct istruct *in)
@@ -334,7 +332,7 @@ void inter_to_new_mesh(struct istruct *in, struct istruct *out)
 {
 	int i;
 	int ii;
-	double pos = 0.0;
+	double pos = in->x[0];
 	double delta = (in->x[in->len - 1] - in->x[0]) / (double)out->len;
 	pos += delta / 2.0;
 	for (i = 0; i < out->len; i++) {
@@ -355,27 +353,20 @@ void inter_to_new_mesh(struct istruct *in, struct istruct *out)
 	return;
 }
 
-void inter_realloc_dd(struct istruct *in, int len)
+void inter_realloc(struct istruct *in, int len)
 {
-	int m;
-	for (m = 0; m < in->m; m++) {
-		in->dd[m] = (double *)realloc(in->dd[m], len * sizeof(double));
-	}
-
-	in->data = in->dd[0];
+	in->x = (double *)realloc(in->x, len * sizeof(double));
+	in->data = (double *)realloc(in->data, len * sizeof(double));
 }
 
 void inter_new(struct istruct *in, int len)
 {
 	int i;
-	in->m = 1;
 	strcpy(in->name, "new");
 
 	in->len = len;
 
-	in->x = (double *)malloc(in->len * sizeof(double));
-
-	inter_alloc_dd(in, in->m, in->len);
+	inter_alloc(in, in->len);
 
 	for (i = 0; i < in->len; i++) {
 		in->data[i] = 0.0;
@@ -449,7 +440,7 @@ void inter_mul(struct istruct *in, double mul)
 }
 
 double inter_get_diff(char *out_path, struct istruct *one, struct istruct *two,
-		      double start, double stop, double error_mul)
+		      double start, double stop, struct istruct *mull)
 {
 	FILE *out;
 	if (out_path != NULL)
@@ -458,16 +449,20 @@ double inter_get_diff(char *out_path, struct istruct *one, struct istruct *two,
 	if (one->x[0] > start)
 		start = one->x[0];
 
+	double points_max = 400.0;
 	double points = 0.0;
-	double dx = (stop - start) / 400;
+	double dx = (stop - start) / points_max;
 	double pos = start;
 	double etemp = 0.0;
 	do {
 
 		if (pos >= start) {
 			etemp =
-			    error_mul * fabs(inter_get(one, pos) -
-					     inter_get(two, pos));
+			    fabs(inter_get_noend(one, pos) -
+				 inter_get_noend(two,
+						 pos)) * inter_get_noend(mull,
+									 pos);
+
 			if (out_path != NULL)
 				fprintf(out, "%le %le\n", pos, etemp);
 			error += etemp;
@@ -513,7 +508,6 @@ double inter_intergrate(struct istruct *in)
 		sum += n * dt;
 
 	}
-
 	return sum;
 }
 
@@ -583,15 +577,43 @@ double inter_norm_to_one_range(struct istruct *in, double start, double stop)
 
 double inter_get_max(struct istruct *in)
 {
-	int i;
-	double max = in->data[0];
+	double max = 0.0;
 
-	for (i = 0; i < in->len; i++) {
+	max = inter_get_max_range(in, 0, in->len);
+
+	return max;
+}
+
+double inter_get_max_range(struct istruct *in, int start, int stop)
+{
+	int i;
+	double max = 0.0;
+	if (start < in->len) {
+		max = in->data[start];
+	}
+
+	for (i = start; i < stop; i++) {
 		if (in->data[i] > max)
 			max = in->data[i];
 	}
 
 	return max;
+}
+
+int inter_get_max_pos(struct istruct *in)
+{
+	int i;
+	int pos = 0;
+	double max = in->data[0];
+
+	for (i = 0; i < in->len; i++) {
+		if (in->data[i] > max) {
+			max = in->data[i];
+			pos = i;
+		}
+	}
+
+	return pos;
 }
 
 double inter_get_fabs_max(struct istruct *in)
@@ -607,7 +629,7 @@ double inter_get_fabs_max(struct istruct *in)
 	return max;
 }
 
-double inter_norm_to_one(struct istruct *in)
+double inter_norm(struct istruct *in, double mul)
 {
 	int i;
 	double max = in->data[0];
@@ -618,7 +640,7 @@ double inter_norm_to_one(struct istruct *in)
 	}
 
 	for (i = 0; i < in->len; i++) {
-		in->data[i] /= max;
+		in->data[i] *= mul / max;
 	}
 
 	return max;
@@ -654,7 +676,8 @@ void inter_log_x(struct istruct *in)
 	}
 }
 
-void inter_smooth_range(struct istruct *in, int points, double x)
+void inter_smooth_range(struct istruct *out, struct istruct *in, int points,
+			double x)
 {
 	int i = 0;
 	int ii = 0;
@@ -662,26 +685,27 @@ void inter_smooth_range(struct istruct *in, int points, double x)
 	double tot_point = 0.0;
 	double tot = 0;
 	for (i = 0; i < in->len; i++) {
-		for (ii = 0; ii < points; ii++) {
+		for (ii = -points; ii < points + 1; ii++) {
 
 			pos = i + ii;
 
-			if (pos < in->len) {
+			if ((pos < in->len) && (pos >= 0)) {
 				tot += in->data[pos];
 				tot_point += 1.0;
 			}
 		}
 
 		if (in->x[i] > x) {
-
-			in->data[i] = (tot / (double)tot_point);
+			out->data[i] = (tot / (double)tot_point);
+		} else {
+			out->data[i] = in->data[i];
 		}
 		tot = 0.0;
 		tot_point = 0.0;
 	}
 }
 
-void inter_smooth(struct istruct *in, int points)
+void inter_smooth(struct istruct *out, struct istruct *in, int points)
 {
 	int i = 0;
 	int ii = 0;
@@ -689,17 +713,17 @@ void inter_smooth(struct istruct *in, int points)
 	double tot_point = 0.0;
 	double tot = 0;
 	for (i = 0; i < in->len; i++) {
-		for (ii = 0; ii < points; ii++) {
+		for (ii = -points; ii < points + 1; ii++) {
 
 			pos = i + ii;
 
-			if (pos < in->len) {
+			if ((pos < in->len) && (pos >= 0)) {
 				tot += in->data[pos];
 				tot_point += 1.0;
 			}
 		}
 
-		in->data[i] = (tot / (double)tot_point);
+		out->data[i] = (tot / (double)tot_point);
 		tot = 0.0;
 		tot_point = 0.0;
 	}
@@ -723,8 +747,7 @@ void inter_purge_zero(struct istruct *in)
 
 	in->len = write;
 
-	in->x = (double *)realloc(in->x, in->len * sizeof(double));
-	inter_realloc_dd(in, in->len);
+	inter_realloc(in, in->len);
 
 }
 
@@ -774,8 +797,7 @@ void inter_chop(struct istruct *in, double min, double max)
 	}
 	in->len = write;
 
-	in->x = (double *)realloc(in->x, in->len * sizeof(double));
-	inter_realloc_dd(in, in->len);
+	inter_realloc(in, in->len);
 }
 
 void inter_div_double(struct istruct *in, double div)
@@ -880,7 +902,7 @@ void inter_add_double(struct istruct *in, double value)
 
 }
 
-void inter_norm(struct istruct *in, double mul)
+void inter_norm_area(struct istruct *in, double mul)
 {
 	int i;
 	double tot = 0.0;
@@ -916,8 +938,7 @@ void inter_append(struct istruct *in, double x, double y)
 
 	if ((in->max_len - in->len) < 10) {
 		in->max_len += 100;
-		in->x = (double *)realloc(in->x, in->max_len * sizeof(double));
-		inter_realloc_dd(in, in->max_len);
+		inter_realloc(in, in->max_len);
 	}
 
 }
@@ -925,10 +946,8 @@ void inter_append(struct istruct *in, double x, double y)
 void inter_init_mesh(struct istruct *in, int len, double min, double max)
 {
 	int i;
-	in->m = 1;
 	in->len = len;
-	in->x = (double *)malloc(in->len * sizeof(double));
-	inter_alloc_dd(in, in->m, in->len);
+	inter_alloc(in, in->len);
 	memset(in->data, 0, in->len * sizeof(double));
 	double pos = min;
 	double dx = (max - min) / ((double)in->len);
@@ -940,27 +959,74 @@ void inter_init_mesh(struct istruct *in, int len, double min, double max)
 
 }
 
-void inter_init_m(struct istruct *in, int m)
+void inter_init(struct istruct *in)
 {
 	in->len = 0;
 	in->max_len = 100;
-	in->m = m;
-	in->x = (double *)malloc(in->max_len * sizeof(double));
-
-	inter_alloc_dd(in, m, in->max_len);
+	inter_alloc(in, in->max_len);
 }
 
-void inter_init(struct istruct *in)
+int inter_get_col_n(char *name)
 {
-	in->m = 1;
-	inter_init_m(in, in->m);
+	int i = 0;
+	char temp[10000];
+	int pos[10000];
+	double x;
+	double y;
+	char *token;
+	int col = 0;
+
+	FILE *file;
+	file = fopen(name, "r");
+	if (file == NULL) {
+		printf("inter_get_col_n can not open file %s\n", name);
+		exit(0);
+	}
+
+	do {
+		memset(temp, 10000, 0);
+		unused_pchar = fgets(temp, 10000, file);
+		const char s[2] = " ";
+		for (i = 0; i < strlen(temp); i++) {
+			if (temp[i] == '\t')
+				temp[i] = ' ';
+		}
+
+		if ((temp[0] != '#') && (temp[0] != '\n') && (temp[0] != '\r')
+		    && (temp[0] != 0)) {
+			col = 0;
+			token = strtok(temp, s);
+
+			do {
+				token = strtok(NULL, s);
+				if (token == NULL)
+					break;
+				if (token[0] != '\n')
+					col++;
+			}
+			while (token != NULL);
+
+			col--;
+			break;
+
+		}
+
+	} while (!feof(file));
+	fclose(file);
+	return col;
 }
 
-void inter_load_a(struct istruct *in, char *name, int col, int ncol)
+void inter_load_by_col(struct istruct *in, char *name, int col)
 {
-	in->m = 1;
+	int i = 0;
+	char temp[1000];
+	int pos[1000];
+	double x;
+	double y;
+	char *token;
+	int icol = 0;
 	strcpy(in->name, name);
-	int len = get_file_len(name);
+
 	FILE *file;
 	file = fopen(name, "r");
 	if (file == NULL) {
@@ -968,35 +1034,51 @@ void inter_load_a(struct istruct *in, char *name, int col, int ncol)
 		exit(0);
 	}
 
-	in->len = len;
-	int i = 0;
-	double out = 0.0;
-	in->x = (double *)malloc(in->len * sizeof(double));
-
-	inter_alloc_dd(in, in->m, in->len);
-	int ii = 0;
-	for (i = 0; i < in->len; i++) {
-		unused = fscanf(file, "%lf", &(in->x[i]));
-		for (ii = 0; ii < ncol; ii++) {
-			unused = fscanf(file, "%lf", &(out));
-			if (ii == col)
-				in->data[i] = out;
+	inter_init(in);
+	do {
+		memset(temp, 1000, 0);
+		unused_pchar = fgets(temp, 1000, file);
+		const char s[2] = " ";
+		for (i = 0; i < strlen(temp); i++) {
+			if (temp[i] == '\t')
+				temp[i] = ' ';
 		}
 
-	}
+		if ((temp[0] != '#') && (temp[0] != '\n') && (temp[0] != '\r')
+		    && (temp[0] != 0)) {
+			token = strtok(temp, s);
 
+			sscanf(token, "%le", &(x));
+			if (token != NULL) {
+				icol = 0;
+				int ret = 0;
+				while (token != NULL) {
+					if (col == icol) {
+						ret =
+						    sscanf(token, "%le", &(y));
+						break;
+					}
+					token = strtok(NULL, s);
+					icol++;
+				}
+
+				if (ret == 1)
+					inter_append(in, x, y);
+			}
+
+		}
+
+	} while (!feof(file));
 	fclose(file);
 }
 
 void inter_copy(struct istruct *in, struct istruct *orig, int alloc)
 {
 	int i;
-	in->m = orig->m;
 	in->len = orig->len;
 
 	if (alloc == TRUE) {
-		in->x = (double *)malloc(orig->len * sizeof(double));
-		inter_alloc_dd(in, in->m, orig->len);
+		inter_alloc(in, orig->len);
 	}
 
 	for (i = 0; i < orig->len; i++) {
@@ -1010,12 +1092,10 @@ void inter_import_array(struct istruct *in, double *x, double *y, int len,
 			int alloc)
 {
 	int i;
-	in->m = 1;
 	in->len = len;
 
 	if (alloc == TRUE) {
-		in->x = (double *)malloc(in->len * sizeof(double));
-		inter_alloc_dd(in, in->m, in->len);
+		inter_alloc(in, in->len);
 	}
 
 	for (i = 0; i < in->len; i++) {
@@ -1049,8 +1129,11 @@ void inter_deriv(struct istruct *out, struct istruct *in)
 			xr = in->x[i + 1];
 			yr = in->data[i + 1];
 		}
-
-		dy = (yr - yl) / (xr - xl);
+		if (yr != yl) {
+			dy = (yr - yl) / (xr - xl);
+		} else {
+			dy = 0.0;
+		}
 		out->x[i] = in->x[i];
 		out->data[i] = dy;
 	}
@@ -1077,37 +1160,43 @@ void inter_swap(struct istruct *in)
 	free(dtemp);
 }
 
-void inter_load(struct istruct *in, char *name, int len, int col, int ncol)
+void inter_load(struct istruct *in, char *name)
 {
-	in->m = 1;
+	int i = 0;
+	char temp[1000];
+	double x;
+	double y;
+
+	strcpy(in->name, name);
+
 	FILE *file;
 	file = fopen(name, "r");
-	in->len = len;
-	strcpy(in->name, name);
-	int i = 0;
-	double out = 0.0;
-	in->x = (double *)malloc(in->len * sizeof(double));
-	inter_alloc_dd(in, in->m, in->len);
-	int ii = 0;
-	for (i = 0; i < in->len; i++) {
-		unused = fscanf(file, "%lf", &(in->x[i]));
-		for (ii = 0; ii < ncol; ii++) {
-			unused = fscanf(file, "%lf", &(out));
-			if (ii == col)
-				in->data[i] = out;
-		}
-
+	if (file == NULL) {
+		printf("inter_load_a can not open file %s\n", name);
+		exit(0);
 	}
 
+	inter_init(in);
+	do {
+		temp[0] = 0;
+		unused_pchar = fgets(temp, 1000, file);
+
+		if ((temp[0] != '#') && (temp[0] != '\n') && (temp[0] != '\r')
+		    && (temp[0] != 0)) {
+			sscanf(temp, "%le %le", &(x), &(y));
+
+			inter_append(in, x, y);
+		}
+
+	} while (!feof(file));
 	fclose(file);
 }
 
 void inter_set_value(struct istruct *in, double value)
 {
 	int i = 0;
-	int m = 0;
 	for (i = 0; i < in->len; i++) {
-		in->dd[m][i] = value;
+		in->data[i] = value;
 	}
 
 }
@@ -1115,27 +1204,25 @@ void inter_set_value(struct istruct *in, double value)
 void inter_y_mul_dx(struct istruct *in)
 {
 	int i = 0;
-	int m = 0;
+
 	double dx = 0.0;
 	double d0 = 0.0;
 	double d1 = 0.0;
 	for (i = 0; i < in->len; i++) {
-		for (m = 0; m < in->m; m++) {
-			if (i == 0) {
-				d0 = (in->x[0]);
-			} else {
-				d0 = (in->x[i - 1]);
-			}
-
-			if (i == in->len - 1) {
-				d1 = (in->x[i]);
-			} else {
-				d1 = (in->x[i + 1]);
-			}
-
-			dx = (d1 - d0) / 2.0;
-			in->dd[m][i] = in->dd[m][i] * dx;
+		if (i == 0) {
+			d0 = (in->x[0]);
+		} else {
+			d0 = (in->x[i - 1]);
 		}
+
+		if (i == in->len - 1) {
+			d1 = (in->x[i]);
+		} else {
+			d1 = (in->x[i + 1]);
+		}
+
+		dx = (d1 - d0) / 2.0;
+		in->data[i] = in->data[i] * dx;
 	}
 
 }
@@ -1170,13 +1257,8 @@ void inter_make_cumulative(struct istruct *in)
 void inter_dump(struct istruct *in)
 {
 	int i = 0;
-	int m = 0;
 	for (i = 0; i < in->len; i++) {
-		printf("%e", in->x[i]);
-		for (m = 0; m < in->m; m++) {
-			printf(" %e", in->dd[m][i]);
-		}
-		printf("\n");
+		printf("%le %le\n", in->x[i], in->data[i]);
 	}
 
 }
@@ -1212,7 +1294,6 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 {
 	FILE *file = NULL;
 	int i = 0;
-	int m = 0;
 
 	int count_max = in->len / seg;
 	int count = 0;
@@ -1226,9 +1307,7 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 			file_count++;
 		}
 		fprintf(file, "%e", in->x[i]);
-		for (m = 0; m < in->m; m++) {
-			fprintf(file, " %e", in->dd[m][i]);
-		}
+		fprintf(file, " %e", in->data[i]);
 		count++;
 		fprintf(file, "\n");
 
@@ -1248,17 +1327,16 @@ void inter_save(struct istruct *in, char *name)
 	FILE *file;
 	file = fopen(name, "w");
 	int i = 0;
-	int m = 0;
-
 	for (i = 0; i < in->len; i++) {
-		fprintf(file, "%e", in->x[i]);
-		for (m = 0; m < in->m; m++) {
-			fprintf(file, " %e", in->dd[m][i]);
-		}
-		fprintf(file, "\n");
+		fprintf(file, "%e %e\n", in->x[i], in->data[i]);
 	}
 
 	fclose(file);
+}
+
+int inter_search_pos(struct istruct *in, double x)
+{
+	return search(in->x, in->len, x);
 }
 
 double inter_get_raw(double *x, double *data, int len, double pos)
@@ -1345,6 +1423,7 @@ double inter_get_hard(struct istruct *in, double x)
 
 double inter_get_noend(struct istruct *in, double x)
 {
+
 	double x0;
 	double x1;
 	double y0;
@@ -1361,38 +1440,33 @@ double inter_get_noend(struct istruct *in, double x)
 		return in->data[in->len - 1];
 	}
 
-	if (x >= in->x[in->len - 1]) {
+	i = search(in->x, in->len, x);
+	x0 = in->x[i];
+	x1 = in->x[i + 1];
 
-		i = in->len - 1;
-		x0 = in->x[i - 1];
-		x1 = in->x[i];
+	y0 = in->data[i];
+	y1 = in->data[i + 1];
 
-		y0 = in->data[i - 1];
-		y1 = in->data[i];
+	double eval = 0.0;
 
+	if ((y1 - y0) == 0.0) {
+		eval = 0.0;
+	} else if ((x - x0) == 0.0) {
+		eval = 0.0;
 	} else {
-		i = search(in->x, in->len, x);
-		x0 = in->x[i];
-		x1 = in->x[i + 1];
-
-		y0 = in->data[i];
-		y1 = in->data[i + 1];
+		eval = ((y1 - y0) / (x1 - x0)) * (x - x0);
 	}
-	ret = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
+
+	ret = y0 + eval;
 	return ret;
 }
 
 void inter_free(struct istruct *in)
 {
-	int m = 0;
 	in->len = 0;
 	in->max_len = 0;
 	free(in->x);
-	for (m = 0; m < in->m; m++) {
-		free(in->dd[m]);
-	}
-	free(in->dd);
-	in->m = 0;
+	free(in->data);
 }
 
 double inter_array_get_max(double *data, int len)

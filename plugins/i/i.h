@@ -24,18 +24,18 @@
 
 struct istruct {
 	double *x;
-	double **dd;
 	double *data;
 
-	int m;
 	int len;
 	int max_len;
 	char name[200];
 };
 
+int inter_get_col_n(char *name);
 void inter_add_to_hist(struct istruct *in, double pos, double value);
 void inter_init_mesh(struct istruct *in, int len, double min, double max);
-void inter_smooth_range(struct istruct *in, int points, double x);
+void inter_smooth_range(struct istruct *out, struct istruct *in, int points,
+			double x);
 double inter_avg_range(struct istruct *in, double start, double stop);
 double inter_array_get_max(double *data, int len);
 void inter_div(struct istruct *one, struct istruct *two);
@@ -49,7 +49,7 @@ double inter_get_quartile(struct istruct *in, double value);
 void inter_save_seg(struct istruct *in, char *path, char *name, int seg);
 double inter_intergrate(struct istruct *in);
 void inter_to_log_mesh(struct istruct *out, struct istruct *in);
-void inter_smooth(struct istruct *in, int points);
+void inter_smooth(struct istruct *out, struct istruct *in, int points);
 double inter_sum_mod(struct istruct *in);
 void inter_set_value(struct istruct *in, double value);
 double inter_get_neg(struct istruct *in, double x);
@@ -72,17 +72,17 @@ void inter_sub(struct istruct *one, struct istruct *two);
 double inter_sum(struct istruct *in);
 void inter_copy(struct istruct *in, struct istruct *orig, int alloc);
 int inter_get_col(char *file);
-void inter_load_a(struct istruct *in, char *name, int col, int ncol);
+void inter_load_by_col(struct istruct *in, char *name, int col);
 double inter_get_diff(char *out_path, struct istruct *one, struct istruct *two,
-		      double start, double stop, double error_mul);
+		      double start, double stop, struct istruct *mull);
 void inter_pow(struct istruct *in, double p);
 double inter_get_raw(double *x, double *data, int len, double pos);
-double inter_norm_to_one(struct istruct *in);
+double inter_norm(struct istruct *in, double mul);
 void inter_log_y(struct istruct *in);
 void inter_mul(struct istruct *in, double mul);
 void inter_log_x(struct istruct *in);
 void inter_save(struct istruct *in, char *name);
-void inter_load(struct istruct *in, char *name, int len, int col, int ncol);
+void inter_load(struct istruct *in, char *name);
 double inter_get_hard(struct istruct *in, double x);
 double inter_get(struct istruct *in, double x);
 void inter_print(struct istruct *in);
@@ -90,8 +90,9 @@ void inter_free(struct istruct *in);
 void inter_rescale(struct istruct *in, double xmul, double ymul);
 void inter_mod(struct istruct *in);
 void inter_add(struct istruct *out, struct istruct *in);
-void inter_norm(struct istruct *in, double mul);
+void inter_norm_area(struct istruct *in, double mul);
 double inter_get_max(struct istruct *in);
+double inter_get_max_range(struct istruct *in, int start, int stop);
 void inter_add_double(struct istruct *in, double value);
 double inter_intergrate_lim(struct istruct *in, double from, double to);
 void inter_deriv(struct istruct *out, struct istruct *in);
@@ -101,4 +102,6 @@ double inter_avg(struct istruct *in);
 void inter_convolve(struct istruct *one, struct istruct *two);
 void inter_save_backup(struct istruct *in, char *name, int backup);
 void inter_dft(double *real, double *imag, struct istruct *in, double fx);
+int inter_get_max_pos(struct istruct *in);
+int inter_search_pos(struct istruct *in, double x);
 #endif

@@ -25,23 +25,26 @@
 #include <string.h>
 #include "../../sim.h"
 #include "jv.h"
-#include "frame.h"
 #include "dump.h"
 #include <math.h>
 #include "../../elec_plugins.h"
 #include "ntricks.h"
 #include "../../inp.h"
+#include "../../buffer.h"
 
 static int unused __attribute__ ((unused));
 
 void sim_jv(struct device *in)
 {
+	printf("entered jv\n");
+	struct buffer buf;
+	buffer_init(&buf);
+
 	struct jv config;
 	jv_load_config(&config, in);
 	double V = 0.0;
 	double Vstop = config.Vstop;
 	double Vstep = config.Vstep;
-	FILE *iv;
 	int ittr = 0;
 	double J;
 	double Pden;
@@ -70,15 +73,16 @@ void sim_jv(struct device *in)
 	if (fabs(config.Vstart - in->Vapplied) > 0.2) {
 		ramp_externalv(in, 0.0, config.Vstart);
 	}
+
 	in->Vapplied = config.Vstart;
+
 	sim_externalv(in, in->Vapplied);
 
 	remesh_reset(in, in->Vapplied);
-
 	if (in->remesh == TRUE) {
 		light_solve_and_update(in, &(in->mylight),
 				       in->Psun * config.jv_light_efficiency,
-				       0.0);
+				       0.0, 0.0);
 	}
 
 	V = in->Vapplied;
@@ -86,17 +90,6 @@ void sim_jv(struct device *in)
 	in->Vapplied = config.Vstart;
 	newton_sim_jv(in);
 	newton_set_min_ittr(0);
-	struct map framen;
-	struct map framep;
-	struct map frame;
-	if (in->dump_movie == TRUE) {
-		frame_init(&framen, in->ymeshpoints, 1000, in->ymesh[0],
-			   in->ymesh[in->ymeshpoints - 1], -7.5, -3.5);
-		frame_init(&framep, in->ymeshpoints, 1000, in->ymesh[0],
-			   in->ymesh[in->ymeshpoints - 1], -7.5, -3.5);
-		frame_init(&frame, in->ymeshpoints, 1000, in->ymesh[0],
-			   in->ymesh[in->ymeshpoints - 1], -7.5, -3.5);
-	}
 
 	double k_voc = 0.0;
 	double n_voc = 0.0;
@@ -117,17 +110,6 @@ void sim_jv(struct device *in)
 
 		J = get_equiv_J(in);
 		Vexternal = get_equiv_V(in);
-
-		if (in->dump_movie == TRUE) {
-			frame_reset(&framen);
-			frame_reset(&framep);
-			frame_reset(&frame);
-			dump_build_2d_charge_frame(&framen, &framep, in);
-			dump_write_2d_charge_map(&framen, &framep, in);
-
-			dump_build_2d_charge_single_frame(&frame, in);
-			dump_write_2d_charge_single_map(&frame, in);
-		}
 
 		if (ittr > 0) {
 
@@ -189,9 +171,9 @@ void sim_jv(struct device *in)
 
 		}
 
-		if (get_dump_status(dump_iodump) == TRUE) {
+		if (get_dump_status(dump_print_converge) == TRUE) {
 			printf("V=%lf %lf current = %e mA (%e A/m^2) %le\n", V,
-			       Vexternal, get_I(in) / 1e-3, J, get_J(in));
+			       Vexternal, get_I(in) / 1e-3, J, in->last_error);
 		}
 
 		Jlast = J;
@@ -199,7 +181,7 @@ void sim_jv(struct device *in)
 		Pdenlast = Pden;
 		first = FALSE;
 
-		slice_check(in);
+		dump_write_to_disk(in);
 
 		V += Vstep;
 		Vstep *= config.jv_step_mul;
@@ -212,6 +194,10 @@ void sim_jv(struct device *in)
 		if ((Vstep < 0) && (V < Vstop)) {
 			in->stop = TRUE;
 			printf("--------------2\n");
+		}
+
+		if (get_equiv_J(in) > config.jv_max_j) {
+			in->stop = TRUE;
 		}
 
 		if (in->stop == TRUE) {
@@ -234,27 +220,28 @@ void sim_jv(struct device *in)
 		printf("Voltage to get Pmax= %lf (V)\n", in->Pmax_voltage);
 		printf("FF= %lf\n", in->FF * 100.0);
 		printf("Efficiency= %lf percent\n",
-		       fabs(in->Pmax / in->Psun) * 100.0);
+		       fabs(in->Pmax / in->Psun / 1000) * 100.0);
 	}
 
 	FILE *out;
-	out = fopena(in->outputpath, "./sim_info.dat", "w");
+	out = fopena(in->inputpath, "./sim_info.dat", "w");
 	fprintf(out, "#ff\n%le\n", in->FF);
-	fprintf(out, "#pce\n%le\n", fabs(in->Pmax / (in->Psun)) * 100.0);
+	fprintf(out, "#pce\n%le\n", fabs(in->Pmax / (in->Psun / 1000)) * 100.0);
 	fprintf(out, "#voc\n%le\n", in->Voc);
-	fprintf(out, "#jv_voc_tau\n%le\n", n_voc / r_voc);
+	fprintf(out, "#voc_tau\n%le\n", n_voc / r_voc);
+	fprintf(out, "#voc_R\n%le\n", r_voc);
 	fprintf(out, "#jv_voc_k\n%le\n", r_voc / n_voc);
 	fprintf(out, "#jv_pmax_n\n%le\n", n_pmax);
 	fprintf(out, "#jv_pmax_tau\n%le\n", n_pmax / r_pmax);
-	fprintf(out, "#jv_voc_nt\n%le\n", n_trap_voc);
-	fprintf(out, "#jv_voc_pt\n%le\n", p_trap_voc);
-	fprintf(out, "#jv_voc_nf\n%le\n", n_free_voc);
-	fprintf(out, "#jv_voc_pf\n%le\n", p_free_voc);
+	fprintf(out, "#voc_nt\n%le\n", n_trap_voc);
+	fprintf(out, "#voc_pt\n%le\n", p_trap_voc);
+	fprintf(out, "#voc_nf\n%le\n", n_free_voc);
+	fprintf(out, "#voc_pf\n%le\n", p_free_voc);
 	fprintf(out, "#jsc\n%le\n", in->Jsc);
 	fprintf(out, "#jv_jsc_n\n%le\n", nsc);
 	fprintf(out, "#jv_vbi\n%le\n", in->vbi);
 	fprintf(out, "#jv_gen\n%le\n", get_avg_gen(in));
-	fprintf(out, "#jv_voc_np_tot\n%le\n", np_voc_tot);
+	fprintf(out, "#voc_np_tot\n%le\n", np_voc_tot);
 	fprintf(out, "#end");
 	fclose(out);
 
@@ -264,44 +251,76 @@ void sim_jv(struct device *in)
 		inter_free(&klist);
 	}
 
-	FILE *kvocfile = fopena(in->outputpath, "./kvoc.dat", "w");
-	fprintf(kvocfile, "%le %le\n", n_voc, k_voc);
-	fclose(kvocfile);
-
-	kvocfile = fopena(in->outputpath, "./n_tau.dat", "w");
-	fprintf(kvocfile, "%le %le\n", n_voc, 1.0 / (k_voc * n_voc));
-	fclose(kvocfile);
-
-	inter_save_a(&charge, in->outputpath, "charge.dat");
-	inter_free(&charge);
+	buffer_malloc(&buf);
+	buf.y_mul = 1.0;
+	buf.x_mul = 1.0;
+	strcpy(buf.title, "Charge density - Appleid voltage");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Applied Voltage");
+	strcpy(buf.y_label, "Charge density");
+	strcpy(buf.x_units, "Volts");
+	strcpy(buf.y_units, "m^{-3}");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, charge.x, charge.data, charge.len);
+	buffer_dump(in->outputpath, "charge.dat", &buf);
+	buffer_free(&buf);
 
 	inter_save_a(&charge_tot, in->outputpath, "charge_tot.dat");
 	inter_free(&charge_tot);
 
-	inter_save_a(&ivexternal, in->outputpath, "ivexternal.dat");
-	inter_free(&ivexternal);
+	buffer_malloc(&buf);
+	buf.y_mul = 1.0;
+	buf.x_mul = 1.0;
+	strcpy(buf.title, "Current density - Appleid voltage");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Applied Voltage");
+	strcpy(buf.y_label, "Current density");
+	strcpy(buf.x_units, "Volts");
+	strcpy(buf.y_units, "A m^{-2}");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
+	buffer_dump(in->outputpath, "jvexternal.dat", &buf);
+	buffer_free(&buf);
 
-	inter_save_a(&jvexternal, in->outputpath, "jvexternal.dat");
+	buffer_malloc(&buf);
+	buf.y_mul = 1.0;
+	buf.x_mul = 1.0;
+	strcpy(buf.title, "Current - Appleid voltage");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Applied Voltage");
+	strcpy(buf.y_label, "Current");
+	strcpy(buf.x_units, "Volts");
+	strcpy(buf.y_units, "A");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
+	buffer_dump(in->outputpath, "ivexternal.dat", &buf);
+	buffer_free(&buf);
+
 	inter_free(&jvexternal);
-
-	if (in->dump_movie == TRUE) {
-		frame_free(&framen);
-		frame_free(&framep);
-		frame_free(&frame);
-	}
-
+	inter_free(&charge);
+	inter_free(&ivexternal);
 }
 
 void jv_load_config(struct jv *in, struct device *dev)
 {
-	inp_load(dev->outputpath, "jv.inp");
-	inp_check(1.2);
-	inp_search_double(&(in->Vstart), "#Vstart");
-	inp_search_double(&(in->Vstop), "#Vstop");
-	inp_search_double(&(in->Vstep), "#Vstep");
-	inp_search_double(&(in->jv_step_mul), "#jv_step_mul");
-	inp_search_double(&(in->jv_light_efficiency), "#jv_light_efficiency");
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, dev->inputpath, "jv.inp");
+	inp_check(&inp, 1.21);
+	inp_search_double(&inp, &(in->Vstart), "#Vstart");
+	inp_search_double(&inp, &(in->Vstop), "#Vstop");
+	inp_search_double(&inp, &(in->Vstep), "#Vstep");
+	inp_search_double(&inp, &(in->jv_step_mul), "#jv_step_mul");
+	inp_search_double(&inp, &(in->jv_light_efficiency),
+			  "#jv_light_efficiency");
+	inp_search_double(&inp, &(in->jv_max_j), "#jv_max_j");
 	in->jv_light_efficiency = fabs(in->jv_light_efficiency);
-	inp_free();
+	inp_free(&inp);
 
 }

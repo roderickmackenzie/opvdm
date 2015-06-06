@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,11 +28,69 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include "util.h"
 #include "true_false.h"
 #include "../../sim_modes.h"
 #include "../../dump_ctrl.h"
 #include "../../dos_types.h"
+#include "../../inp.h"
+
+struct inp_file hard_limit_inp;
+int file_exists(char *in)
+{
+	FILE *f = fopen(in, "r");
+
+	if (f == NULL) {
+		return FALSE;
+	}
+
+	fclose(f);
+	return TRUE;
+
+}
+
+void join_path(int args, ...)
+{
+	int max = args + 1;
+	va_list arguments;
+	double sum = 0;
+	int i;
+	va_start(arguments, max);
+	char *ret = va_arg(arguments, char *);
+	strcpy(ret, "");
+	for (i = 1; i < max; i++) {
+		if (i != 1) {
+#ifdef windows
+			strcat(ret, "\\");
+#else
+			strcat(ret, "/");
+#endif
+		}
+		strcat(ret, va_arg(arguments, char *));
+	}
+	va_end(arguments);
+
+	return;
+}
+
+void print_hex(unsigned char *data)
+{
+	int i;
+	for (i = 0; i < 16; i++) {
+		printf("%02x", data[i]);
+	}
+	printf("\n");
+}
+
+static char lock_name[100];
+static char lock_data[100];
+
+void set_ewe_lock_file(char *lockname, char *data)
+{
+	strcpy(lock_name, lockname);
+	strcpy(lock_data, data);
+}
 
 int ewe(const char *format, ...)
 {
@@ -52,6 +109,16 @@ int ewe(const char *format, ...)
 	out = fopen("./server_stop.dat", "w");
 	fprintf(out, "solver\n");
 	fclose(out);
+
+	out = fopen("./server_stop.dat", "w");
+	fprintf(out, "solver\n");
+	fclose(out);
+
+	if (strcmp(lock_name, "") != 0) {
+		out = fopen(lock_name, "w");
+		fprintf(out, "%s", lock_data);
+		fclose(out);
+	}
 
 	exit(1);
 }
@@ -153,18 +220,22 @@ int english_to_bin(char *in)
 		return sim_mode_stark;
 	} else if (strcmp(in, "pulse") == 0) {
 		return sim_mode_pulse;
-	} else if (strcmp(in, "photokit") == 0) {
-		return sim_mode_photokit;
+	} else if (strcmp(in, "imps") == 0) {
+		return sim_mode_imps;
 	} else if (strcmp(in, "pulse_voc") == 0) {
 		return sim_mode_pulse_voc;
 	} else if (strcmp(in, "jv_simple") == 0) {
 		return sim_mode_jv_simple;
-	} else if (strcmp(in, "find_voc") == 0) {
-		return sim_mode_find_voc;
+	} else if (strcmp(in, "sun_voc") == 0) {
+		return sim_mode_sun_voc;
 	} else if (strcmp(in, "exponential") == 0) {
 		return dos_exp;
 	} else if (strcmp(in, "complex") == 0) {
 		return dos_an;
+	} else if (strcmp(in, "optics") == 0) {
+		return sim_mode_optics;
+	} else if (strcmp(in, "stark_spectrum") == 0) {
+		return sim_mode_stark_spectrum;
 	}
 
 	ewe("I don't understand the command %s\n", in);
@@ -260,6 +331,18 @@ void waveprint(char *in, double wavelength)
 
 }
 
+int random_int(int in)
+{
+	int random;
+	FILE *fp = fopen("/dev/urandom", "r");
+	fread(&random, sizeof(int), 1, fp);
+	random = fabs(random);
+	random = random % 400;
+	printf("%d\n", random);
+	fclose(fp);
+	return random;
+}
+
 void randomprint(char *in)
 {
 	int i;
@@ -284,9 +367,16 @@ void randomprint(char *in)
 
 void textcolor(int color)
 {
+#ifdef windows
+	HANDLE hConsole;
+	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	SetConsoleTextAttribute(hConsole, color);
+#else
 	char command[13];
 	sprintf(command, "\e[%dm", color);
 	printf("%s", command);
+#endif
 }
 
 FILE *fopena(char *path, char *name, const char *mode)
@@ -369,150 +459,277 @@ char *get_arg_plusone(char *in[], int count, char *find)
 	return no;
 }
 
-void edit_file_int(char *in_name, char *front, int line, int value)
+void edit_file_int(char *in_name, char *front, int line_to_edit, int value)
 {
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("edit_file_int %s %d %d\n", in_name, line, value);
+		printf("edit_file_int %s %d %d\n", in_name, line_to_edit,
+		       value);
+
 	FILE *in;
 	FILE *out;
-	char buf[400];
+	char *line;
+	int file_size = 0;
 	in = fopen(in_name, "r");
+	int pos = 0;
+	char temp[200];
 	if (in == NULL) {
-		ewe("edit_file_int: error opening file %s\n", in_name);
+		ewe("edit_file_by_var: File %s not found\n", in_name);
 	}
-	out = fopen("temp.tmp", "w");
-	if (out == NULL) {
-		ewe("edit_file_int: error opening file temp.tmp\n");
-	}
-	int l = 0;
+	fseek(in, 0, SEEK_END);
+	file_size = ftell(in);
+	fseek(in, 0, SEEK_SET);
 
-	do {
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (l != line) {
-				fprintf(out, "%s\n", buf);
-			} else {
-				fprintf(out, "%s%d\n", front, value);
-			}
-		}
-	} while (!feof(in));
+	char *in_buf = malloc(file_size + 1);
+	memset(in_buf, 0, (file_size + 1) * sizeof(char));
 
+	fread(in_buf, file_size, 1, in);
+	in_buf[file_size] = 0;
 	fclose(in);
+
+	char *out_buf = out_buf = malloc((file_size + 100) * sizeof(char));
+	memset(out_buf, 0, (file_size + 100) * sizeof(char));
+
+	line = strtok(in_buf, "\n");
+	while (line) {
+		pos++;
+		if (pos != line_to_edit) {
+			strcat(out_buf, line);
+			strcat(out_buf, "\n");
+		} else {
+			sprintf(temp, "%s%ld\n", front, value);
+			strcat(out_buf, temp);
+		}
+		line = strtok(NULL, "\n");
+	}
+
+	free(in_buf);
+
+	out = fopen(in_name, "w");
+	if (in == NULL) {
+		ewe("edit_file_by_var: Can not write file %s \n", in_name);
+	}
+	fwrite(out_buf, strlen(out_buf), 1, out);
+	free(out_buf);
 	fclose(out);
-	char command[1000];
-	sprintf(command, "mv temp.tmp %s", in_name);
-	unused = system(command);
+
 	if (get_dump_status(dump_iodump) == TRUE)
 		printf("Exit edit_file_int %s\n", in_name);
 }
 
-void edit_file(char *in_name, char *front, int line, double value)
+void edit_file(char *in_name, char *front, int line_to_edit, double value)
 {
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("edit_file %s %d %le\n", in_name, line, value);
+		printf("edit_file %s %d %le\n", in_name, line_to_edit, value);
+
 	FILE *in;
 	FILE *out;
-	char buf[400];
+	char *line;
+	int file_size = 0;
 	in = fopen(in_name, "r");
+	int pos = 0;
+	char temp[200];
 	if (in == NULL) {
-		ewe("edit_file_int: error opening file %s\n", in_name);
+		ewe("edit_file_by_var: File %s not found\n", in_name);
 	}
-	out = fopen("temp.tmp", "w");
-	if (out == NULL) {
-		ewe("edit_file_int: error opening file temp.tmp\n");
-	}
-	int l = 0;
+	fseek(in, 0, SEEK_END);
+	file_size = ftell(in);
+	fseek(in, 0, SEEK_SET);
 
-	do {
+	char *in_buf = malloc(file_size + 1);
+	memset(in_buf, 0, (file_size + 1) * sizeof(char));
 
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (l != line) {
-				fprintf(out, "%s\n", buf);
-			} else {
-				fprintf(out, "%s%le\n", front, value);
-			}
-		}
-		if (l > 1000)
-			exit(0);
-	} while (!feof(in));
-
-	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Exit edit_file_int loop %s\n", in_name);
-
+	fread(in_buf, file_size, 1, in);
+	in_buf[file_size] = 0;
 	fclose(in);
+
+	char *out_buf = out_buf = malloc((file_size + 100) * sizeof(char));
+	memset(out_buf, 0, (file_size + 100) * sizeof(char));
+
+	line = strtok(in_buf, "\n");
+	while (line) {
+		pos++;
+		if (pos != line_to_edit) {
+			strcat(out_buf, line);
+			strcat(out_buf, "\n");
+		} else {
+			sprintf(temp, "%s%le\n", front, value);
+			strcat(out_buf, temp);
+		}
+		line = strtok(NULL, "\n");
+	}
+
+	free(in_buf);
+
+	out = fopen(in_name, "w");
+	if (in == NULL) {
+		ewe("edit_file_by_var: Can not write file %s \n", in_name);
+	}
+	fwrite(out_buf, strlen(out_buf), 1, out);
+	free(out_buf);
 	fclose(out);
 
-	char command[1000];
-	sprintf(command, "mv temp.tmp %s", in_name);
-	unused = system(command);
 	if (get_dump_status(dump_iodump) == TRUE)
 		printf("Exit edit_file %s\n", in_name);
 }
 
-void copy_file(char *out_name, char *in_name, char *front, int line,
-	       double value)
+void mass_copy_file(char **output, char *input, int n)
 {
-	FILE *in;
-	FILE *out;
-	char buf[400];
-	in = fopen(in_name, "r");
-	out = fopen(out_name, "w");
-	int l = 0;
 
-	do {
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (l != line) {
-				fprintf(out, "%s\n", buf);
-			} else {
-				fprintf(out, "%s%le\n", front, value);
-			}
+	char buf[8192];
+	int i;
+	struct stat results;
+	int in_fd = open(input, O_RDONLY);
+
+	if (in_fd == -1) {
+		ewe("File %s can not be opened\n", input);
+	}
+
+	stat(input, &results);
+
+	int out_fd[10];
+
+	for (i = 0; i < n; i++) {
+		out_fd[i] =
+		    open(output[i], O_WRONLY | O_CREAT, results.st_mode);
+		if (out_fd[i] == -1) {
+			ewe("File %s can not be opened\n", output);
 		}
-	} while (!feof(in));
+	}
 
-	fclose(in);
-	fclose(out);
+	while (1) {
+		memset(buf, 0, (8192) * sizeof(char));
+		ssize_t result = read(in_fd, buf, 8192 * sizeof(char));
+		if (result == 0) {
+			break;
+		}
+
+		for (i = 0; i < n; i++) {
+			write(out_fd[i], buf, result * sizeof(char));
+		}
+	}
+
+	close(in_fd);
+	for (i = 0; i < n; i++) {
+		close(out_fd[i]);
+	}
+}
+
+void copy_file(char *output, char *input)
+{
+
+	char buf[8192];
+	struct stat results;
+	int in_fd = open(input, O_RDONLY);
+	if (in_fd == -1) {
+		ewe("File %s can not be opened\n", input);
+	}
+
+	stat(input, &results);
+
+	int out_fd = open(output, O_WRONLY | O_CREAT, results.st_mode);
+	if (in_fd == -1) {
+		ewe("File %s can not be opened\n", output);
+	}
+
+	while (1) {
+		ssize_t result = read(in_fd, buf, 8192 * sizeof(char));
+
+		if (result == 0) {
+			break;
+		}
+		write(out_fd, buf, result * sizeof(char));
+	}
+
+	close(in_fd);
+	close(out_fd);
 }
 
 void edit_file_by_var(char *in_name, char *token, char *newtext)
 {
 	FILE *in;
 	FILE *out;
-	char buf[400];
-	in = fopen(in_name, "r");
-	out = fopen("temp.tmp", "w");
-	int l = 0;
+	char *line;
 	int found = FALSE;
-	do {
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (strcmp(buf, token) != 0) {
-				fprintf(out, "%s\n", buf);
-			} else {
-				fprintf(out, "%s\n", buf);
-				fprintf(out, "%s\n", newtext);
-				unused = fscanf(in, "%s", buf);
-				found = TRUE;
-			}
-		}
-	} while (!feof(in));
-
-	fclose(in);
-	fclose(out);
-	if (found == FALSE) {
-		ewe("Token not found in file %s\n", token);
+	int file_size = 0;
+	in = fopen(in_name, "r");
+	if (in == NULL) {
+		ewe("edit_file_by_var: File %s not found\n", in_name);
 	}
-	char command[1000];
-	sprintf(command, "mv temp.tmp %s", in_name);
-	unused = system(command);
+	fseek(in, 0, SEEK_END);
+	file_size = ftell(in);
+	fseek(in, 0, SEEK_SET);
+
+	char *in_buf = malloc(file_size + 1);
+	memset(in_buf, 0, (file_size + 1) * sizeof(char));
+
+	fread(in_buf, file_size, 1, in);
+	in_buf[file_size] = 0;
+	fclose(in);
+
+	char *out_buf = out_buf =
+	    malloc((file_size + strlen(newtext) + 10) * sizeof(char));
+	memset(out_buf, 0, (file_size + strlen(newtext) + 10) * sizeof(char));
+
+	line = strtok(in_buf, "\n");
+	while (line) {
+		if (strcmp(line, token) != 0) {
+			strcat(out_buf, line);
+			strcat(out_buf, "\n");
+		} else {
+			strcat(out_buf, line);
+			strcat(out_buf, "\n");
+			strcat(out_buf, newtext);
+			strcat(out_buf, "\n");
+			line = strtok(NULL, "\n");
+			found = TRUE;
+		}
+		line = strtok(NULL, "\n");
+	}
+
+	if (found == FALSE) {
+		ewe("edit_file_by_var: Token not found in file %s\n", token);
+	}
+
+	free(in_buf);
+
+	out = fopen(in_name, "w");
+	if (in == NULL) {
+		ewe("edit_file_by_var: Can not write file %s \n", in_name);
+	}
+	fwrite(out_buf, strlen(out_buf), 1, out);
+	free(out_buf);
+	fclose(out);
+
 }
 
-void remove_dir(char *path, char *dir_name)
+char *get_file_name_from_path(char *in)
+{
+	int i = 0;
+	for (i = strlen(in) - 1; i > 0; i--) {
+
+		if (in[i] == '/') {
+			return (in + i + 1);
+		}
+	}
+	return in;
+}
+
+char *get_dir_name_from_path(char *in)
+{
+	static char ret[1000];
+	strcpy(ret, in);
+
+	int i = 0;
+	for (i = strlen(in); i > 0; i--) {
+		if (in[i] == '/') {
+			ret[i] = 0;
+			return ret;
+		}
+	}
+	return ret;
+}
+
+void remove_dir(char *path, char *dir_name, int remove_base_dir)
 {
 
 	struct dirent *next_file;
@@ -522,19 +739,52 @@ void remove_dir(char *path, char *dir_name)
 
 	sprintf(out_dir, "%s/%s", path, dir_name);
 
-	if (get_dump_status(dump_newton) == TRUE) {
+	theFolder = opendir(out_dir);
+	if (theFolder != NULL) {
+		while ((next_file = readdir(theFolder)) != NULL) {
+			sprintf(filepath, "%s/%s", out_dir, next_file->d_name);
 
-		theFolder = opendir(out_dir);
-		if (theFolder != NULL) {
-			while ((next_file = readdir(theFolder)) != NULL) {
-				sprintf(filepath, "%s/%s", out_dir,
-					next_file->d_name);
-
-				remove(filepath);
-			}
-
-			remove(out_dir);
+			remove(filepath);
 		}
+
+		if (remove_base_dir == TRUE)
+			remove(out_dir);
+		closedir(theFolder);
 	}
 
+}
+
+void hard_limit_init()
+{
+	inp_init(&hard_limit_inp);
+	inp_load_from_path(&hard_limit_inp, "./", "hard_limit.inp");
+}
+
+void hard_limit_free()
+{
+	inp_free(&hard_limit_inp);
+}
+
+void hard_limit(char *token, double *value)
+{
+	char token0[1000];
+	double ret = *value;
+	double min = 0.0;
+	double max = 0.0;
+	char *text = inp_search_part(&hard_limit_inp, token);
+
+	if (text != NULL) {
+		unused = sscanf(text, "%s %lf %lf", token0, &max, &min);
+
+		if (strcmp(token0, token) == 0) {
+			if (ret > max) {
+				ret = max;
+			}
+
+			if (ret < min) {
+				ret = min;
+			}
+		}
+	}
+	*value = ret;
 }

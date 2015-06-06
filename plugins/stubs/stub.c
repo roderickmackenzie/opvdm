@@ -44,7 +44,7 @@ void print_jobs(struct server *myserver)
 
 }
 
-void server_add_job(struct server *myserver, char *command)
+void server_add_job(struct server *myserver, char *command, char *output)
 {
 	int odes = 0;
 
@@ -53,7 +53,7 @@ void server_add_job(struct server *myserver, char *command)
 	} else if (cmpstr_min(command, "gendosp") == 0) {
 		gen_dos_fd_gaus_p(extract_str_number(command, "gendosp"));
 	} else {
-		odes = run_simulation(command);
+		odes = run_simulation(command, output);
 	}
 	printf("Solved %d ODEs\n", odes);
 }

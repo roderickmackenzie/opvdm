@@ -6,15 +6,15 @@ else
 	opt=$(opt_normal)
 endif
 
-ifndef OPT_ARCH
-	OPT_ARCH=x86_64
+ifndef platform
+	platform=linux
 endif
 
 main: newton.o
-	ld -m elf_$(OPT_ARCH) -r newton.o -o plugin.o
+	$(LD) -r newton.o -o plugin.o
 
 newton.o: newton.c
-	gcc -c newton.c -o newton.o $(opt) $(inc) 
+	$(CC) -c newton.c -o newton.o $(opt) $(inc) -D $(platform)
 
 clean:
 	rm *.o

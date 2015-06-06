@@ -4,15 +4,15 @@ ifndef opt_normal
 	opt_normal=-Wall
 endif
 
-ifndef OPT_ARCH
-	OPT_ARCH=x86_64
+ifndef platform
+	platform=linux
 endif
 
 main: jv.o
-	ld -m elf_$(OPT_ARCH) -r jv.o -o plugin.o
+	$(LD) -r jv.o -o plugin.o
 
 jv.o: jv.c
-	gcc -c jv.c  $(inc) -I ../../ -o jv.o $(opt_normal)
+	$(CC) -c jv.c  $(inc) -I ../../ -o jv.o $(opt_normal) -D $(platform)
 
 clean:
 	rm *.o

@@ -124,6 +124,8 @@ void update_solver_vars(struct device *in, int clamp)
 	int i;
 	int band = 0;
 
+	double clamp_temp = 300.0;
+
 	double update = 0.0;
 	for (i = 0; i < in->ymeshpoints; i++) {
 
@@ -138,7 +140,7 @@ void update_solver_vars(struct device *in, int clamp)
 				    update / (1.0 +
 					      fabs(update /
 						   in->electrical_clamp /
-						   (300.0 * kb / q)));
+						   (clamp_temp * kb / Q)));
 			} else {
 				in->phi[i] += update;
 
@@ -150,7 +152,7 @@ void update_solver_vars(struct device *in, int clamp)
 			in->x[i] +=
 			    update / (1.0 +
 				      fabs(update / in->electrical_clamp /
-					   (300.0 * kb / q)));
+					   (clamp_temp * kb / Q)));
 		} else {
 			in->x[i] += update;
 		}
@@ -160,7 +162,7 @@ void update_solver_vars(struct device *in, int clamp)
 			in->xp[i] +=
 			    update / (1.0 +
 				      fabs(update / in->electrical_clamp /
-					   (300.0 * kb / q)));
+					   (clamp_temp * kb / Q)));
 		} else {
 			in->xp[i] += update;
 
@@ -178,7 +180,8 @@ void update_solver_vars(struct device *in, int clamp)
 						      fabs(update /
 							   in->
 							   electrical_clamp /
-							   (300.0 * kb / q)));
+							   (clamp_temp * kb /
+							    Q)));
 
 				} else {
 					in->xt[i][band] += update;
@@ -198,7 +201,8 @@ void update_solver_vars(struct device *in, int clamp)
 						      fabs(update /
 							   in->
 							   electrical_clamp /
-							   (300.0 * kb / q)));
+							   (clamp_temp * kb /
+							    Q)));
 				} else {
 					in->xpt[i][band] += update;
 
@@ -238,13 +242,13 @@ void fill_matrix(struct device *in)
 	double Evr = 0.0;
 	double Evc = 0.0;
 
-	double Tel = 300.0;
+	double Tel = 0.0;
 
-	double Ter = 300.0;
+	double Ter = 0.0;
 
-	double Thl = 300.0;
+	double Thl = 0.0;
 
-	double Thr = 300.0;
+	double Thr = 0.0;
 
 	double xnr;
 	double tnr;
@@ -321,7 +325,7 @@ void fill_matrix(struct device *in)
 	double didxir = 0.0;
 	double didxipr = 0.0;
 
-	if (in->newton_cur == FALSE) {
+	if (in->kl_in_newton == FALSE) {
 		if (in->interfaceleft == TRUE) {
 			in->phi[0] = in->Vapplied;
 		}
@@ -333,7 +337,6 @@ void fill_matrix(struct device *in)
 
 	pos = 0;
 	for (i = 0; i < in->ymeshpoints; i++) {
-
 		if (i == 0) {
 
 			phil = in->Vapplied;
@@ -476,14 +479,16 @@ void fill_matrix(struct device *in)
 		wnc = in->wn[i];
 		wpc = in->wp[i];
 
-		Dnl = munl * (2.0 / 3.0) * wnl / q;
-		Dpl = mupl * (2.0 / 3.0) * wpl / q;
+		Dnl = munl * (2.0 / 3.0) * wnl / Q;
+		Dpl = mupl * (2.0 / 3.0) * wpl / Q;
 
-		Dnc = munc * (2.0 / 3.0) * wnc / q;
-		Dpc = mupc * (2.0 / 3.0) * wpc / q;
+		Dnc = munc * (2.0 / 3.0) * wnc / Q;
+		Dpc = mupc * (2.0 / 3.0) * wpc / Q;
+		in->Dn[i] = Dnc;
+		in->Dp[i] = Dnc;
 
-		Dnr = munr * (2.0 / 3.0) * wnr / q;
-		Dpr = mupr * (2.0 / 3.0) * wpr / q;
+		Dnr = munr * (2.0 / 3.0) * wnr / Q;
+		Dpr = mupr * (2.0 / 3.0) * wpr / Q;
 
 		Dnl = (Dnl + Dnc) / 2.0;
 		Dnr = (Dnr + Dnc) / 2.0;
@@ -524,8 +529,8 @@ void fill_matrix(struct device *in)
 
 		deriv = phil * dphil + phic * dphic + phir * dphir;
 
-		dphidxic = q * (dnc);
-		dphidxipc = -q * (dpc);
+		dphidxic = Q * (dnc);
+		dphidxipc = -Q * (dpc);
 
 		if (((in->interfaceleft == TRUE) && (i == 0))
 		    || ((in->interfaceright == TRUE)
@@ -536,7 +541,7 @@ void fill_matrix(struct device *in)
 
 		if (in->ntrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
-				dphidntrap[band] = q * (in->dnt[i][band]);
+				dphidntrap[band] = Q * (in->dnt[i][band]);
 				if ((in->interfaceleft == TRUE) && (i == 0))
 					dphidntrap[band] = 0.0;
 				if ((in->interfaceright == TRUE)
@@ -547,7 +552,7 @@ void fill_matrix(struct device *in)
 
 		if (in->ptrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
-				dphidptrap[band] = -q * (in->dpt[i][band]);
+				dphidptrap[band] = -Q * (in->dpt[i][band]);
 				if ((in->interfaceleft == TRUE) && (i == 0))
 					dphidptrap[band] = 0.0;
 				if ((in->interfaceright == TRUE)
@@ -557,11 +562,11 @@ void fill_matrix(struct device *in)
 			}
 		}
 
-		xil = q * 2.0 * (3.0 / 2.0) * (Ecc - Ecl) / ((wnc + wnl));
-		xir = q * 2.0 * (3.0 / 2.0) * (Ecr - Ecc) / ((wnr + wnc));
+		xil = Q * 2.0 * (3.0 / 2.0) * (Ecc - Ecl) / ((wnc + wnl));
+		xir = Q * 2.0 * (3.0 / 2.0) * (Ecr - Ecc) / ((wnr + wnc));
 
-		xipl = q * 2.0 * (3.0 / 2.0) * (Evc - Evl) / (wpc + wpl);
-		xipr = q * 2.0 * (3.0 / 2.0) * (Evr - Evc) / (wpr + wpc);
+		xipl = Q * 2.0 * (3.0 / 2.0) * (Evc - Evl) / (wpc + wpl);
+		xipr = Q * 2.0 * (3.0 / 2.0) * (Evr - Evc) / (wpr + wpc);
 
 		dJdxil = 0.0;
 		dJdxic = 0.0;
@@ -627,8 +632,8 @@ void fill_matrix(struct device *in)
 			in->Jpright = Jpr;
 		}
 
-		in->Jn[i] = q * (Jnl + Jnr) / 2.0;
-		in->Jp[i] = q * (Jpl + Jpr) / 2.0;
+		in->Jn[i] = Q * (Jnl + Jnr) / 2.0;
+		in->Jp[i] = Q * (Jpl + Jpr) / 2.0;
 
 		dJdxil += -dJnldxil_l / (dylh + dyrh);
 		dJdxic += (-dJnldxil_c + dJnrdxir_c) / (dylh + dyrh);
@@ -692,10 +697,6 @@ void fill_matrix(struct device *in)
 		in->prelax[i] = 0.0;
 		in->ptrap_to_n[i] = 0.0;
 
-		if (get_dump_status(dump_iodump) == TRUE) {
-
-		}
-
 		if (in->ntrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
 				dJdtrapn[band] = 0.0;
@@ -734,16 +735,10 @@ void fill_matrix(struct device *in)
 				    -(-pc * in->srh_n_r3[i][band] +
 				      in->srh_n_r4[i][band]);
 
-				if (get_dump_status(dump_iodump) == TRUE) {
-					in->nt_r1[i][band] =
-					    nc * in->srh_n_r1[i][band];
-					in->nt_r2[i][band] =
-					    in->srh_n_r2[i][band];
-					in->nt_r3[i][band] =
-					    pc * in->srh_n_r3[i][band];
-					in->nt_r4[i][band] =
-					    in->srh_n_r4[i][band];
-				}
+				in->nt_r1[i][band] = nc * in->srh_n_r1[i][band];
+				in->nt_r2[i][band] = in->srh_n_r2[i][band];
+				in->nt_r3[i][band] = pc * in->srh_n_r3[i][band];
+				in->nt_r4[i][band] = in->srh_n_r4[i][band];
 
 			}
 		}
@@ -790,16 +785,10 @@ void fill_matrix(struct device *in)
 				    -(-nc * in->srh_p_r3[i][band] +
 				      in->srh_p_r4[i][band]);
 
-				if (get_dump_status(dump_iodump) == TRUE) {
-					in->pt_r1[i][band] =
-					    pc * in->srh_p_r1[i][band];
-					in->pt_r2[i][band] =
-					    in->srh_p_r2[i][band];
-					in->pt_r3[i][band] =
-					    nc * in->srh_p_r3[i][band];
-					in->pt_r4[i][band] =
-					    in->srh_p_r4[i][band];
-				}
+				in->pt_r1[i][band] = pc * in->srh_p_r1[i][band];
+				in->pt_r2[i][band] = in->srh_p_r2[i][band];
+				in->pt_r3[i][band] = nc * in->srh_p_r3[i][band];
+				in->pt_r4[i][band] = in->srh_p_r4[i][band];
 
 			}
 
@@ -836,7 +825,7 @@ void fill_matrix(struct device *in)
 
 		}
 
-		if ((in->newton_cur == TRUE) && (in->interfaceleft == TRUE)
+		if ((in->kl_in_newton == TRUE) && (in->interfaceleft == TRUE)
 		    && (i == 0)) {
 
 		} else {
@@ -988,7 +977,7 @@ void fill_matrix(struct device *in)
 
 		if (i != (in->ymeshpoints - 1)) {
 
-			if ((in->newton_cur == TRUE)
+			if ((in->kl_in_newton == TRUE)
 			    && (in->interfaceleft == TRUE) && (i == 0)) {
 
 			} else {
@@ -1030,14 +1019,14 @@ void fill_matrix(struct device *in)
 		} else {
 			in->b[i] = -(deriv);
 
-			in->b[i] += -(-q * (in->p[i] - in->n[i]));
+			in->b[i] += -(-Q * (in->p[i] - in->n[i]));
 
 			for (band = 0; band < in->srh_bands; band++) {
 				in->b[i] +=
-				    -(-q * (in->pt[i][band] - in->nt[i][band]));
+				    -(-Q * (in->pt[i][band] - in->nt[i][band]));
 			}
 
-			in->b[i] += -(-q * in->Nad[i]);
+			in->b[i] += -(-Q * in->Nad[i]);
 		}
 
 		in->b[in->ymeshpoints * (1) + i] =
@@ -1071,7 +1060,7 @@ void fill_matrix(struct device *in)
 	}
 
 	if (pos > in->N) {
-		ewe("Error %d %d %d\n", pos, in->N, in->newton_cur);
+		ewe("Error %d %d %d\n", pos, in->N, in->kl_in_newton);
 	}
 
 }
@@ -1211,29 +1200,98 @@ void solver_realloc(struct device *in)
 	if (alloc == TRUE) {
 
 		in->Ti = realloc(in->Ti, in->N * sizeof(int));
+		if (in->Ti == NULL) {
+			ewe("in->Ti - memory error\n");
+		}
+
 		in->Tj = realloc(in->Tj, in->N * sizeof(int));
+		if (in->Tj == NULL) {
+			ewe("in->Tj - memory error\n");
+		}
+
 		in->Tx = realloc(in->Tx, in->N * sizeof(double));
+		if (in->Tx == NULL) {
+			ewe("in->Tx - memory error\n");
+		}
+
 		in->b = realloc(in->b, in->M * sizeof(double));
+		if (in->b == NULL) {
+			ewe("in->b - memory error\n");
+		}
 
 		dntrap = realloc(dntrap, in->srh_bands * sizeof(double));
+		if (dntrap == NULL) {
+			ewe("dntrap - memory error\n");
+		}
+
 		dntrapdntrap =
 		    realloc(dntrapdntrap, in->srh_bands * sizeof(double));
+		if (dntrapdntrap == NULL) {
+			ewe("dntrapdntrap - memory error\n");
+		}
+
 		dntrapdn = realloc(dntrapdn, in->srh_bands * sizeof(double));
+		if (dntrapdn == NULL) {
+			ewe("dntrapdn - memory error\n");
+		}
+
 		dntrapdp = realloc(dntrapdp, in->srh_bands * sizeof(double));
+		if (dntrapdp == NULL) {
+			ewe("dntrapdp - memory error\n");
+		}
+
 		dJdtrapn = realloc(dJdtrapn, in->srh_bands * sizeof(double));
+		if (dJdtrapn == NULL) {
+			ewe("dJdtrapn - memory error\n");
+		}
+
 		dJpdtrapn = realloc(dJpdtrapn, in->srh_bands * sizeof(double));
+		if (dJpdtrapn == NULL) {
+			ewe("dJpdtrapn - memory error\n");
+		}
+
 		dphidntrap =
 		    realloc(dphidntrap, in->srh_bands * sizeof(double));
+		if (dphidntrap == NULL) {
+			ewe("dphidntrap - memory error\n");
+		}
 
 		dptrapdp = realloc(dptrapdp, in->srh_bands * sizeof(double));
+		if (dptrapdp == NULL) {
+			ewe("dptrapdp - memory error\n");
+		}
+
 		dptrapdptrap =
 		    realloc(dptrapdptrap, in->srh_bands * sizeof(double));
+		if (dptrapdptrap == NULL) {
+			ewe("dptrapdptrap - memory error\n");
+		}
+
 		dptrap = realloc(dptrap, in->srh_bands * sizeof(double));
+		if (dptrap == NULL) {
+			ewe("dptrap - memory error\n");
+		}
+
 		dptrapdn = realloc(dptrapdn, in->srh_bands * sizeof(double));
+		if (dptrapdn == NULL) {
+			ewe("dptrapdn - memory error\n");
+		}
+
 		dJpdtrapp = realloc(dJpdtrapp, in->srh_bands * sizeof(double));
+		if (dJpdtrapp == NULL) {
+			ewe("dJpdtrapp - memory error\n");
+		}
+
 		dJdtrapp = realloc(dJdtrapp, in->srh_bands * sizeof(double));
+		if (dJdtrapp == NULL) {
+			ewe("dJdtrapp - memory error\n");
+		}
+
 		dphidptrap =
 		    realloc(dphidptrap, in->srh_bands * sizeof(double));
+		if (dphidptrap == NULL) {
+			ewe("dphidptrap - memory error\n");
+		}
 
 	}
 
@@ -1302,6 +1360,7 @@ int solve_cur(struct device *in)
 	int i = 0;
 
 	do {
+
 		fill_matrix(in);
 
 		if (in->stop == TRUE) {
@@ -1310,7 +1369,7 @@ int solve_cur(struct device *in)
 
 		solver(in->M, in->N, in->Ti, in->Tj, in->Tx, in->b);
 
-		int propper = get_clamp_state();
+		int propper = TRUE;
 
 		update_solver_vars(in, propper);
 
@@ -1330,7 +1389,7 @@ int solve_cur(struct device *in)
 		in->last_ittr = ittr;
 		ittr++;
 
-		if (get_dump_status(dump_print_converge) == TRUE) {
+		if (get_dump_status(dump_write_converge) == TRUE) {
 			in->converge =
 			    fopena(in->outputpath, "./converge.dat", "a");
 			fprintf(in->converge, "%e\n", error);
@@ -1363,7 +1422,11 @@ int solve_cur(struct device *in)
 
 	} while (keep_going == TRUE);
 
-	dump_for_plot(in, "");
+	in->newton_last_ittr = ittr;
+
+	if (get_dump_status(dump_newton) == TRUE) {
+		dump_1d_slice(in, "");
+	}
 
 	in->odes += in->M;
 
