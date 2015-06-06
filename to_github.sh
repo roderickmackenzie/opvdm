@@ -20,49 +20,26 @@
 #    You should have received a copy of the GNU General Public License along
 #    with this program; if not, write to the Free Software Foundation, Inc.,
 #    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+kiallmy_dir=`pwd`
+files="*.c *.h makefile *.sh"
+dest=/home/rod/webpage/git/opvdm/opvdm/
 
-platform=$2
-if [ "$platform" = "windows" ]; then
-cp ~/windll/*.dll ./
+read -p "What happened : " message
 
-i686-w64-mingw32-windres ./gui/opvdm.rc -o ./gui/res.o
-fi
-
-mydir=`pwd`
-for i in `find ./plugins/ |grep makefile$`; do
-newdir=`dirname $i`
-echo "Building plugin" $newdir
-cd $newdir
-make opt_normal="$1" platform="$2" CC="$3" LD="$4"
-if [ $? -ne 0 ]; then
-	exit
-fi
-cd $mydir
-
+for i in $files
+do
+	cp $i $dest
 done
 
-echo -n >sim_menu.inp
-for i in `find ./plugins/ |grep gui_info.inp$`; do
-cat $i >>sim_menu.inp
+cp plugins $dest/ -r
+cp light $dest/ -r
+
+cd $dest
+
+for i in $files
+do
+git add $i
 done
-
-for i in `find ./light/ |grep makefile$`; do
-newdir=`dirname $i`
-echo "Building optical plugin" $newdir
-cd $newdir
-make platform="$2" CC="$3" LD="$4"
-nowdir=`pwd`
-curname=`basename $nowdir`
-echo $platform
-if [ "$platform" = "linux" ]; then
-cp plugin.so ../${curname}.so
-else
-cp plugin.dll ../${curname}.dll
-fi
-
-if [ $? -ne 0 ]; then
-	exit
-fi
-cd $mydir
-
-done
+git commit -m "$message"
+git push origin master --force
+cd $my_dir

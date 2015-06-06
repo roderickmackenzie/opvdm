@@ -1,6 +1,6 @@
 #!/bin/bash -x
 unzip -p sim.opvdm ver.inp >data.dat
-ver=`cat data.dat|sed -n 2p`
+ver=`cat data.dat|sed -n 4p`
 dist=fc19
 mydir=`pwd`
 rpmdir=~/rpmbuild
@@ -52,12 +52,10 @@ Url:			http://www.opvdm.com
 Group:			Development/Tools
 
 
-#BuildRequires: suitesparse-devel, zlib-devel, openssl-devel, gsl-devel, blas-devel, libcurl-devel, mencoder
-
 #rpmbuild does not pick up gnuplot because it's called using popen
 #there is no arch requirement is it is callued using popen
 #nor does rpm build pick up numpty of matplotlib 
-Requires: gnuplot, numpy, python-matplotlib, texlive, ghostscript, ImageMagick, python-inotify, opvdm-core >= 2.52
+Requires: gnuplot, numpy, python-matplotlib, texlive, ghostscript, ImageMagick, python-inotify, vte ,opvdm-core >= 2.52 ,pywebkitgtk, python-crypto, awake, python-awake
 
 %description
 GUI for Organic solar cell device model, is a drift-diffusion/Shockley-Read-Hall

@@ -28,7 +28,6 @@ mkdir ./opvdm-core-${ver}/man_pages
 cp ./man_pages/opvdm_core.1.gz ./opvdm-core-${ver}/man_pages/
 
 mkdir ./opvdm-core-${ver}/gui
-cp ./phys ./opvdm-core-${ver}/ -r
 cp ./exp ./opvdm-core-${ver}/ -r
 
 mkdir ./opvdm-core-${ver}/light
@@ -61,7 +60,7 @@ Url:			http://www.opvdm.com
 Group:			Development/Tools
 
 
-BuildRequires: suitesparse-devel, zlib-devel, openssl-devel, gsl-devel, blas-devel, libcurl-devel, mencoder
+BuildRequires: suitesparse-devel, zlib-devel, openssl-devel, gsl-devel, blas-devel, libcurl-devel
 
 #rpmbuild does not pick up gnuplot because it's called using popen
 #there is no arch requirement is it is callued using popen
@@ -97,16 +96,53 @@ make  DEST_DIR=%{buildroot} DEST_LIB=%{_lib} install
 %doc license.txt
 
 %changelog
+* Sun Nov 16 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-10
+  - Added cluster support to opvdm python script
+  - Ported to windows 
+  - There have been lots of changes since May but I have not kept track of them.
+* Sat May 31 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-9
+  - Cleaned up fitting code.
+  - homo0.inp lumo0.inp now have version numbers
+* Tue May 20 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-8
+  - Rewrote optical model to account for non relfecting back contact.
+  - Replaced plotting code in opvdm to used matplot lib instead of gnuplot
+  - Fixed bugs in printing of carrier distributions
+  - Plot information now written to file with data
+  - Removed code to handle 2D data from i.c
+  - Removed simple exp() optical model.
+  - moved zipping of output files to end of program execution.
+  - made homo and lumo file format better.
+* Mon Apr 14 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-7
+  - Added undo button
+  - added --clean command
+  - added n.dat and p.dat files
+  - Fiexed xy parameter selector dialouge box
+  - Rewrote sections of tab.py to make it compatible with the undo function.
+* Sat Apr 05 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-7
+  - Fixed xy parameter selector dialogue box
+  - made inp.h thread safe, by removing statics
+  - tided up how light interface allocates memory.
+  - Made find_voc dump charge density and carrier recombination rates.
+* Wed Apr 02 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-5
+  - Fixed bug in scan tab so that it can run more than once.
+  - Fixed open files left by mkstemp.
+  - Gives an error if electrical and optical mesh are not the same size.
+  - Fixed bugs in plotted files menu.
+* Mon Mar 31 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-4
+  - Fixed more bugs in rpm build scripts.
+  - Model fails nicly if it can't find the correct optical model by defaulting to the exponential model.
+  - Made opvdm --import also import scan directories
+  - Fixed rpm so it also requires vte
 * Sun Mar 30 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-3
   - tab.py can now do comboboxes
-  - removed mod function
+  - removed mod function  
 * Sat Mar 29 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-2
   - Added virtual terminal tab
   - Consolidated gui functions startting and stopping the simulation
   - Added the –lock command line option to opvdm_core
   - move the gui_hooks to main and out of the plugins
   - Auto switching to terminal tab when running
-* Fri Mar 22 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-1
+* Sat Mar 22 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.70-1
   - Bug fixes in rpm build for new release. 
 * Fri Mar 21 2014 Roderick MacKenzie <roderick.mackenzie@nottingham.ac.uk> - 2.59-1
   - Optical model now dumps to a zip file to save inodes.
