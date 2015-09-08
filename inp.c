@@ -31,6 +31,25 @@
 #include "code_ctrl.h"
 #include "true_false.h"
 
+int inp_search_pos(struct inp_file *in, char *token)
+{
+	int pos = 0;
+	inp_reset_read(in);
+	char *line = NULL;
+	do {
+		line = inp_get_string(in);
+
+		if (strcmp(line, token) == 0) {
+			return pos;
+		}
+
+		pos++;
+
+	} while (line != NULL);
+
+	return -1;
+}
+
 void inp_reset_read(struct inp_file *in)
 {
 	in->pos = 0;
@@ -62,7 +81,7 @@ char *inp_get_string(struct inp_file *in)
 	return ret;
 }
 
-void inp_read_buffer(char **buf, long *len, char *full_file_name)
+int inp_read_buffer(char **buf, long *len, char *full_file_name)
 {
 
 	FILE *f = fopen(full_file_name, "rb");
@@ -75,6 +94,7 @@ void inp_read_buffer(char **buf, long *len, char *full_file_name)
 		memset(*buf, 0, ((*len) + 2) * sizeof(char));
 		fread(*buf, *len, 1, f);
 		fclose(f);
+		return 0;
 
 	} else {
 		char zip_path[1000];
@@ -104,8 +124,9 @@ void inp_read_buffer(char **buf, long *len, char *full_file_name)
 				ewe("File %s not found\n", file_name);
 			}
 			zip_close(z);
+			return 0;
 		} else {
-			ewe("error in config file %s", full_file_name);
+			return -1;
 		}
 
 	}
@@ -180,6 +201,11 @@ void inp_replace(struct inp_file *in, char *token, char *text)
 
 	in->data = realloc(in->data, (len + 1) * sizeof(char));
 	memcpy(in->data, temp, (len + 1) * sizeof(char));
+
+	if (in->data[len] != 0) {
+		printf("%s %d\n", in->data, len);
+		ewe("String not ended\n");
+	}
 	free(temp);
 }
 
@@ -187,15 +213,41 @@ void inp_save(struct inp_file *in)
 {
 
 	if (in->edited == TRUE) {
-		int out_fd = open(in->full_name, O_WRONLY | O_CREAT, 0644);
+		int out_fd =
+		    open(in->full_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
 		if (out_fd == -1) {
 			ewe("File %s can not be opened\n", in->full_name);
 		}
+
+		ftruncate(out_fd, 0);
 
 		write(out_fd, in->data, in->fsize * sizeof(char));
 		close(out_fd);
 
 		in->edited = FALSE;
+
+		/*FILE *f = fopen(in->full_name, "rb");
+		   if (f!=NULL)
+		   {
+		   fseek(f, 0, SEEK_END);
+		   int len = ftell(f);
+		   fseek(f, 0, SEEK_SET);
+
+		   char *buf = malloc(((len) + 2)*sizeof(char));
+		   memset(buf, 0, ((len) + 2)*sizeof(char));
+		   fread(buf, len, 1, f);
+		   printf("read'%s' %d\n",buf,len);
+		   fclose(f);
+		   if (strcmp(buf,in->data)!=0)
+		   {
+		   ewe("Buffers did not match\n");
+		   }
+		   free(buf);
+		   }else
+		   {
+		   ewe("Can't open file\n");
+		   } */
 
 	}
 

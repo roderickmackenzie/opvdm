@@ -25,7 +25,7 @@ cp jv.inp ./pub/
 cp sim_menu.inp ./pub/
 
 mkdir ./pub/phys
-cp ./phys/*.inp ./pub/phys/
+cp ./phys/*.spectra ./pub/phys/
 
 cp ./phys/ito_hoke ./pub/phys/ -r
 cp ./phys/pedotpss ./pub/phys/ -r

@@ -32,69 +32,6 @@
 
 static int unused __attribute__ ((unused));
 
-int config_search_token(char *file_name, char *token)
-{
-	FILE *in;
-	char buf[400];
-	in = fopen(file_name, "r");
-	if (in == NULL) {
-		ewe("file %s not found\n", file_name);
-	}
-
-	int l = 0;
-	int found = FALSE;
-	do {
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (strcmp(buf, token) == 0) {
-				found = TRUE;
-				l++;
-				break;
-			}
-		}
-	} while (!feof(in));
-
-	fclose(in);
-	if (found == FALSE) {
-		ewe("Line not found in file %s %s\n", token, file_name);
-		l = -1;
-	}
-	return l;
-}
-
-double config_get_token_val(char *file_name, char *token)
-{
-	FILE *in;
-	char buf[400];
-	in = fopen(file_name, "r");
-	if (in == NULL) {
-		ewe("file %s not found\n", file_name);
-	}
-
-	int l = 0;
-	int found = FALSE;
-	double ret = 0.0;
-	do {
-		l++;
-		unused = fscanf(in, "%s", buf);
-		if ((!feof(in))) {
-			if (strcmp(buf, token) == 0) {
-				found = TRUE;
-				unused = fscanf(in, "%le", &ret);
-				break;
-			}
-		}
-	} while (!feof(in));
-
-	fclose(in);
-	if (found == FALSE) {
-		ewe("Line not found in file %s %s\n", token, file_name);
-		l = -1;
-	}
-	return ret;
-}
-
 void config_read_line_to_double(double *data, FILE * in, char *id)
 {
 	char name[100];
@@ -103,17 +40,6 @@ void config_read_line_to_double(double *data, FILE * in, char *id)
 	if (strcmp(name, id) != 0) {
 		ewe("Error read %s but expected %s\n", name, id);
 	}
-}
-
-void config_read_line_string_decode_to_int(int *data, FILE * in, char *id)
-{
-	char name[100];
-	unused = fscanf(in, "%s", name);
-	if (strcmp(name, id) != 0) {
-		ewe("Error read %s but expected %s\n", name, id);
-	}
-	unused = fscanf(in, "%s", name);
-	*data = english_to_bin(name);
 }
 
 void config_read_line_to_int(int *data, FILE * in, char *id)
@@ -251,7 +177,7 @@ void load_config(char *simfile, struct device *in)
 
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->inputpath, "device.inp");
-	inp_check(&inp, 1.14);
+	inp_check(&inp, 1.16);
 	inp_search_string(&inp, temp, "#lr_bias");
 	in->lr_bias = english_to_bin(temp);
 
@@ -273,8 +199,6 @@ void load_config(char *simfile, struct device *in)
 
 	inp_search_double(&inp, &(in->Rshort), "#Rshort");
 	in->Rshort = fabs(in->Rshort);
-
-	inp_search_int(&inp, &(in->Dphoton), "#Dphoton");
 
 	inp_search_double(&inp, &(in->lcharge), "#lcharge");
 	in->lcharge = fabs(in->lcharge);

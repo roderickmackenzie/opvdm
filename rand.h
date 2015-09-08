@@ -19,10 +19,8 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#ifndef config_h
-#define config_h
-void config_read_line_to_string(char *data, FILE * in, char *id);
-void config_read_line_to_int(int *data, FILE * in, char *id);
-void config_read_line_to_double(double *data, FILE * in, char *id);
-void config_read_line_string_decode_to_int(int *data, FILE * in, char *id);
+#ifndef rand_h
+void randomize_input_files();
+int random_int(int in);
+int random_int_range(int start, int stop);
 #endif

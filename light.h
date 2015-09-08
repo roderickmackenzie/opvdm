@@ -87,7 +87,6 @@ struct light {
 	double *layer_end;
 	double device_start;
 	double *G_percent;
-	double dlength;
 	int align_mesh;
 	int flip_field;
 	int device_start_layer;

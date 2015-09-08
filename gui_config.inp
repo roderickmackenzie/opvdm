@@ -1,9 +1,12 @@
 1
 device.inp
 Device
-1
+0
 jv.inp
 JV Curve
+0
+jv_simple.inp
+JV simple
 1
 light.inp
 Light
@@ -17,47 +20,38 @@ CELIV
 math.inp
 Numerics
 1
-optics.inp
-Optics
-1
 tof.inp
 ToF
-0
+1
 stark.inp
 stark
-0
+1
 lumo0.inp
 Bands
-0
-dump_time.inp
-Dump Time
-0
-server.inp
-HPC
-0
-pulse.inp
-Pulse
 1
 pulse_voc.inp
 Pulse voc
-0
-photokit.inp
-photokit
 1
+imps.inp
+imps
+0
 light_exp.inp
 Exp. Optical Model
+0
+sun_voc.inp
+Sun voc
+1
+tpc.inp
+TPC
+0
+fit.inp
+fit
 1
 dos0.inp
 DoS layer 0
+1
+thermal.inp
+Thermal
 0
-jv_simple.inp
-JV simple
-1
-terminal.inp
-Terminal
-1
-dos1.inp
-DoS layer 1
-1
-dos2.inp
-DoS layer 2
+pulse.inp
+Pulse

@@ -247,7 +247,6 @@ struct device {
 	double Rshunt;
 	double Rcontact;
 
-	int Dphoton;
 	int lr_bias;
 
 	int *dostype;

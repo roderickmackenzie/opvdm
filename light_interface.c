@@ -249,11 +249,9 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 }
 
 void light_solve_and_update(struct device *cell, struct light *in,
-			    double Psun_in, double laser_eff_in,
-			    double pulse_width)
+			    double Psun_in, double laser_eff_in)
 {
 	int i = 0;
-	in->pulse_width = pulse_width;
 
 	if (in->disable_transfer_to_electrical_mesh == FALSE) {
 		if (fabs(in->device_ylen - cell->ylen) > 0.01e-9) {

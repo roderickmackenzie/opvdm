@@ -25,7 +25,7 @@
 #include <math.h>
 #include "advmath.h"
 
-inline double dB(double x)
+double dB(double x)
 {
 	double ret;
 	if (fabs(x) > 1e-10) {
@@ -40,7 +40,7 @@ inline double dB(double x)
 	return ret;
 }
 
-inline double B(double x)
+double B(double x)
 {
 	double ret;
 	if (fabs(x) < 1e-16) {

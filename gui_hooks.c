@@ -24,17 +24,78 @@
 #include <stdlib.h>
 #include <errno.h>
 #include "gui_hooks.h"
+
+#ifdef dbus
+#include <dbus/dbus.h>
+#endif
+
+#ifdef windows
+#include <windows.h>
+#endif
+
+int gui_send_data(char *tx_data)
+{
+
+#ifdef dbus
+	DBusConnection *connection;
+	DBusError error;
+	dbus_error_init(&error);
+	connection = dbus_bus_get(DBUS_BUS_SESSION, &error);
+
+	if (!connection) {
+		printf("Failed to connect to the D-BUS daemon: %s",
+		       error.message);
+		dbus_error_free(&error);
+		return 1;
+	}
+
+	DBusMessage *message;
+	message =
+	    dbus_message_new_signal("/org/my/test", "org.my.test", tx_data);
+	/* Send the signal */
+	dbus_connection_send(connection, message, NULL);
+	dbus_connection_flush(connection);
+	dbus_message_unref(message);
+
+#endif
+
+#ifdef windows
+
+	HANDLE pipe =
+	    CreateFile("\\\\.\\pipe\\opvdm_pipe", GENERIC_WRITE,
+		       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
+		       FILE_ATTRIBUTE_NORMAL, NULL);
+
+	if (pipe == INVALID_HANDLE_VALUE) {
+		printf("Failed to connect to pipe.");
+		return 1;
+	}
+
+	DWORD numBytesWritten = 0;
+
+	WriteFile(pipe, (const wchar_t *)tx_data,
+		  strlen(tx_data) * sizeof(char), &numBytesWritten, NULL);
+
+	CloseHandle(pipe);
+
+#endif
+	return 0;
+}
+
+int dbus_init()
+{
+#ifdef dbus
+
+#endif
+	return 0;
+}
+
 void gui_start()
 {
-	FILE *out;
-	out = fopen("./signal_start.dat", "w");
-	fclose(out);
+	gui_send_data("start");
 }
 
 void gui_stop()
 {
-	FILE *out;
-	out = fopen("./signal_stop.dat", "w");
-	fprintf(out, "Simulation finished\n");
-	fclose(out);
+	gui_send_data("stop");
 }

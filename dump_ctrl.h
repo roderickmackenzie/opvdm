@@ -45,6 +45,7 @@
 #define dump_dynamic 22
 #define dump_print_hardware_info 23
 #define dump_norm_y_axis 24
+#define dump_write_out_band_structure 25
 
 void set_io_dump(int in);
 int get_io_dump();

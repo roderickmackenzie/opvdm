@@ -1,7 +1,7 @@
 #!/bin/bash -x
 unzip -p sim.opvdm ver.inp >data.dat
 ver=`cat data.dat|sed -n 2p`
-dist=fc19
+dist=fc21
 mydir=`pwd`
 rpmdir=~/rpmbuild
 mytarget=x86_64
@@ -224,4 +224,4 @@ cp ./RPMS/${mytarget}/* ~/yum/repo/
 cp ./SRPMS/* ~/yum/repo/
 cd $mydir
 
-cp ~/rpmbuild/RPMS/${mytarget}/opvdm-core-2*.rpm ../
+cp ~/rpmbuild/RPMS/${mytarget}/opvdm-core-*.rpm ../

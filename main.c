@@ -52,6 +52,7 @@
 #include "inp.h"
 #include "gui_hooks.h"
 #include "timer.h"
+#include "rand.h"
 
 static int unused __attribute__ ((unused));
 
@@ -70,7 +71,9 @@ void device_init(struct device *in)
 
 int main(int argc, char *argv[])
 {
-	timer_init();
+	timer_init(0);
+	timer_init(1);
+	dbus_init();
 	set_ewe_lock_file("", "");
 	cell.onlypos = FALSE;
 
@@ -246,7 +249,7 @@ int main(int argc, char *argv[])
 		Psun = 1.0;
 		inp_free(&inp);
 
-		light_solve_and_update(&cell, &two, Psun, 0.0, 0.0);
+		light_solve_and_update(&cell, &two, Psun, 0.0);
 		light_dump(&two);
 		light_free(&two);
 		complex_solver_free();

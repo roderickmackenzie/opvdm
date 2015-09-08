@@ -1,7 +1,7 @@
 #!/bin/bash -x
 unzip -p sim.opvdm ver.inp >data.dat
 ver=`cat data.dat|sed -n 4p`
-dist=fc19
+dist=fc22
 mydir=`pwd`
 rpmdir=~/rpmbuild
 mytarget=x86_64
@@ -23,10 +23,10 @@ cp ./man_pages/opvdm.1.gz ./opvdm-gui-${ver}/man_pages/
 mkdir ./opvdm-gui-${ver}/gui
 cp ./gui/*.jpg ./opvdm-gui-${ver}/gui/
 cp ./gui/*.png ./opvdm-gui-${ver}/gui/
-cp ./gui/*.pyc ./opvdm-gui-${ver}/gui/
+cp ./gui/*.py ./opvdm-gui-${ver}/gui/
 cp ./gui/opvdm.desktop ./opvdm-gui-${ver}/gui/
 cp ./gui/opvdm-opvdm.xml ./opvdm-gui-${ver}/gui/
-cp ./gui/application-opvdm.svg ./opvdm-gui-${ver}/gui/
+cp ./gui/*.svg ./opvdm-gui-${ver}/gui/
 
 cp ./opvdm ./opvdm-gui-${ver}/opvdm
 cp ./makefile ./opvdm-gui-${ver}/
@@ -55,7 +55,7 @@ Group:			Development/Tools
 #rpmbuild does not pick up gnuplot because it's called using popen
 #there is no arch requirement is it is callued using popen
 #nor does rpm build pick up numpty of matplotlib 
-Requires: gnuplot, numpy, python-matplotlib, texlive, ghostscript, ImageMagick, python-inotify, vte ,opvdm-core >= 2.52 ,pywebkitgtk, python-crypto, awake, python-awake
+Requires: gnuplot, numpy, python-matplotlib, texlive, ghostscript, ImageMagick, vte ,opvdm-core >= 2.52 ,pywebkitgtk, python-crypto, awake, python-awake, notify-python
 
 %description
 GUI for Organic solar cell device model, is a drift-diffusion/Shockley-Read-Hall
@@ -108,4 +108,4 @@ cp ./RPMS/${mytarget}/* ~/yum/repo/
 cp ./SRPMS/* ~/yum/repo/
 cd $mydir
 
-cp ~/rpmbuild/RPMS/${mytarget}/opvdm-gui-2*.rpm ../
+cp ~/rpmbuild/RPMS/${mytarget}/opvdm-gui-*.rpm ../

@@ -36,6 +36,7 @@
 #include "sim.h"
 #include "inp.h"
 #include "util.h"
+#include "buffer.h"
 
 static int unused __attribute__ ((unused));
 
@@ -257,6 +258,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	    int electrons, int mat)
 {
 	char name[100];
+	char temp[1000];
 
 #ifdef dos_test_stats
 	FILE *freetest;
@@ -446,15 +448,40 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 #ifdef test_dist
 	int first = FALSE;
-	FILE *dosout;
-	if (electrons == TRUE) {
-		sprintf(name, "./dosoutn%d.dat", mat);
-		dosout = fopen(name, "w");
-	} else {
-		sprintf(name, "./dosoutp%d.dat", mat);
-		dosout = fopen(name, "w");
-	}
 #endif
+
+	struct buffer dos_out;
+	buffer_init(&dos_out);
+
+	if (get_dump_status(dump_write_out_band_structure) == TRUE) {
+		if (electrons == TRUE) {
+			buffer_malloc(&dos_out);
+			dos_out.y_mul = 1.0;
+			dos_out.x_mul = 1.0;
+			strcpy(dos_out.title, "Discretized density of states");
+			strcpy(dos_out.type, "xy");
+			strcpy(dos_out.x_label, "Energy");
+			strcpy(dos_out.y_label, "Density of states");
+			strcpy(dos_out.x_units, "$eV$");
+			strcpy(dos_out.y_units, "$m^{-3}eV^{-1}$");
+			dos_out.logscale_x = 0;
+			dos_out.logscale_y = 0;
+			buffer_add_info(&dos_out);
+		} else {
+			buffer_malloc(&dos_out);
+			dos_out.y_mul = 1.0;
+			dos_out.x_mul = 1.0;
+			strcpy(dos_out.title, "Discretized density of states");
+			strcpy(dos_out.type, "xy");
+			strcpy(dos_out.x_label, "Energy");
+			strcpy(dos_out.y_label, "Density of states");
+			strcpy(dos_out.x_units, "$eV$");
+			strcpy(dos_out.y_units, "$m^{-3}eV^{-1}$");
+			dos_out.logscale_x = 0;
+			dos_out.logscale_y = 0;
+			buffer_add_info(&dos_out);
+		}
+	}
 
 	int srh_band = 0;
 	double srh_E = srh_mid[0];
@@ -551,21 +578,33 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 				if (x == 0) {
 					pick_add(E - in->Xi, rho);
-#ifdef test_dist
-					if (E > in->srh_start) {
-						if (electrons == TRUE) {
-							fprintf(dosout,
-								"%le %le\n",
-								E - in->Xi,
-								rho);
-						} else {
-							fprintf(dosout,
-								"%le %le\n",
-								-E - in->Xi -
-								in->Eg, rho);
+					if (get_dump_status
+					    (dump_write_out_band_structure) ==
+					    TRUE) {
+						if (E > in->srh_start) {
+							if (electrons == TRUE) {
+								sprintf(temp,
+									"%le %le\n",
+									E -
+									in->Xi,
+									rho);
+								buffer_add_string
+								    (&dos_out,
+								     temp);
+							} else {
+								sprintf(temp,
+									"%le %le\n",
+									-E -
+									in->Xi -
+									in->Eg,
+									rho);
+								buffer_add_string
+								    (&dos_out,
+								     temp);
+							}
+
 						}
 					}
-#endif
 				}
 
 				if (E > 0) {
@@ -807,10 +846,20 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	fclose(rod);
 	fclose(plotbands);
 	fclose(plotbandsfree);
-	fclose(dosout);
 	fclose(munfile);
 #endif
 
+	if (get_dump_status(dump_write_out_band_structure) == TRUE) {
+		if (electrons == TRUE) {
+			sprintf(name, "./dosoutn%d.dat", mat);
+		} else {
+			sprintf(name, "./dosoutp%d.dat", mat);
+		}
+
+		buffer_dump("./", name, &dos_out);
+		buffer_free(&dos_out);
+
+	}
 #ifdef dos_bin
 	if (buf_len != buf_pos) {
 		ewe("Expected dos size is different from generated\n");

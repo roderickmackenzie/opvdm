@@ -31,15 +31,39 @@ void time_load_mesh(struct device *in)
 {
 }
 
-void time_update_dt(struct device *in)
-{
-}
-
 void time_init(struct device *in)
 {
 }
 
 void device_timestep(struct device *in)
 {
+}
 
+int time_run()
+{
+	return 0;
+}
+
+double time_get_voltage()
+{
+	return 0.0;
+}
+
+double time_get_fs_laser()
+{
+	return 0.0;
+}
+
+double time_get_sun()
+{
+	return 0.0;
+}
+
+double time_get_laser()
+{
+	return 0.0;
+}
+
+void time_memory_free()
+{
 }

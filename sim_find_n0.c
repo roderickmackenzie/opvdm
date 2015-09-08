@@ -42,7 +42,7 @@ void find_n0(struct device *in)
 	double B_temp;
 	in->Vapplied = 0;
 	in->Psun = 0;
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0, 0.0);
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
 	if (get_dump_status(dump_newton) == TRUE) {
 		dump_1d_slice(in, "");
 	}
@@ -80,6 +80,6 @@ void find_n0(struct device *in)
 
 	in->Psun = oldsun;
 	in->Vapplied = oldv;
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0, 0.0);
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
 	printf("Exit finding n0\n");
 }

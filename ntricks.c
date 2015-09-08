@@ -26,6 +26,7 @@
 #include "sim.h"
 #include "dump.h"
 #include "ntricks.h"
+#include "../../gui_hooks.h"
 
 static int unused __attribute__ ((unused));
 
@@ -68,6 +69,7 @@ void ramp_externalv(struct device *in, double from, double to)
 		sim_externalv(in, V);
 
 		plot_now(in, "jv.plot");
+		gui_send_data("pulse");
 
 		if (fabs(in->Vapplied - to) < fabs(dV)) {
 			break;

@@ -33,6 +33,38 @@ static double p_count = 0.0;
 static double rn_count = 0.0;
 static double rp_count = 0.0;
 
+void get_avg_np_pos(struct device *in, double *nx, double *px)
+{
+	int i;
+	double navg = 0.0;
+	double pavg = 0.0;
+	double nsum = 0.0;
+	double psum = 0.0;
+
+	for (i = 0; i < in->ymeshpoints; i++) {
+		navg +=
+		    (in->n[i] + in->nt_all[i] - in->n_orig[i]) * in->ymesh[i];
+		pavg +=
+		    (in->p[i] + in->pt_all[i] - in->p_orig[i]) * in->ymesh[i];
+		nsum += (in->n[i] + in->nt_all[i] - in->n_orig[i]);
+		psum += in->p[i] + in->pt_all[i] - in->p_orig[i];
+
+	}
+	if (nsum != 0.0) {
+		*nx = navg / nsum;
+
+	} else {
+		*nx = 0.0;
+	}
+
+	if (psum != 0.0) {
+		*px = pavg / psum;
+	} else {
+		*px = 0.0;
+	}
+
+}
+
 double get_charge_change(struct device *in)
 {
 

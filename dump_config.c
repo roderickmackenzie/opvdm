@@ -100,6 +100,9 @@ void dump_load_config(struct device *in)
 	inp_search_int(&inp, &(dump), "#dump_print_hardware_info");
 	set_dump_status(dump_print_hardware_info, dump);
 
+	inp_search_int(&inp, &(dump), "#dump_write_out_band_structure");
+	set_dump_status(dump_write_out_band_structure, dump);
+
 	inp_free(&inp);
 
 	if (get_dump_status(dump_iodump) == FALSE) {

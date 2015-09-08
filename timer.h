@@ -21,6 +21,6 @@
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef h_timer
 #define h_timer
-void timer_init();
-double timer_get_time();
+void timer_init(int timer);
+double timer_get_time(int timer);
 #endif

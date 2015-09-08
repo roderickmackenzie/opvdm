@@ -314,12 +314,12 @@ void light_load_materials(struct light *in)
 		inp_free(&inp);
 
 		join_path(3, file_path, physdir, in->material_dir_name[i],
-			  "alpha.inp");
+			  "alpha.mat");
 		inter_load(&(in->mat[i]), file_path);
 		inter_sort(&(in->mat[i]));
 
 		join_path(3, file_path, physdir, in->material_dir_name[i],
-			  "n.inp");
+			  "n.mat");
 		inter_load(&(in->mat_n[i]), file_path);
 		inter_sort(&(in->mat_n[i]));
 
@@ -803,6 +803,8 @@ void light_init_mesh(struct light *in)
 
 	inp_search_double(&inp, &in->pulseJ, "#pulseJ");
 
+	inp_search_double(&inp, &in->pulse_width, "#laser_pulse_width");
+
 	pos = in->lstart;
 	for (i = 0; i < in->lpoints; i++) {
 		in->l[i] = pos;
@@ -839,8 +841,6 @@ void light_init_mesh(struct light *in)
 	}
 
 	inp_search_int(&inp, &(in->gather), "#gather");
-
-	inp_search_double(&inp, &(in->dlength), "#dlength");
 
 	inp_search_double(&inp, &(in->Eg), "#Eg");
 

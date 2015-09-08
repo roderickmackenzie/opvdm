@@ -20,5 +20,5 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef ver_h
-#define opvdm_ver	"2.80"
+#define opvdm_ver	"4.0"
 #endif

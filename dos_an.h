@@ -26,12 +26,12 @@ struct dos_an_data {
 	int items;
 	char file[100];
 	int type[100];
-	int change[100];
+	int enable[100];
 	double a[100];
 	double b[100];
 	double c[100];
 };
 
 void dos_an_load(struct dos_an_data *in, char *name);
-double dos_an_get_value(struct dos_an_data *in, double E, double gaus_mull);
+double dos_an_get_value(struct dos_an_data *in, double E);
 #endif
