@@ -17,7 +17,6 @@ mkdir opvdm-core-${ver}
 cp ./*.inp ./opvdm-core-${ver}/
 cp ./sim.opvdm ./opvdm-core-${ver}/
 cp ./plot ./opvdm-core-${ver}/ -rf
-cp ./build.sh   ./opvdm-core-${ver}/ 
 cp ./buildplugins.sh ./opvdm-core-${ver}/ 
 cp ./build_fit_plugins.sh ./opvdm-core-${ver}/ 
 cp ./get_elec_plugins.sh ./opvdm-core-${ver}/

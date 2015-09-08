@@ -209,6 +209,7 @@ void light_load_materials(struct light *in)
 	char pwd[1000];
 	char temp[1000];
 	getcwd(pwd, 1000);
+	struct inp_file inp;
 
 	join_path(2, temp, pwd, "phys");
 	int found = FALSE;
@@ -220,12 +221,12 @@ void light_load_materials(struct light *in)
 	}
 
 	if (found == FALSE) {
-		FILE *pfile = fopen("physdir.inp", "r");
-		if (pfile == NULL) {
-			ewe("physdir.inp not found\n");
-		}
-		config_read_line_to_string(temp, pfile, "#physdir");
-		fclose(pfile);
+		inp_init(&inp);
+		inp_load_from_path(&inp, "", "physdir.inp");
+		inp_check(&inp, 1.0);
+
+		strcpy(temp, inp_search(&inp, "#physdir"));
+		inp_free(&inp);
 
 		theFolder = opendir(temp);
 		if (theFolder != NULL) {
@@ -269,7 +270,7 @@ void light_load_materials(struct light *in)
 	double wavelength_shift_alpha = 0.0;
 	int patch = FALSE;
 	int inter = FALSE;
-	struct inp_file inp;
+
 	inp_init(&inp);
 	char patch_file[400];
 	char out_file[400];
@@ -562,17 +563,19 @@ void light_free_epitaxy(struct light *in)
 
 void light_load_epitaxy(struct light *in, char *epi_file)
 {
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->input_path, epi_file);
+	inp_check(&inp, 1.11);
 
-	FILE *epi = fopena(in->input_path, epi_file, "r");
+	inp_reset_read(&inp);
+
 	char temp[200];
-	if (epi == NULL) {
-		ewe("Optics epitaxy '%s' '%s' file not found\n", in->input_path,
-		    epi_file);
-	}
+
 	int i = 0;
 
-	unused = fscanf(epi, "%s", temp);
-	unused = fscanf(epi, "%d", &in->layers);
+	inp_get_string(&inp);
+	sscanf(inp_get_string(&inp), "%d", &in->layers);
 	in->thick = (double *)malloc(in->layers * sizeof(double));
 	in->G_percent = (double *)malloc(in->layers * sizeof(double));
 
@@ -587,16 +590,16 @@ void light_load_epitaxy(struct light *in, char *epi_file)
 	in->device_ylen = 0.0;
 
 	for (i = 0; i < in->layers; i++) {
-		unused = fscanf(epi, "%s", temp);
-		unused = fscanf(epi, "%le", &(in->thick[i]));
+		inp_get_string(&inp);
+		sscanf(inp_get_string(&inp), "%le", &(in->thick[i]));
 
 		in->thick[i] = fabs(in->thick[i]);
 		hard_limit(temp, &(in->thick[i]));
-		unused = fscanf(epi, "%s", temp);
+		sscanf(inp_get_string(&inp), "%s", temp);
 		strcpy(in->material_dir_name[i], temp);
 
 		int device;
-		unused = fscanf(epi, "%d", &device);
+		sscanf(inp_get_string(&inp), "%d", &device);
 		if (device == TRUE) {
 			device_started = TRUE;
 			in->device_ylen += in->thick[i];
@@ -610,20 +613,7 @@ void light_load_epitaxy(struct light *in, char *epi_file)
 		in->ylen += in->thick[i];
 	}
 
-	double ver;
-	unused = fscanf(epi, "%s", temp);
-	unused = fscanf(epi, "%lf", &(ver));
-
-	if (ver != 1.11) {
-		ewe("File compatability problem %s\n", "optics_epitaxy.inp");
-	}
-
-	unused = fscanf(epi, "%s", temp);
-	if (strcmp("#end", temp) != 0) {
-		ewe("Problem with device_epitaxy.inp file last item read %s!\n",
-		    temp);
-	}
-	fclose(epi);
+	inp_free(&inp);
 }
 
 void light_calculate_complex_n(struct light *in)

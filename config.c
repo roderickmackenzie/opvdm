@@ -64,9 +64,7 @@ void config_read_line_to_string(char *data, FILE * in, char *id)
 
 void load_config(char *simfile, struct device *in)
 {
-	double ver;
 	int i;
-	FILE *config;
 	char temp[100];
 	char name[1000];
 	char token0[200];
@@ -92,36 +90,41 @@ void load_config(char *simfile, struct device *in)
 
 	inp_free(&inp);
 
-	config = fopena(in->inputpath, device_epitaxy, "r");
-	if (config == NULL) {
-		ewe("epitaxy file not found\n");
-	}
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->inputpath, device_epitaxy);
+	inp_check(&inp, 1.1);
 
-	config_read_line_to_int(&(in->mat.number), config, "#layers");
+	inp_reset_read(&inp);
+
+	inp_get_string(&inp);
+
+	sscanf(inp_get_string(&inp), "%d", &(in->mat.number));
 
 	in->mat_layers = in->mat.number;
 	in->mat.l = malloc(in->mat.number * sizeof(struct layer));
 
 	for (i = 0; i < in->mat.number; i++) {
-		unused =
-		    fscanf(config, "%s %le", in->mat.l[i].name,
-			   &(in->mat.l[i].height));
+		sscanf(inp_get_string(&inp), "%s", in->mat.l[i].name);
+		sscanf(inp_get_string(&inp), "%le", &(in->mat.l[i].height));
+
 		in->mat.l[i].height = fabs(in->mat.l[i].height);
 		hard_limit(in->mat.l[i].name, &(in->mat.l[i].height));
 
 	}
 
-	config_read_line_to_int(&(in->ymeshlayers), config, "#mesh_layers");
+	inp_get_string(&inp);
+	sscanf(inp_get_string(&inp), "%d", &(in->ymeshlayers));
 
 	in->meshdata = malloc(in->ymeshlayers * sizeof(struct mesh));
 
 	in->ymeshpoints = 0;
 
 	for (i = 0; i < in->ymeshlayers; i++) {
-		unused =
-		    fscanf(config, "%s %lf %s %lf", token0,
-			   &(in->meshdata[i].len), token1,
-			   &(in->meshdata[i].number));
+		sscanf(inp_get_string(&inp), "%s", token0);
+		sscanf(inp_get_string(&inp), "%lf", &(in->meshdata[i].len));
+
+		sscanf(inp_get_string(&inp), "%s", token1);
+		sscanf(inp_get_string(&inp), "%lf", &(in->meshdata[i].number));
 
 		in->meshdata[i].len = fabs(in->meshdata[i].len);
 		hard_limit(token0, &(in->meshdata[i].len));
@@ -129,6 +132,8 @@ void load_config(char *simfile, struct device *in)
 		    in->meshdata[i].len / in->meshdata[i].number;
 		in->ymeshpoints += in->meshdata[i].number;
 	}
+
+	inp_free(&inp);
 
 	in->imat = malloc(in->ymeshpoints * sizeof(int));
 
@@ -147,18 +152,6 @@ void load_config(char *simfile, struct device *in)
 			pos++;
 		}
 	}
-
-	config_read_line_to_double(&(ver), config, "#ver");
-	if (ver != 1.1) {
-		ewe("File compatability problem %s\n", "epitaxy file");
-	}
-
-	unused = fscanf(config, "%s", name);
-	if (strcmp("#end", name) != 0) {
-		ewe("Problem with epitaxy file last item read %s!\n", name);
-	}
-
-	fclose(config);
 
 	in->ylen = 0.0;
 	double mesh_len = 0.0;
@@ -252,27 +245,13 @@ void load_config(char *simfile, struct device *in)
 	inp_search_int(&inp, &(in->config_kl_in_newton), "#kl_in_newton");
 	inp_free(&inp);
 
-	config = fopena(in->inputpath, "thermal.inp", "r");
-	if (config == NULL) {
-		ewe("thermal.inp not found\n");
-	}
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%d", &(in->newton_enable_external_thermal));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%d", &(in->nofluxl));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%lf", &(in->Tll));
-
-	unused = fscanf(config, "%s", name);
-	unused = fscanf(config, "%lf", &(in->Tlr));
-
-	unused = fscanf(config, "%s", name);
-	if (strcmp("#end", name) != 0) {
-		ewe("Problem with thermal.inp file last item read %s!\n", name);
-	}
-	fclose(config);
+	inp_init(&inp);
+	inp_load_from_path(&inp, in->inputpath, "thermal.inp");
+	inp_check(&inp, 1.0);
+	inp_search_int(&inp, &(in->newton_enable_external_thermal), "#thermal");
+	inp_search_int(&inp, &(in->nofluxl), "#nofluxl");
+	inp_search_double(&inp, &(in->Tll), "#Tll");
+	inp_search_double(&inp, &(in->Tlr), "#Tlr");
+	inp_free(&inp);
 
 }

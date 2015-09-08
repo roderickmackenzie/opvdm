@@ -22,8 +22,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "sim.h"
 #include <math.h>
+#include "sim.h"
+#include "inp.h"
 
 static int unused __attribute__ ((unused));
 

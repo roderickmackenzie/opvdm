@@ -8,21 +8,7 @@ cp crypto.dll ./pub/
 cp zlib1.dll ./pub/
 cp libzip-2.dll ./pub/
 
-cp dump.inp ./pub/
-cp ver.inp ./pub/
-cp device_epitaxy.inp ./pub/
-cp dos0.inp ./pub/
-cp sim.inp ./pub/
-cp device.inp ./pub/
-cp math.inp ./pub/
-cp thermal.inp ./pub/
-cp light.inp ./pub/
-cp optics_epitaxy.inp ./pub/
-cp optics.inp ./pub/
-cp physdir.inp ./pub/
-cp time_mesh.inp ./pub/
-cp jv.inp ./pub/
-cp sim_menu.inp ./pub/
+cp *.inp ./pub/
 
 mkdir ./pub/phys
 cp ./phys/*.spectra ./pub/phys/

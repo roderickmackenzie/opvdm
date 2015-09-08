@@ -46,6 +46,9 @@ for i in `find ./plugins/ |grep gui_info.inp$`; do
 cat $i >>sim_menu.inp
 done
 
+./gui/opvdm_zip.py ./sim.opvdm sim_menu.inp sim_menu.inp
+rm sim_menu.inp
+
 for i in `find ./light/ |grep makefile$`; do
 newdir=`dirname $i`
 echo "Building optical plugin" $newdir
