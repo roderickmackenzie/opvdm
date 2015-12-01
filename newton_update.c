@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -182,6 +183,7 @@ void init_mat_arrays(struct device *in)
 		in->dostype[i] = 0;
 
 		in->Eg[i] = get_dos_Eg(in->imat[i]);
+		in->B[i] = get_dos_B(in->imat[i]);
 		in->Dex[i] = 0.0;
 
 		in->Xi[i] = get_dos_Xi(in->imat[i]);

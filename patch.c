@@ -24,18 +24,63 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "dump_ctrl.h"
-#include "true_false.h"
+#include <util.h>
+#include <true_false.h>
+#include "patch.h"
+#include "../../dump_ctrl.h"
+#include "../../inp.h"
 
-static int dump_array[100];
+static int unused __attribute__ ((unused));
 
-int get_dump_status(int a)
+void patch(char *dest, char *patch_file)
 {
-	return dump_array[a];
-}
+	FILE *in;
+	char token[100];
+	char file[100];
+	char newtext[100];
 
-void set_dump_status(int name, int a)
-{
-	if ((dump_array[dump_lock] == FALSE) || (name == dump_lock))
-		dump_array[name] = a;
+	if ((in = fopen(patch_file, "r")) == NULL) {
+		ewe("Error opening file: %s\n", patch_file);
+	}
+	char filetoedit[200];
+	if (get_dump_status(dump_iodump) == TRUE)
+		printf("Patch %s\n", patch_file);
+	int found = FALSE;
+
+	struct inp_file ifile;
+	inp_init(&ifile);
+
+	do {
+		unused = fscanf(in, "%s", token);
+
+		if (strcmp(token, "#end") == 0) {
+			break;
+		}
+		if (token[0] != '#') {
+			ewe("error token does not begin with #\n", token);
+		} else {
+			found = TRUE;
+			unused = fscanf(in, "%s", file);
+			unused = fscanf(in, "%s", newtext);
+			join_path(2, filetoedit, dest, file);
+			inp_load(&ifile, filetoedit);
+			inp_replace(&ifile, token, newtext);
+
+		}
+
+	} while (!feof(in));
+
+	inp_free(&ifile);
+
+	if (strcmp(token, "#end") != 0) {
+		ewe("Error at end of patch file\n");
+	}
+
+	fclose(in);
+
+	if (found == FALSE) {
+		ewe("Token not found\n");
+	}
+
+	return;
 }

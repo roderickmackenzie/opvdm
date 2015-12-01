@@ -14,7 +14,6 @@ cd ${rpmdir}
 mkdir BUILD RPMS SOURCES SPECS SRPMS
 cd $mydir
 mkdir opvdm-core-${ver}
-cp ./*.inp ./opvdm-core-${ver}/
 cp ./sim.opvdm ./opvdm-core-${ver}/
 cp ./plot ./opvdm-core-${ver}/ -rf
 cp ./buildplugins.sh ./opvdm-core-${ver}/ 

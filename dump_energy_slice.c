@@ -38,18 +38,9 @@ void dump_energy_slice(struct device *in, int num, int i)
 	buffer_init(&buf);
 	char out_dir[200];
 	char name[200];
-
-	sprintf(out_dir, "%s/snapshots/", in->outputpath);
-	struct stat st = { 0 };
-
-	if (stat(out_dir, &st) == -1) {
-#ifdef windows
-		mkdir(out_dir);
-#else
-		mkdir(out_dir, 0700);
-#endif
-	}
-
+	char temp[200];
+	sprintf(temp, "%d", num);
+	join_path(3, out_dir, in->outputpath, "snapshots", temp);
 	int band = 0;
 
 	struct istruct dump_nt;
@@ -66,7 +57,7 @@ void dump_energy_slice(struct device *in, int num, int i)
 	}
 
 	buffer_malloc(&buf);
-	sprintf(name, "energy_slice_nt_%d%s", num, ".dat");
+	sprintf(name, "energy_slice_nt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1.0;
 	strcpy(buf.title, "Energy - trap ocupation");
@@ -79,12 +70,12 @@ void dump_energy_slice(struct device *in, int num, int i)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, dump_nt.x, dump_nt.data, dump_nt.len);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 	inter_free(&dump_nt);
 
 	buffer_malloc(&buf);
-	sprintf(name, "energy_slice_pt_%d%s", num, ".dat");
+	sprintf(name, "energy_slice_pt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1.0;
 	strcpy(buf.title, "Energy - trap ocupation");
@@ -97,7 +88,7 @@ void dump_energy_slice(struct device *in, int num, int i)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, dump_pt.x, dump_pt.data, dump_pt.len);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 	inter_free(&dump_pt);
 

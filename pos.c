@@ -33,20 +33,22 @@ double min_pos_error = 1e-4;
 void pos_dump(struct device *in)
 {
 	if (get_dump_status(dump_iodump) == TRUE) {
+		char out_dir[1000];
+		join_path(2, out_dir, in->outputpath, "equilibrium");
 		struct buffer buf;
 		buffer_init(&buf);
 		char name[200];
 		int band = 0;
 		int i = 0;
 		FILE *out;
-		out = fopena(in->outputpath, "./equ.dat", "w");
+		out = fopena(in->outputpath, "equ.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e %e\n", in->ymesh[i], in->Fn[i],
 				in->Fp[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_Fi.dat", "w");
+		out = fopena(in->outputpath, "equ_Fi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fi[i]);
 		}
@@ -66,7 +68,7 @@ void pos_dump(struct device *in)
 		buf.logscale_y = 0;
 		buffer_add_info(&buf);
 		buffer_add_xy_data(&buf, in->ymesh, in->Ec, in->ymeshpoints);
-		buffer_dump("./", name, &buf);
+		buffer_dump_path(out_dir, name, &buf);
 		buffer_free(&buf);
 
 		buffer_malloc(&buf);
@@ -83,35 +85,35 @@ void pos_dump(struct device *in)
 		buf.logscale_y = 0;
 		buffer_add_info(&buf);
 		buffer_add_xy_data(&buf, in->ymesh, in->Ev, in->ymeshpoints);
-		buffer_dump("./", name, &buf);
+		buffer_dump_path(out_dir, name, &buf);
 		buffer_free(&buf);
 
-		out = fopena(in->outputpath, "./equ_n.dat", "w");
+		out = fopena(in->outputpath, "equ_n.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->n[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_p.dat", "w");
+		out = fopena(in->outputpath, "equ_p.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->p[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_phi.dat", "w");
+		out = fopena(in->outputpath, "equ_phi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->phi[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_np.dat", "w");
+		out = fopena(in->outputpath, "equ_np.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e %e\n", in->ymesh[i], in->n[i],
 				in->p[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./equ_np_trap.dat", "w");
+		out = fopena(in->outputpath, "equ_np_trap.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e ", in->ymesh[i]);
 			for (band = 0; band < in->srh_bands; band++) {
@@ -460,7 +462,7 @@ int solve_pos(struct device *in)
 
 #ifdef dump_converge
 
-		/*in->converge=fopena(in->outputpath,"./converge.dat","a");
+		/*in->converge=fopena(in->outputpath,"converge.dat","a");
 		   fprintf(in->converge,"%e\n",error);
 		   fclose(in->converge); */
 #endif

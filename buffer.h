@@ -38,6 +38,8 @@ struct buffer {
 	int write_to_zip;
 	int norm_x_axis;
 	int norm_y_axis;
+	double time;
+	double Vexternal;
 	char *buf;
 	int len;
 	int max_len;
@@ -51,7 +53,8 @@ void buffer_malloc(struct buffer *in);
 void buffer_add_xy_data(struct buffer *in, double *x, double *y, int len);
 void buffer_add_string(struct buffer *in, char *string);
 void buffer_add_info(struct buffer *in);
-void buffer_dump(char *path, char *file, struct buffer *in);
+void buffer_dump(char *file, struct buffer *in);
+void buffer_dump_path(char *path, char *file, struct buffer *in);
 void buffer_free(struct buffer *in);
 void buffer_dump_aes(char *path, char *file, struct buffer *in, char *key_text);
 #endif

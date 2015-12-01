@@ -20,12 +20,52 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef plot_h
-#define plot_h
-void plot_now_excite(struct device *in);
-void plot_open(struct device *in);
-void plot_now(struct device *in, char *name);
-void plot_close(struct device *in);
-void plot_replot(struct device *in);
-void set_plot_script_dir(char *in);
-#endif
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <stdarg.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include "true_false.h"
+#include "../../inp.h"
+
+struct inp_file hard_limit_inp;
+
+void hard_limit_init()
+{
+	inp_init(&hard_limit_inp);
+	inp_load(&hard_limit_inp, "hard_limit.inp");
+}
+
+void hard_limit_free()
+{
+	inp_free(&hard_limit_inp);
+}
+
+void hard_limit(char *token, double *value)
+{
+	char token0[1000];
+	double ret = *value;
+	double min = 0.0;
+	double max = 0.0;
+	char *text = inp_search_part(&hard_limit_inp, token);
+
+	if (text != NULL) {
+		sscanf(text, "%s %lf %lf", token0, &max, &min);
+
+		if (strcmp(token0, token) == 0) {
+			if (ret > max) {
+				ret = max;
+			}
+
+			if (ret < min) {
+				ret = min;
+			}
+		}
+	}
+	*value = ret;
+}

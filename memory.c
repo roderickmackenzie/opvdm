@@ -50,6 +50,7 @@ void malloc_srh_bands(struct device *in, double *(**var))
 void device_free(struct device *in)
 {
 	free(in->phi);
+	free(in->B);
 	free(in->Nad);
 	free(in->n);
 	free(in->p);
@@ -98,7 +99,7 @@ void device_free(struct device *in)
 	free(in->kf);
 	free(in->kd);
 	free(in->kr);
-	free(in->Rbi);
+	free(in->Rfree);
 	free(in->Rn);
 	free(in->Rp);
 	free(in->kl);
@@ -170,7 +171,6 @@ void device_free(struct device *in)
 
 	free(in->meshdata);
 
-	free(in->mat.l);
 	solver_free();
 	complex_solver_free();
 
@@ -224,6 +224,9 @@ void device_get_memory(struct device *in)
 
 	in->phi = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->phi, 0, in->ymeshpoints * sizeof(double));
+
+	in->B = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->B, 0, in->ymeshpoints * sizeof(double));
 
 	in->Nad = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->Nad, 0, in->ymeshpoints * sizeof(double));
@@ -345,8 +348,8 @@ void device_get_memory(struct device *in)
 	in->kr = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->kr, 0, in->ymeshpoints * sizeof(double));
 
-	in->Rbi = malloc(in->ymeshpoints * sizeof(double));
-	memset(in->Rbi, 0, in->ymeshpoints * sizeof(double));
+	in->Rfree = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->Rfree, 0, in->ymeshpoints * sizeof(double));
 
 	in->Rn = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->Rn, 0, in->ymeshpoints * sizeof(double));

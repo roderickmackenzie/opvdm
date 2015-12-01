@@ -25,6 +25,7 @@
 #include "dos_types.h"
 
 struct dosconfig {
+	char dos_name[20];
 	double edge;
 	double m;
 	int dostype;
@@ -68,7 +69,14 @@ struct dosconfig {
 	double doping;
 	double Xi;
 	double gaus_mull;
+
+	double pl_fe_fh;
+	double pl_trap;
+	double pl_recom;
+	int pl_enabled;
+
 	int Esteps;
+	double B;
 };
 
 struct dos {
@@ -146,4 +154,14 @@ void draw_gaus(struct device *in);
 double get_dos_filled_n(struct device *in);
 double get_dos_filled_p(struct device *in);
 void safe_file(char *name);
+
+double get_pl_fe_fh(int mat);
+double get_pl_fe_te(int mat);
+double get_pl_te_fh(int mat);
+double get_pl_th_fe(int mat);
+double get_pl_ft_th(int mat);
+int get_pl_enabled(int mat);
+
+double get_dos_B(int mat);
+
 #endif

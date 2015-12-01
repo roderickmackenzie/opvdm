@@ -84,7 +84,7 @@ void solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
 {
 	FILE *matrix;
 	char name[100];
-	sprintf(name, "./matrix%s.dat", index);
+	sprintf(name, "matrix%s.dat", index);
 	matrix = fopen(name, "w");
 
 	int i;

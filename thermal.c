@@ -111,7 +111,7 @@ void dump_thermal(struct device *in)
 {
 	int i;
 	FILE *out;
-	out = fopena(in->outputpath, "./Te.dat", "w");
+	out = fopena(in->outputpath, "Te.dat", "w");
 	for (i = 0; i < in->ymeshpoints; i++) {
 		fprintf(out, "%le ", in->ymesh[i]);
 		fprintf(out, "%le ", in->Te[i]);
@@ -119,7 +119,7 @@ void dump_thermal(struct device *in)
 	}
 	fclose(out);
 
-	out = fopena(in->outputpath, "./Th.dat", "w");
+	out = fopena(in->outputpath, "Th.dat", "w");
 	for (i = 0; i < in->ymeshpoints; i++) {
 		fprintf(out, "%le ", in->ymesh[i]);
 		fprintf(out, "%le ", in->Th[i]);
@@ -127,7 +127,7 @@ void dump_thermal(struct device *in)
 	}
 	fclose(out);
 
-	out = fopena(in->outputpath, "./Tl.dat", "w");
+	out = fopena(in->outputpath, "Tl.dat", "w");
 	for (i = 0; i < in->ymeshpoints; i++) {
 		fprintf(out, "%le ", in->ymesh[i]);
 		fprintf(out, "%le ", in->Tl[i]);
@@ -135,7 +135,7 @@ void dump_thermal(struct device *in)
 	}
 	fclose(out);
 
-	out = fopena(in->outputpath, "./H.dat", "w");
+	out = fopena(in->outputpath, "H.dat", "w");
 	for (i = 0; i < in->ymeshpoints; i++) {
 		fprintf(out, "%le ", in->ymesh[i]);
 		fprintf(out, "%le ", in->He[i] + in->Hh[i]);

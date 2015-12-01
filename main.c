@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,6 +54,8 @@
 #include "gui_hooks.h"
 #include "timer.h"
 #include "rand.h"
+#include "hard_limit.h"
+#include "patch.h"
 
 static int unused __attribute__ ((unused));
 
@@ -77,12 +80,15 @@ int main(int argc, char *argv[])
 	set_ewe_lock_file("", "");
 	cell.onlypos = FALSE;
 
-	remove("./snapshots.zip");
-	remove("./light_dump.zip");
+	char pwd[1000];
+	getcwd(pwd, 1000);
+
+	remove("snapshots.zip");
+	remove("light_dump.zip");
 
 	hard_limit_init();
 
-	set_plot_script_dir("./");
+	set_plot_script_dir(pwd);
 
 	if (scanarg(argv, argc, "--help") == TRUE) {
 		printf("opvdm_core - Organic Photovoltaic Device Model\n");
@@ -92,7 +98,7 @@ int main(int argc, char *argv[])
 		printf("\n");
 		printf("Options:\n");
 		printf("\n");
-		printf("\t--outputpath\tdirectory to run (default ./)");
+		printf("\t--outputpath\toutput data path");
 		printf("\t--inputpath\t sets the input path\n");
 		printf("\t--version\tdisplays the current version\n");
 		printf("\t--zip_results\t zip the results\n");
@@ -153,7 +159,7 @@ int main(int argc, char *argv[])
 		strcpy(sim_output_path(),
 		       get_arg_plusone(argv, argc, "--outputpath"));
 	} else {
-		strcpy(sim_output_path(), "./");
+		strcpy(sim_output_path(), pwd);
 	}
 
 	if (scanarg(argv, argc, "--inputpath") == TRUE) {
@@ -168,14 +174,6 @@ int main(int argc, char *argv[])
 
 	if (scanarg(argv, argc, "--onlypos") == TRUE) {
 		cell.onlypos = TRUE;
-	}
-
-	char lock_file[1000];
-
-	if (scanarg(argv, argc, "--lock") == TRUE) {
-		strcpy(lock_file, get_arg_plusone(argv, argc, "--lock"));
-	} else {
-		strcpy(lock_file, "");
 	}
 
 	char name[200];
@@ -196,6 +194,13 @@ int main(int argc, char *argv[])
 	gui_start();
 	if (scanarg(argv, argc, "--optics") == FALSE)
 		server_init(&globalserver);
+
+	if (scanarg(argv, argc, "--lock") == TRUE) {
+		server_set_dbus_finish_signal(&globalserver,
+					      get_arg_plusone(argv, argc,
+							      "--lock"));
+	}
+
 	int ret = 0;
 
 	int do_fit = FALSE;
@@ -203,11 +208,11 @@ int main(int argc, char *argv[])
 	if (scanarg(argv, argc, "--fit") == TRUE)
 		do_fit = TRUE;
 
-	FILE *f = fopen("./fit.inp", "r");
+	FILE *f = fopen("fit.inp", "r");
 	if (f != NULL) {
 		fclose(f);
 		inp_init(&inp);
-		inp_load_from_path(&inp, "./", "fit.inp");
+		inp_load_from_path(&inp, pwd, "fit.inp");
 		int fit_temp;
 		inp_search_int(&inp, &fit_temp, "#do_fit");
 		if (fit_temp == 1) {
@@ -235,7 +240,7 @@ int main(int argc, char *argv[])
 	if (scanarg(argv, argc, "--optics") == TRUE) {
 		gui_start();
 		struct light two;
-		light_init(&two, &cell, "./");
+		light_init(&two, &cell, pwd);
 
 		light_load_config(&two);
 		two.disable_transfer_to_electrical_mesh = TRUE;
@@ -244,7 +249,7 @@ int main(int argc, char *argv[])
 		set_dump_status(dump_optics_verbose, TRUE);
 		double Psun;
 		inp_init(&inp);
-		inp_load_from_path(&inp, "./", "light.inp");
+		inp_load_from_path(&inp, pwd, "light.inp");
 		inp_search_double(&inp, &(Psun), "#Psun");
 		Psun = 1.0;
 		inp_free(&inp);
@@ -262,12 +267,13 @@ int main(int argc, char *argv[])
 
 	}
 
-	server_shut_down(&globalserver, lock_file);
+	server_shut_down(&globalserver);
 
 	if (scanarg(argv, argc, "--zip_results") == TRUE) {
 		printf("zipping results\n");
 		int ret;
-		DIR *dir = opendir("./snapshots");
+		char temp[200];
+		DIR *dir = opendir("snapshots");
 		if (dir) {
 			closedir(dir);
 			ret =
@@ -275,10 +281,13 @@ int main(int argc, char *argv[])
 			if (ret == -1) {
 				printf("tar returned error\n");
 			}
-			remove_dir(cell.outputpath, "snapshots", TRUE);
+
+			join_path(2, temp, cell.outputpath, "snapshots");
+			remove_dir(temp);
+
 		}
 
-		dir = opendir("./light_dump");
+		dir = opendir("light_dump");
 		if (dir) {
 			closedir(dir);
 			ret =
@@ -287,13 +296,15 @@ int main(int argc, char *argv[])
 			if (ret == -1) {
 				printf("tar returned error\n");
 			}
-			remove_dir(cell.outputpath, "light_dump", TRUE);
+
+			join_path(2, temp, cell.outputpath, "light_dump");
+			remove_dir(temp);
+
 		}
 
 	}
 
 	hard_limit_free();
-	gui_stop();
 	if (ret != 0) {
 		return 1;
 	}

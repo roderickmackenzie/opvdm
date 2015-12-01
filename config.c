@@ -29,6 +29,8 @@
 #include <math.h>
 #include "inp.h"
 #include "util.h"
+#include "hard_limit.h"
+#include "epitaxy.h"
 
 static int unused __attribute__ ((unused));
 
@@ -62,7 +64,7 @@ void config_read_line_to_string(char *data, FILE * in, char *id)
 	}
 }
 
-void load_config(char *simfile, struct device *in)
+void load_config(struct device *in)
 {
 	int i;
 	char temp[100];
@@ -90,29 +92,21 @@ void load_config(char *simfile, struct device *in)
 
 	inp_free(&inp);
 
+	char device_file_path[1000];
+
+	join_path(2, device_file_path, in->inputpath, "epitaxy.inp");
+
+	epitaxy_load(&(in->my_epitaxy), device_file_path);
+
 	inp_init(&inp);
-	inp_load_from_path(&inp, in->inputpath, device_epitaxy);
-	inp_check(&inp, 1.1);
+	inp_load_from_path(&inp, in->inputpath, "mesh.inp");
+
+	inp_check(&inp, 1.0);
 
 	inp_reset_read(&inp);
 
 	inp_get_string(&inp);
 
-	sscanf(inp_get_string(&inp), "%d", &(in->mat.number));
-
-	in->mat_layers = in->mat.number;
-	in->mat.l = malloc(in->mat.number * sizeof(struct layer));
-
-	for (i = 0; i < in->mat.number; i++) {
-		sscanf(inp_get_string(&inp), "%s", in->mat.l[i].name);
-		sscanf(inp_get_string(&inp), "%le", &(in->mat.l[i].height));
-
-		in->mat.l[i].height = fabs(in->mat.l[i].height);
-		hard_limit(in->mat.l[i].name, &(in->mat.l[i].height));
-
-	}
-
-	inp_get_string(&inp);
 	sscanf(inp_get_string(&inp), "%d", &(in->ymeshlayers));
 
 	in->meshdata = malloc(in->ymeshlayers * sizeof(struct mesh));
@@ -147,7 +141,12 @@ void load_config(char *simfile, struct device *in)
 		for (ii = 0; ii < in->meshdata[i].number; ii++) {
 			dpos += in->meshdata[i].den / 2.0;
 			in->ymesh[pos] = dpos;
-			in->imat[pos] = i;
+			in->imat[pos] =
+			    epitaxy_get_electrical_material_layer(&
+								  (in->
+								   my_epitaxy),
+								  dpos);
+
 			dpos += in->meshdata[i].den / 2.0;
 			pos++;
 		}
@@ -155,9 +154,8 @@ void load_config(char *simfile, struct device *in)
 
 	in->ylen = 0.0;
 	double mesh_len = 0.0;
-	for (i = 0; i < in->mat.number; i++) {
-		in->ylen += in->mat.l[i].height;
-	}
+
+	in->ylen = epitaxy_get_electrical_length(&(in->my_epitaxy));
 
 	for (i = 0; i < in->ymeshlayers; i++) {
 		mesh_len += in->meshdata[i].len;
@@ -170,7 +168,7 @@ void load_config(char *simfile, struct device *in)
 
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->inputpath, "device.inp");
-	inp_check(&inp, 1.16);
+	inp_check(&inp, 1.18);
 	inp_search_string(&inp, temp, "#lr_bias");
 	in->lr_bias = english_to_bin(temp);
 
@@ -201,9 +199,6 @@ void load_config(char *simfile, struct device *in)
 
 	inp_search_double(&inp, &(in->other_layers), "#otherlayers");
 
-	inp_search_double(&inp, &(in->B), "#free_to_free_recombination");
-	in->B = fabs(in->B);
-
 	inp_search_int(&inp, &(in->interfaceleft), "#interfaceleft");
 	inp_search_int(&inp, &(in->interfaceright), "#interfaceright");
 	inp_search_double(&inp, &(in->phibleft), "#phibleft");
@@ -220,6 +215,13 @@ void load_config(char *simfile, struct device *in)
 
 	inp_search_double(&inp, &(in->vr_h), "#vr_h");
 	in->vr_h = fabs(in->vr_h);
+
+	inp_search_double(&inp, &(in->electron_eff), "#electron_eff");
+	in->electron_eff = fabs(in->electron_eff);
+
+	inp_search_double(&inp, &(in->hole_eff), "#hole_eff");
+	in->hole_eff = fabs(in->hole_eff);
+
 	inp_free(&inp);
 
 	inp_init(&inp);

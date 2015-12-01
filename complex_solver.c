@@ -78,7 +78,7 @@ void complex_solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
 		buffer_add_string(&buf, build);
 	}
 
-	buffer_dump("./", "matrix.dat", &buf);
+	buffer_dump("matrix.dat", &buf);
 
 	buffer_free(&buf);
 	printf("Matrix dumped\n");

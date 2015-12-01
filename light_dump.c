@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -123,7 +124,7 @@ void light_dump(struct light *in)
 			buffer_add_string(&buf, "\n");
 		}
 
-		buffer_dump(out_dir, "light_2d_photons.dat", &buf);
+		buffer_dump_path(out_dir, "light_2d_photons.dat", &buf);
 		buffer_free(&buf);
 
 		buffer_malloc(&buf);
@@ -149,7 +150,7 @@ void light_dump(struct light *in)
 			buffer_add_string(&buf, "\n");
 		}
 
-		buffer_dump(out_dir, "light_2d_photons_asb.dat", &buf);
+		buffer_dump_path(out_dir, "light_2d_photons_asb.dat", &buf);
 		buffer_free(&buf);
 
 		out = fopena(out_dir, "light_2d_n.dat", "w");
@@ -204,7 +205,7 @@ void light_dump(struct light *in)
 			buffer_add_string(&buf, "\n");
 		}
 
-		buffer_dump(out_dir, "light_lambda_alpha.dat", &buf);
+		buffer_dump_path(out_dir, "light_lambda_alpha.dat", &buf);
 		buffer_free(&buf);
 
 		buffer_malloc(&buf);
@@ -220,7 +221,7 @@ void light_dump(struct light *in)
 		buf.logscale_y = 0;
 		buffer_add_info(&buf);
 		buffer_add_xy_data(&buf, in->l, in->reflect, in->lpoints);
-		buffer_dump(out_dir, "reflect.dat", &buf);
+		buffer_dump_path(out_dir, "reflect.dat", &buf);
 		buffer_free(&buf);
 
 	}
@@ -299,7 +300,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 
 			sprintf(out_name, "light_1d_photons_tot_norm%s.dat",
 				ext);
-			buffer_dump(out_dir, out_name, &buf);
+			buffer_dump_path(out_dir, out_name, &buf);
 			buffer_free(&buf);
 
 			char name_1d_photons_tot[200];
@@ -314,8 +315,8 @@ void light_dump_1d(struct light *in, int i, char *ext)
 
 			}
 
-			buffer_dump(out_dir, name_1d_photons_tot,
-				    &data_1d_photons_tot);
+			buffer_dump_path(out_dir, name_1d_photons_tot,
+					 &data_1d_photons_tot);
 		}
 
 		buffer_malloc(&data_photons);
@@ -392,14 +393,15 @@ void light_dump_1d(struct light *in, int i, char *ext)
 			buffer_add_string(&data_t, line);
 		}
 
-		buffer_dump(out_dir, name_photons, &data_photons);
-		buffer_dump(out_dir, name_photons_norm, &data_photons_norm);
-		buffer_dump(out_dir, name_light_1d_Ep, &data_light_1d_Ep);
-		buffer_dump(out_dir, name_light_1d_En, &data_light_1d_En);
-		buffer_dump(out_dir, name_pointing, &data_pointing);
-		buffer_dump(out_dir, name_E_tot, &data_E_tot);
-		buffer_dump(out_dir, name_r, &data_r);
-		buffer_dump(out_dir, name_t, &data_t);
+		buffer_dump_path(out_dir, name_photons, &data_photons);
+		buffer_dump_path(out_dir, name_photons_norm,
+				 &data_photons_norm);
+		buffer_dump_path(out_dir, name_light_1d_Ep, &data_light_1d_Ep);
+		buffer_dump_path(out_dir, name_light_1d_En, &data_light_1d_En);
+		buffer_dump_path(out_dir, name_pointing, &data_pointing);
+		buffer_dump_path(out_dir, name_E_tot, &data_E_tot);
+		buffer_dump_path(out_dir, name_r, &data_r);
+		buffer_dump_path(out_dir, name_t, &data_t);
 
 		buffer_free(&data_photons);
 		buffer_free(&data_photons_norm);

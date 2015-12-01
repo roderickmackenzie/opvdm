@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,8 @@
 #include "config.h"
 #include "inp.h"
 #include "util.h"
+#include "hard_limit.h"
+#include "epitaxy.h"
 
 static int unused __attribute__ ((unused));
 
@@ -222,7 +225,10 @@ void light_load_materials(struct light *in)
 
 	if (found == FALSE) {
 		inp_init(&inp);
-		inp_load_from_path(&inp, "", "physdir.inp");
+		if (inp_load(&inp, "physdir.inp") != 0) {
+			ewe("File physdir.inp not found in %s", pwd);
+		}
+
 		inp_check(&inp, 1.0);
 
 		strcpy(temp, inp_search(&inp, "#physdir"));
@@ -563,57 +569,37 @@ void light_free_epitaxy(struct light *in)
 
 void light_load_epitaxy(struct light *in, char *epi_file)
 {
-	struct inp_file inp;
-	inp_init(&inp);
-	inp_load_from_path(&inp, in->input_path, epi_file);
-	inp_check(&inp, 1.11);
+	struct epitaxy my_epitaxy;
 
-	inp_reset_read(&inp);
-
-	char temp[200];
+	epitaxy_load(&my_epitaxy, "epitaxy.inp");
 
 	int i = 0;
 
-	inp_get_string(&inp);
-	sscanf(inp_get_string(&inp), "%d", &in->layers);
+	in->layers = my_epitaxy.layers;
 	in->thick = (double *)malloc(in->layers * sizeof(double));
 	in->G_percent = (double *)malloc(in->layers * sizeof(double));
 
 	in->material_dir_name = (char **)malloc(in->layers * sizeof(char *));
 	for (i = 0; i < in->layers; i++) {
-		in->material_dir_name[i] = (char *)malloc(300.0 * sizeof(char));
+		in->material_dir_name[i] = (char *)malloc(300 * sizeof(char));
 	}
 
 	in->ylen = 0.0;
-	in->device_start = 0.0;
-	int device_started = FALSE;
 	in->device_ylen = 0.0;
 
-	for (i = 0; i < in->layers; i++) {
-		inp_get_string(&inp);
-		sscanf(inp_get_string(&inp), "%le", &(in->thick[i]));
-
+	for (i = 0; i < my_epitaxy.layers; i++) {
+		in->thick[i] = my_epitaxy.width[i];
 		in->thick[i] = fabs(in->thick[i]);
-		hard_limit(temp, &(in->thick[i]));
-		sscanf(inp_get_string(&inp), "%s", temp);
-		strcpy(in->material_dir_name[i], temp);
 
-		int device;
-		sscanf(inp_get_string(&inp), "%d", &device);
-		if (device == TRUE) {
-			device_started = TRUE;
-			in->device_ylen += in->thick[i];
-		}
-
-		if (device_started == FALSE) {
-			in->device_start += in->thick[i];
-			in->device_start_layer = i;
-		}
+		strcpy(in->material_dir_name[i], my_epitaxy.mat_file[i]);
 
 		in->ylen += in->thick[i];
 	}
 
-	inp_free(&inp);
+	in->device_start = epitaxy_get_device_start(&my_epitaxy);
+	in->device_start_layer = epitaxy_get_device_start_i(&my_epitaxy);
+	in->device_ylen = epitaxy_get_electrical_length(&my_epitaxy);
+
 }
 
 void light_calculate_complex_n(struct light *in)
@@ -660,13 +646,16 @@ void light_calculate_complex_n(struct light *in)
 
 void light_init_mesh(struct light *in)
 {
-	remove_dir(in->output_path, "light_dump", TRUE);
+	char temp[1000];
+	join_path(2, temp, in->output_path, "light_dump");
+	remove_dir(temp);
 	int i;
 	double ver = 0.0;
 	double pos = 0.0;
 	struct inp_file inp;
 
-	sprintf(in->config_file, "%soptics.inp", in->output_path);
+	join_path(2, in->config_file, in->output_path, "optics.inp");
+
 	printf("Load optics config %s\n", in->config_file);
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->input_path, "optics.inp");

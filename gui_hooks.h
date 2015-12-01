@@ -20,8 +20,7 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #ifndef hgui_hooks
-int gui_send_data(char *tx_data);
+int gui_send_data(char *tx_data_in);
 int dbus_init();
 void gui_start();
-void gui_stop();
 #endif

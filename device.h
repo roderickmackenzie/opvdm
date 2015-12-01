@@ -23,6 +23,7 @@
 #define device_h
 #include "code_ctrl.h"
 #include "light.h"
+#include "epitaxy.h"
 
 struct mesh {
 	double number;
@@ -30,17 +31,8 @@ struct mesh {
 	double den;
 };
 
-struct layer {
-	double height;
-	char name[100];
-};
-
-struct layers {
-	int number;
-	struct layer *l;
-};
-
 struct device {
+	struct epitaxy my_epitaxy;
 	int remesh;
 	int newmeshsize;
 	double Jnleft;
@@ -62,6 +54,7 @@ struct device {
 	double *Xi;
 	double *Ev;
 	double *Ec;
+	double *Rfree;
 
 	double *mun;
 	double *mup;
@@ -104,7 +97,6 @@ struct device {
 	double *kd;
 	double *kr;
 
-	double *Rbi;
 	double *Rn;
 	double *Rp;
 	double *kl;
@@ -124,8 +116,6 @@ struct device {
 	double deltaFlp;
 	double deltaFrn;
 	double deltaFrp;
-
-	int mat_layers;
 
 	double *Rbi_k;
 
@@ -151,8 +141,6 @@ struct device {
 	double xlen;
 	double ylen;
 	double zlen;
-
-	struct layers mat;
 
 	int N;
 	int M;
@@ -295,7 +283,7 @@ struct device {
 	void (*newton_aux) (struct device *, double, double *, double *,
 			    double *, double *, double *, double *, double *,
 			    double *);
-	double B;
+	double *B;
 	double xnl_left;
 	double xpl_left;
 	int stoppoint;
@@ -333,5 +321,7 @@ struct device {
 	double VCext;
 	int newton_last_ittr;
 
+	double electron_eff;
+	double hole_eff;
 };
 #endif

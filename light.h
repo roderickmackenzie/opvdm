@@ -96,8 +96,6 @@ struct light {
 	double Eg;
 	char output_path[300];
 	char input_path[300];
-	double electron_eff;
-	double hole_eff;
 	double Psun;
 	double laser_eff;
 	double simplephotondensity;

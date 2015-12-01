@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,6 +31,43 @@
 #include "util.h"
 #include "code_ctrl.h"
 #include "true_false.h"
+
+int inp_isfile(char *full_file_name)
+{
+	FILE *f = fopen(full_file_name, "rb");
+	if (f != NULL) {
+		fclose(f);
+		return 0;
+	} else {
+		char zip_path[1000];
+		char *file_path = get_dir_name_from_path(full_file_name);
+		char *file_name = get_file_name_from_path(full_file_name);
+
+		join_path(2, zip_path, file_path, "sim.opvdm");
+
+		int err = 0;
+		struct zip *z = zip_open(zip_path, 0, &err);
+
+		if (z != NULL) {
+
+			struct zip_stat st;
+			zip_stat_init(&st);
+			int ret = zip_stat(z, file_name, 0, &st);
+
+			if (ret == 0) {
+				return 0;
+			} else {
+				return -1;
+			}
+			zip_close(z);
+			return 0;
+		} else {
+			return -1;
+		}
+
+	}
+
+}
 
 int inp_search_pos(struct inp_file *in, char *token)
 {
@@ -101,7 +139,8 @@ int inp_read_buffer(char **buf, long *len, char *full_file_name)
 		char *file_path = get_dir_name_from_path(full_file_name);
 		char *file_name = get_file_name_from_path(full_file_name);
 
-		sprintf(zip_path, "%s/sim.opvdm", file_path);
+		join_path(2, zip_path, file_path, "sim.opvdm");
+
 		int err = 0;
 		struct zip *z = zip_open(zip_path, 0, &err);
 
@@ -142,17 +181,17 @@ void inp_init(struct inp_file *in)
 	in->edited = FALSE;
 }
 
-void inp_load_from_path(struct inp_file *in, char *path, char *file)
+int inp_load_from_path(struct inp_file *in, char *path, char *file)
 {
-	char temp[1000];
-	sprintf(temp, "%s/%s", path, file);
-	inp_load(in, temp);
+	char full_path[1000];
+	join_path(2, full_path, path, file);
+	return inp_load(in, full_path);
 }
 
-void inp_load(struct inp_file *in, char *file)
+int inp_load(struct inp_file *in, char *file)
 {
+	int ret = 0;
 	in->pos = 0;
-
 	if (strcmp(in->full_name, file) != 0) {
 
 		if (in->data != NULL) {
@@ -160,11 +199,14 @@ void inp_load(struct inp_file *in, char *file)
 		}
 
 		strcpy(in->full_name, file);
-		inp_read_buffer(&(in->data), &(in->fsize), file);
+		if (inp_read_buffer(&(in->data), &(in->fsize), file) != 0) {
+			ret = -1;
+		}
 
 		in->edited = FALSE;
 	}
 
+	return ret;
 }
 
 void inp_replace(struct inp_file *in, char *token, char *text)
@@ -339,4 +381,22 @@ char *inp_search(struct inp_file *in, char *token)
 	ewe("Token %s not found in file %s", token, in->full_name);
 	exit(0);
 	return NULL;
+}
+
+int inp_search_english(struct inp_file *in, char *token)
+{
+	inp_reset_read(in);
+	char *line = inp_get_string(in);
+	while (line != NULL) {
+
+		if (strcmp(line, token) == 0) {
+			line = inp_get_string(in);
+			return english_to_bin(line);
+		}
+
+		line = inp_get_string(in);
+	}
+	ewe("Token %s not found in file %s", token, in->full_name);
+	exit(0);
+	return -1;
 }

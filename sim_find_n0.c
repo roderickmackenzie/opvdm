@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,19 +37,22 @@
 
 void find_n0(struct device *in)
 {
+	int i;
 	printf("Finding n0\n");
 	double oldsun = in->Psun;
 	double oldv = in->Vapplied;
-	double B_temp;
 	in->Vapplied = 0;
 	in->Psun = 0;
 	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
+
 	if (get_dump_status(dump_newton) == TRUE) {
-		dump_1d_slice(in, "");
+		dump_1d_slice(in, "equilibrium", "");
 	}
 
-	B_temp = in->B;
-	in->B = 0.0;
+	for (i = 0; i < in->ymeshpoints; i++) {
+		in->B[i] = 0.0;
+	}
+
 	double save_clamp = in->electrical_clamp;
 	int save_ittr = in->max_electrical_itt;
 	double save_electricalerror = in->min_cur_error;
@@ -64,17 +68,20 @@ void find_n0(struct device *in)
 	in->min_cur_error = save_electricalerror;
 
 	solve_all(in);
-	in->B = B_temp;
+
+	for (i = 0; i < in->ymeshpoints; i++) {
+		in->B[i] = get_dos_B(in->imat[i]);
+	}
 
 	reset_np_save(in);
 	reset_npequlib(in);
 
 	FILE *outfile;
-	outfile = fopena(in->outputpath, "./voc_mue.dat", "w");
+	outfile = fopena(in->outputpath, "voc_mue.dat", "w");
 	fprintf(outfile, "%le", get_avg_mue(in));
 	fclose(outfile);
 
-	outfile = fopena(in->outputpath, "./voc_muh.dat", "w");
+	outfile = fopena(in->outputpath, "voc_muh.dat", "w");
 	fprintf(outfile, "%le", get_avg_muh(in));
 	fclose(outfile);
 

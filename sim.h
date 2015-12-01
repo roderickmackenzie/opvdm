@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #ifndef sim_h
 #define sim_h
 #include <i.h>
@@ -83,7 +84,7 @@ void lock_main(int argc, char *argv[]);
 void init_mat_arrays(struct device *in);
 
 void device_init(struct device *in);
-void load_config(char *simfile, struct device *in);
+void load_config(struct device *in);
 void update(struct device *cell);
 int run_simulation(char *outputpath, char *inputpath);
 void solve_all(struct device *in);

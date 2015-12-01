@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,28 +31,35 @@
 #include "sim.h"
 #include "dump.h"
 #include "buffer.h"
+#include "util.h"
 
-void dump_1d_slice(struct device *in, char *extra)
+void dump_1d_slice(struct device *in, char *dump_dir, char *extra)
 {
+	int i;
+	int band;
+	char name[100];
+	char temp[200];
 	char out_dir[200];
+	double Vexternal = get_equiv_V(in);
 	struct buffer buf;
 	buffer_init(&buf);
 
-	if (strcmp(extra, "") != 0) {
-		sprintf(out_dir, "%s/snapshots/", in->outputpath);
-	} else {
-		strcpy(out_dir, in->outputpath);
+	join_path(3, out_dir, in->outputpath, dump_dir, extra);
+
+	struct stat st = { 0 };
+
+	if (stat(out_dir, &st) == -1) {
+#ifdef windows
+		mkdir(out_dir);
+#else
+		mkdir(out_dir, 0700);
+#endif
 	}
 
-	int i;
-	int band;
-
-	char name[100];
-	char temp[200];
 	cal_J_drift_diffusion(in);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jn_drift", extra, ".dat");
+	sprintf(name, "%s", "Jn_drift.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Drift current density - position");
@@ -64,13 +72,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jn_drift, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jn_diffusion", extra, ".dat");
+	sprintf(name, "%s", "Jn_diffusion.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Diffusion current density - position");
@@ -83,13 +93,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jn_diffusion, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jp_drift", extra, ".dat");
+	sprintf(name, "%s", "Jp_drift.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Drift current density - position");
@@ -102,13 +114,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jp_drift, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jp_diffusion", extra, ".dat");
+	sprintf(name, "%s", "Jp_diffusion.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Diffusion current density - position");
@@ -121,13 +135,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jp_diffusion, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Ec", extra, ".dat");
+	sprintf(name, "%s", "Ec.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "LUMO-position");
@@ -140,13 +156,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Ec, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Ev", extra, ".dat");
+	sprintf(name, "%s", "Ev.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "HOMO-position");
@@ -159,13 +177,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Ev, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Te", extra, ".dat");
+	sprintf(name, "%s", "Te.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron temperature - position");
@@ -178,13 +198,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Te, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Th", extra, ".dat");
+	sprintf(name, "%s", "Th.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole temperature - position");
@@ -197,13 +219,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Te, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Nad", extra, ".dat");
+	sprintf(name, "%s", "Nad.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Doping - position");
@@ -216,13 +240,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Nad, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Eg", extra, ".dat");
+	sprintf(name, "%s", "Eg.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Band gap-position");
@@ -235,13 +261,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Eg, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Fn", extra, ".dat");
+	sprintf(name, "%s", "Fn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron quasi Fermi-level position");
@@ -254,13 +282,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Fn, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Fp", extra, ".dat");
+	sprintf(name, "%s", "Fp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole quasi Fermi-level position");
@@ -273,13 +303,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Fp, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "phi", extra, ".dat");
+	sprintf(name, "%s", "phi.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Potential");
@@ -292,13 +324,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->phi, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dphi", extra, ".dat");
+	sprintf(name, "%s", "dphi.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Potential");
@@ -311,17 +345,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			(in->phi[i] - in->phi_save[i]));
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jn", extra, ".dat");
+	sprintf(name, "%s", "Jn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Current density - position");
@@ -334,13 +370,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jn, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jp", extra, ".dat");
+	sprintf(name, "%s", "Jp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Current density - position");
@@ -353,13 +391,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Jp, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jn_plus_Jp", extra, ".dat");
+	sprintf(name, "%s", "Jn_plus_Jp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Total current density (Jn+Jp) - position");
@@ -372,6 +412,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	sprintf(temp, "%e %e\n", in->ymesh[0] - in->ymesh[1] / 2,
 		get_J_left(in));
@@ -382,11 +424,11 @@ void dump_1d_slice(struct device *in, char *extra)
 	sprintf(temp, "%e %e\n",
 		in->ymesh[in->ymeshpoints - 1] - in->ymesh[1] / 2,
 		get_J_right(in));
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Jp_drift_plus_diffusion", extra, ".dat");
+	sprintf(name, "%s", "Jp_drift_plus_diffusion.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Total current density (Jn+Jp) - position");
@@ -399,17 +441,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Transport");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			(in->Jp_drift[i] + in->Jp_diffusion[i]));
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Fi", extra, ".dat");
+	sprintf(name, "%s", "Fi.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Equlibrium Fermi-level - position");
@@ -422,13 +466,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Fi, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "epsilon_r", extra, ".dat");
+	sprintf(name, "%s", "epsilon_r.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Relative permittivity - position");
@@ -441,13 +487,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->epsilonr, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "mu_n", extra, ".dat");
+	sprintf(name, "%s", "mu_n.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron mobility - position");
@@ -460,13 +508,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->mun, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "mu_p", extra, ".dat");
+	sprintf(name, "%s", "mu_p.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole mobility - position");
@@ -479,13 +529,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->mup, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "mu_n_ft", extra, ".dat");
+	sprintf(name, "%s", "mu_n_ft.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron mobility free/all- position");
@@ -498,17 +550,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			in->mun[i] * in->n[i] / in->nt_all[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "mu_p_ft", extra, ".dat");
+	sprintf(name, "%s", "mu_p_ft.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole mobility free/all- position");
@@ -521,17 +575,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			in->mup[i] * in->p[i] / in->pt_all[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "nf", extra, ".dat");
+	sprintf(name, "%s", "nf.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free electron carrier density - position");
@@ -544,13 +600,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->n, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "pf", extra, ".dat");
+	sprintf(name, "%s", "pf.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free hole carrier density - position");
@@ -563,13 +621,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Material parameters");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->p, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "nt", extra, ".dat");
+	sprintf(name, "%s", "nt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Trapped electron carrier density - position");
@@ -582,13 +642,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->nt_all, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "pt", extra, ".dat");
+	sprintf(name, "%s", "pt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Trapped hole carrier density - position");
@@ -601,13 +663,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->pt_all, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "p", extra, ".dat");
+	sprintf(name, "%s", "p.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Total hole density - position");
@@ -620,17 +684,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			in->p[i] + in->pt_all[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "n", extra, ".dat");
+	sprintf(name, "%s", "n.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Total hole density - position");
@@ -643,17 +709,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			in->n[i] + in->nt_all[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dn", extra, ".dat");
+	sprintf(name, "%s", "dn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Change in electron population - position");
@@ -666,6 +734,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Chaerge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
@@ -673,11 +743,11 @@ void dump_1d_slice(struct device *in, char *extra)
 						      in->nt_save[i]));
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "charge", extra, ".dat");
+	sprintf(name, "%s", "charge.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Total charge - position");
@@ -690,17 +760,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
 			in->p[i] - in->n[i] + in->pt_all[i] - in->nt_all[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dcharge", extra, ".dat");
+	sprintf(name, "%s", "dcharge.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Change in total charge - position");
@@ -713,6 +785,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
@@ -721,11 +795,11 @@ void dump_1d_slice(struct device *in, char *extra)
 			 in->nt_save[i]));
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dp", extra, ".dat");
+	sprintf(name, "%s", "dp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Change in hole population - position");
@@ -738,6 +812,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
@@ -745,11 +821,11 @@ void dump_1d_slice(struct device *in, char *extra)
 			in->pt_save[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dnt", extra, ".dat");
+	sprintf(name, "%s", "dnt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Excess electron density - position");
@@ -762,17 +838,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %le", in->ymesh[i],
 			in->nt_all[i] - in->nt_save[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "dpt", extra, ".dat");
+	sprintf(name, "%s", "dpt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Excess electron density - position");
@@ -785,17 +863,19 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Charge density");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %le", in->ymesh[i],
 			in->pt_all[i] - in->pt_save[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Gn", extra, ".dat");
+	sprintf(name, "%s", "Gn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free electron generation rate - position");
@@ -808,13 +888,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Gn, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Gp", extra, ".dat");
+	sprintf(name, "%s", "Gp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free hole generation rate - position");
@@ -827,13 +909,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Gp, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Rn", extra, ".dat");
+	sprintf(name, "%s", "Rn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron recombination rate - position");
@@ -846,13 +930,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Rn, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Rp", extra, ".dat");
+	sprintf(name, "%s", "Rp.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole recombination rate - position");
@@ -865,13 +951,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->Rp, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "fsrhn", extra, ".dat");
+	sprintf(name, "%s", "fsrhn.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Trap fermi level - position");
@@ -884,6 +972,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e ", in->ymesh[i]);
@@ -898,11 +988,11 @@ void dump_1d_slice(struct device *in, char *extra)
 		buffer_add_string(&buf, "\n");
 
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "fsrhh", extra, ".dat");
+	sprintf(name, "%s", "fsrhh.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Trap fermi level - position");
@@ -915,6 +1005,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e ", in->ymesh[i]);
@@ -929,11 +1021,11 @@ void dump_1d_slice(struct device *in, char *extra)
 		buffer_add_string(&buf, "\n");
 
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "imat", extra, ".dat");
+	sprintf(name, "%s", "imat.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Material number - position");
@@ -946,16 +1038,18 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Model");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %d\n", in->ymesh[i], in->imat[i]);
 		buffer_add_string(&buf, temp);
 	}
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "Efield", extra, ".dat");
+	sprintf(name, "%s", "Efield.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Material number - position");
@@ -968,6 +1062,8 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Band structure");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	double deriv = 0.0;
 	for (i = in->ymeshpoints - 1; i > 1; i--) {
@@ -979,11 +1075,11 @@ void dump_1d_slice(struct device *in, char *extra)
 		buffer_add_string(&buf, temp);
 	}
 
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "pf_to_nt", extra, ".dat");
+	sprintf(name, "%s", "pf_to_nt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free hole to trapped electron - position");
@@ -996,13 +1092,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->ntrap_to_p, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "nf_to_pt", extra, ".dat");
+	sprintf(name, "%s", "nf_to_pt.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Free electron to trapped hole - position");
@@ -1015,13 +1113,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->ptrap_to_n, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "prelax", extra, ".dat");
+	sprintf(name, "%s", "prelax.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Hole relaxation rate - position");
@@ -1034,13 +1134,15 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->prelax, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
-	sprintf(name, "%s%s%s", "nrelax", extra, ".dat");
+	sprintf(name, "%s", "nrelax.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
 	strcpy(buf.title, "Electron relaxation rate - position");
@@ -1053,9 +1155,11 @@ void dump_1d_slice(struct device *in, char *extra)
 	strcpy(buf.section_two, "Recombination");
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
+	buf.time = 0.0;
+	buf.Vexternal = Vexternal;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, in->ymesh, in->nrelax, in->ymeshpoints);
-	buffer_dump(out_dir, name, &buf);
+	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
 
 	dump_device_map(out_dir, extra, in);

@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -62,6 +63,8 @@ void buffer_malloc(struct buffer *in)
 	strcpy(in->section_two, "");
 	in->logscale_x = 0;
 	in->logscale_y = 0;
+	in->time = -1.0;
+	in->Vexternal = -1.0;
 	in->buf = (char *)malloc(sizeof(char) * in->max_len);
 	memset(in->buf, 0, in->max_len);
 }
@@ -159,9 +162,24 @@ void buffer_add_info(struct buffer *in)
 
 	sprintf(temp, "#section_two %s\n", in->section_two);
 	buffer_add_string(in, temp);
+
+	sprintf(temp, "#time %e\n", in->time);
+	buffer_add_string(in, temp);
+
+	sprintf(temp, "#Vexternal %e\n", in->Vexternal);
+	buffer_add_string(in, temp);
 }
 
-void buffer_dump(char *path, char *file, struct buffer *in)
+void buffer_dump(char *file, struct buffer *in)
+{
+	FILE *out;
+	out = fopen(file, "wb");
+	fwrite(in->buf, in->len, 1, out);
+	fclose(out);
+
+}
+
+void buffer_dump_path(char *path, char *file, struct buffer *in)
 {
 	FILE *out;
 	out = fopena(path, file, "wb");

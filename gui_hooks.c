@@ -19,11 +19,13 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include "gui_hooks.h"
+#include "util.h"
 
 #ifdef dbus
 #include <dbus/dbus.h>
@@ -33,8 +35,12 @@
 #include <windows.h>
 #endif
 
-int gui_send_data(char *tx_data)
+int gui_send_data(char *tx_data_in)
 {
+	char tx_data[1024];
+	char temp[1024];
+	string_to_hex(temp, tx_data_in);
+	sprintf(tx_data, "hex%s", temp);
 
 #ifdef dbus
 	DBusConnection *connection;
@@ -51,7 +57,7 @@ int gui_send_data(char *tx_data)
 
 	DBusMessage *message;
 	message =
-	    dbus_message_new_signal("/org/my/test", "org.my.test", tx_data);
+	    dbus_message_new_signal("/org/my/test", "org.my.opvdm", tx_data);
 	/* Send the signal */
 	dbus_connection_send(connection, message, NULL);
 	dbus_connection_flush(connection);
@@ -93,9 +99,4 @@ int dbus_init()
 void gui_start()
 {
 	gui_send_data("start");
-}
-
-void gui_stop()
-{
-	gui_send_data("stop");
 }

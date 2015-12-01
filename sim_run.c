@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,6 +40,7 @@ struct device cell;
 
 int run_simulation(char *outputpath, char *inputpath)
 {
+	char temp[1000];
 	printf("Run_simulation\n");
 
 	cell.kl_in_newton = FALSE;
@@ -55,46 +57,47 @@ int run_simulation(char *outputpath, char *inputpath)
 	int i;
 
 	printf("Load config\n");
-	load_config("device.inp", &cell);
+	load_config(&cell);
 
 	if (cell.simmode != sim_mode_optics) {
-		printf("Loading DoS for %d layers\n", cell.mat_layers);
+		printf("Loading DoS for %d layers\n",
+		       cell.my_epitaxy.electrical_layers);
 		char tempn[100];
 		char tempp[100];
 		i = 0;
 		dos_init(i);
-		printf("Load DoS %d/%d\n", i, cell.mat_layers);
-		sprintf(tempn, "dosn%d.dat", i);
-		sprintf(tempp, "dosp%d.dat", i);
+		printf("Load DoS %d/%d\n", i,
+		       cell.my_epitaxy.electrical_layers);
+		sprintf(tempn, "%s_dosn.dat", cell.my_epitaxy.dos_file[i]);
+		sprintf(tempp, "%s_dosp.dat", cell.my_epitaxy.dos_file[i]);
 		load_dos(&cell, tempn, tempp, i);
 
 		if (get_dump_status(dump_write_converge) == TRUE) {
 			cell.converge =
-			    fopena(cell.outputpath, "./converge.dat", "w");
+			    fopena(cell.outputpath, "converge.dat", "w");
 			fclose(cell.converge);
 
 			cell.tconverge =
-			    fopena(cell.outputpath, "./tconverge.dat", "w");
+			    fopena(cell.outputpath, "tconverge.dat", "w");
 			fclose(cell.tconverge);
 		}
 	}
 	device_init(&cell);
 
-	remove_dir(cell.outputpath, "snapshots", TRUE);
-	remove_dir(cell.outputpath, "light_dump", TRUE);
-	remove_dir(cell.outputpath, "dynamic", FALSE);
+	join_path(2, temp, cell.outputpath, "equilibrium");
+	remove_dir(temp);
 
-	int curlayer = 0;
-	double end = cell.mat.l[0].height;
+	join_path(2, temp, cell.outputpath, "snapshots");
+	remove_dir(temp);
+
+	join_path(2, temp, cell.outputpath, "light_dump");
+	remove_dir(temp);
+
+	join_path(2, temp, cell.outputpath, "dynamic");
+	remove_dir(temp);
 
 	for (i = 0; i < cell.ymeshpoints; i++) {
-		if (cell.ymesh[i] >= end) {
-			curlayer++;
-			end += cell.mat.l[curlayer].height;
-		}
-		cell.imat[i] = curlayer;
 		cell.Nad[i] = get_dos_doping(cell.imat[i]);
-
 	}
 
 	init_mat_arrays(&cell);
@@ -146,7 +149,7 @@ int run_simulation(char *outputpath, char *inputpath)
 		draw_gaus(&cell);
 
 		if (cell.onlypos == TRUE) {
-			dump_1d_slice(&cell, "");
+			dump_1d_slice(&cell, "equilibrium", "");
 			device_free(&cell);
 			return 0;
 		}
@@ -158,7 +161,7 @@ int run_simulation(char *outputpath, char *inputpath)
 	if (cell.simmode != sim_mode_optics) {
 		plot_close(&cell);
 
-		for (i = 0; i < cell.mat_layers; i++) {
+		for (i = 0; i < cell.my_epitaxy.electrical_layers; i++) {
 			dos_free(i);
 		}
 

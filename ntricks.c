@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -140,7 +141,7 @@ void save_state(struct device *in, double to)
 	int i;
 	int band;
 	FILE *state;
-	state = fopena(in->outputpath, "./state.dat", "w");
+	state = fopena(in->outputpath, "state.dat", "w");
 
 	fprintf(state, "%le ", to);
 
@@ -165,7 +166,7 @@ int load_state(struct device *in, double voltage)
 	int band;
 	double vtest;
 	FILE *state;
-	state = fopena(in->outputpath, "./state.dat", "r");
+	state = fopena(in->outputpath, "state.dat", "r");
 	if (!state) {
 		printf("State not found\n");
 		return FALSE;

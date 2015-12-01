@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -212,20 +213,20 @@ void load_dos_file(struct dos *mydos, char *file)
 #endif
 	/*FILE *rt;
 	   #ifdef dos_bin
-	   if (strcmp(file,"./dosn.dat")==0)
+	   if (strcmp(file,"dosn.dat")==0)
 	   {
-	   rt = fopen("./rtbinn.inp", "w");
+	   rt = fopen("rtbinn.inp", "w");
 	   }else
 	   {
-	   rt = fopen("./rtbinp.inp", "w");
+	   rt = fopen("rtbinp.inp", "w");
 	   }
 	   #else
-	   if (strcmp(file,"./dosn.dat")==0)
+	   if (strcmp(file,"dosn.dat")==0)
 	   {
-	   rt = fopen("./rtnormn.inp", "w");
+	   rt = fopen("rtnormn.inp", "w");
 	   }else
 	   {
-	   rt = fopen("./rtnormp.inp", "w");
+	   rt = fopen("rtnormp.inp", "w");
 	   }
 	   #endif */
 #ifdef dos_bin
@@ -289,14 +290,22 @@ void load_dos_file(struct dos *mydos, char *file)
 	mydos->config.Nv = buf[buf_pos++];
 	mydos->config.Eg = buf[buf_pos++];
 	mydos->config.Xi = buf[buf_pos++];
+	mydos->config.pl_fe_fh = buf[buf_pos++];
+	mydos->config.pl_trap = buf[buf_pos++];
+	mydos->config.pl_recom = buf[buf_pos++];
+	mydos->config.pl_enabled = (int)buf[buf_pos++];
+	mydos->config.B = buf[buf_pos++];
 #else
-	fscanf(in, "%d %d %d %le %le %le %le %le %le %le %le %le %le\n",
+	fscanf(in,
+	       "%d %d %d %le %le %le %le %le %le %le %le %le %le %le %le %le %d %le\n",
 	       &(mydos->xlen), &(mydos->tlen), &(mydos->srh_bands),
 	       &(mydos->config.epsilonr), &(mydos->config.doping),
 	       &(mydos->config.mu), &(mydos->config.srh_vth),
 	       &(mydos->config.srh_sigman), &(mydos->config.srh_sigmap),
 	       &(mydos->config.Nc), &(mydos->config.Nv), &(mydos->config.Eg),
-	       &(mydos->config.Xi));
+	       &(mydos->config.Xi), &(mydos->config.pl_fe_fh),
+	       &(mydos->config.pl_trap), &(mydos->config.pl_recom),
+	       &(mydos->config.pl_enabled), &(mydos->config.B));
 #endif
 
 	double xsteps = mydos->xlen;
@@ -465,6 +474,11 @@ double get_dos_Xi(int mat)
 	return dosn[mat].config.Xi;
 }
 
+double get_dos_B(int mat)
+{
+	return dosn[mat].config.B;
+}
+
 void load_dos(struct device *dev, char *namen, char *namep, int mat)
 {
 	load_dos_file(&(dosn[mat]), namen);
@@ -556,6 +570,38 @@ double get_dp_den(double top, double T, int mat)
 	double ret =
 	    (Q / (T * kb)) * dosp[mat].config.Nv * exp((Q * top) / (T * kb));
 	return ret;
+}
+
+double get_pl_fe_fh(int mat)
+{
+	return dosn[mat].config.pl_fe_fh;
+}
+
+double get_pl_fe_te(int mat)
+{
+	return dosn[mat].config.pl_trap;
+}
+
+double get_pl_te_fh(int mat)
+{
+
+	return dosn[mat].config.pl_recom;
+}
+
+double get_pl_th_fe(int mat)
+{
+
+	return dosp[mat].config.pl_recom;
+}
+
+double get_pl_ft_th(int mat)
+{
+	return dosp[mat].config.pl_trap;
+}
+
+int get_pl_enabled(int mat)
+{
+	return dosp[mat].config.pl_enabled;
 }
 
 double get_n_srh(double top, double T, int trap, int r, int mat)

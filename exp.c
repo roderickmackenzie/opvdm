@@ -72,11 +72,6 @@ double get_charge_change(struct device *in)
 	return diff;
 }
 
-void exp_cal_emission(int number, struct device *in)
-{
-	return;
-}
-
 double get_avg_recom(struct device *in)
 {
 	int i;
@@ -273,8 +268,8 @@ void carrier_count_add(struct device *in)
 	double dx = in->ymesh[1] - in->ymesh[0];
 
 	for (i = 0; i < in->ymeshpoints; i++) {
-		locat_n_tot += in->Rbi[i] * dx;
-		locat_p_tot += in->Rbi[i] * dx;
+		locat_n_tot += in->Rfree[i] * dx;
+		locat_p_tot += in->Rfree[i] * dx;
 	}
 
 	rn_count += locat_n_tot * in->dt;
@@ -345,7 +340,7 @@ double get_extracted_k(struct device *in)
 	double tot = 0.0;
 	double n = 0.0;
 	for (i = 0; i < in->ymeshpoints; i++) {
-		tot += in->Rbi[i];
+		tot += in->Rfree[i];
 		n += in->n[i] * in->p[i];
 	}
 

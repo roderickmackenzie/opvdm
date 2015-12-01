@@ -20,12 +20,11 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef plot_h
-#define plot_h
-void plot_now_excite(struct device *in);
-void plot_open(struct device *in);
-void plot_now(struct device *in, char *name);
-void plot_close(struct device *in);
-void plot_replot(struct device *in);
-void set_plot_script_dir(char *in);
+#ifndef pl_h
+#define pl_h
+
+double calculate_photon_energy(struct istruct *in);
+void exp_cal_emission(int number, struct device *in);
+double pl_get_light_energy();
+
 #endif

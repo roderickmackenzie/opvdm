@@ -29,7 +29,6 @@
 #define server_job_running 2
 
 #include <time.h>
-#include "true_false.h"
 
 struct server globalserver;
 
@@ -43,6 +42,7 @@ struct server {
 	char command[server_max][200];
 	char output[server_max][200];
 	int state[server_max];
+	char dbus_finish_signal[200];
 	int jobs;
 	int jobs_running;
 	int cpus;
@@ -57,7 +57,7 @@ struct server {
 	time_t start_time;
 };
 void server_stop_and_exit();
-void server_shut_down(struct server *myserver, char *lock_file);
+void server_shut_down(struct server *myserver);
 void server_add_job(struct server *myserver, char *command, char *path);
 void print_jobs(struct server *myserver);
 void server_init(struct server *myserver);
@@ -69,4 +69,6 @@ double server_get_jobs_per_s();
 void change_cpus(struct server *myserver);
 void server_check_wall_clock(struct server *myserver);
 void server_update_last_job_time();
+void server_set_dbus_finish_signal(struct server *myserver, char *signal);
+void server_send_finished_to_gui(struct server *myserver);
 #endif

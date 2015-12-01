@@ -24,7 +24,8 @@
 platform=$2
 if [ "$platform" = "windows" ]; then
 cp ~/windll/*.dll ./
-
+pwd
+echo i686-w64-mingw32-windres ./gui/opvdm.rc -o ./gui/res.o
 i686-w64-mingw32-windres ./gui/opvdm.rc -o ./gui/res.o
 fi
 

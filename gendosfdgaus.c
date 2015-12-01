@@ -37,6 +37,8 @@
 #include "inp.h"
 #include "util.h"
 #include "buffer.h"
+#include "hard_limit.h"
+#include "epitaxy.h"
 
 static int unused __attribute__ ((unused));
 
@@ -73,7 +75,8 @@ void md5write(char *file_name)
 	long l;
 	char chkfile[100];
 	char temp_path[1000];
-	sprintf(temp_path, "%s/%s", sim_input_path(), file_name);
+	join_path(2, temp_path, sim_input_path(), file_name);
+
 	sprintf(chkfile, "md5.%s.dat", file_name);
 
 	inp_read_buffer(&buffer, &l, temp_path);
@@ -107,7 +110,8 @@ int md5check(char *file_name)
 	char newcheck[100];
 	char fromfile[100];
 	char temp_path[1000];
-	sprintf(temp_path, "%s/%s", sim_input_path(), file_name);
+	join_path(2, temp_path, sim_input_path(), file_name);
+
 	sprintf(chkfile, "md5.%s.dat", file_name);
 	long l;
 	inp_read_buffer(&buffer, &l, temp_path);
@@ -145,8 +149,8 @@ void dump_qe()
 	struct istruct n;
 	struct istruct p;
 
-	inter_load(&n, "./dosoutn.dat");
-	inter_load(&p, "./dosoutp.dat");
+	inter_load(&n, "dosoutn.dat");
+	inter_load(&p, "dosoutp.dat");
 	inter_swap(&p);
 
 	double start = n.x[0];
@@ -244,7 +248,7 @@ void pick_dump()
 #ifdef dos_debug
 	int i;
 	FILE *out;
-	out = fopen("./gaus.dat", "w");
+	out = fopen("gaus.dat", "w");
 	double pos = pick_start;
 	for (i = 0; i < 1000; i++) {
 		fprintf(out, "%e %e\n", pick_x[i], pick[i]);
@@ -263,11 +267,11 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #ifdef dos_test_stats
 	FILE *freetest;
 	if (electrons == TRUE) {
-		sprintf(name, "./freetestn%d.dat", mat);
+		sprintf(name, "%sfreetestn.dat", confige[mat].dos_name);
 		freetest = fopen(name, "w");
 		fclose(freetest);
 	} else {
-		sprintf(name, "./freetestp%d.dat", mat);
+		sprintf(name, "%s_freetestp.dat", configh[mat].dos_name);
 		freetest = fopen(name, "w");
 		fclose(freetest);
 	}
@@ -318,7 +322,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	x = 0;
 #ifdef dos_bin
 	int buf_len = 0;
-	buf_len += 13;
+	buf_len += 18;
 	buf_len += in->npoints;
 	buf_len += tsteps;
 	buf_len += in->srh_bands;
@@ -341,13 +345,20 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	buf[buf_pos++] = (double)in->Nv;
 	buf[buf_pos++] = (double)in->Eg;
 	buf[buf_pos++] = (double)in->Xi;
+	buf[buf_pos++] = (double)in->pl_fe_fh;
+	buf[buf_pos++] = (double)in->pl_trap;
+	buf[buf_pos++] = (double)in->pl_recom;
+	buf[buf_pos++] = (double)in->pl_enabled;
+	buf[buf_pos++] = (double)in->B;
 #else
 	FILE *out;
 	out = fopen(outfile, "w");
-	fprintf(out, "%d %d %d %lf %le %le %le %le %le %le %le %le %le\n",
+	fprintf(out,
+		"%d %d %d %lf %le %le %le %le %le %le %le %le %le %le %le %le %d %le\n",
 		(int)in->npoints, (int)tsteps, in->srh_bands, in->epsilonr,
 		in->doping, in->mu, in->srh_vth, in->srh_sigman, in->srh_sigmap,
-		in->Nc, in->Nv, in->Eg, in->Xi);
+		in->Nc, in->Nv, in->Eg, in->Xi, in->pl_fe_fh, in->pl_trap,
+		in->pl_recom, in->pl_enabled), in->B);
 #endif
 
 	double srh_pos = in->srh_start;
@@ -411,10 +422,10 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	if (in->dostype == dos_read) {
 		FILE *dosread;
 		if (electrons == TRUE) {
-			sprintf(name, "./srhbandn%d.dat", mat);
+			sprintf(name, "%s_srhbandn.dat", confige[mat].dos_name);
 			dosread = fopen(name, "r");
 		} else {
-			sprintf(name, "./srhbandp%d.dat", mat);
+			sprintf(name, "%s_srhbandp.dat", configh[mat].dos_name);
 			dosread = fopen(name, "r");
 		}
 
@@ -431,18 +442,18 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 		fclose(dosread);
 	}
 #ifdef test_dist
-	FILE *munfile = fopen("./munfile.dat", "w");
+	FILE *munfile = fopen("munfile.dat", "w");
 	if (munfile == NULL) {
 		ewe("problem\n");
 	}
 
 	FILE *plotbands;
-	plotbands = fopen("./plotbandsn.dat", "w");
+	plotbands = fopen("plotbandsn.dat", "w");
 
 	FILE *plotbandsfree;
-	plotbandsfree = fopen("./plotbandsfreen.dat", "w");
+	plotbandsfree = fopen("plotbandsfreen.dat", "w");
 
-	FILE *rod = fopen("./gau_test_n.dat", "w");
+	FILE *rod = fopen("gau_test_n.dat", "w");
 
 #endif
 
@@ -462,8 +473,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 			strcpy(dos_out.type, "xy");
 			strcpy(dos_out.x_label, "Energy");
 			strcpy(dos_out.y_label, "Density of states");
-			strcpy(dos_out.x_units, "$eV$");
-			strcpy(dos_out.y_units, "$m^{-3}eV^{-1}$");
+			strcpy(dos_out.x_units, "eV");
+			strcpy(dos_out.y_units, "m^{-3}eV^{-1}");
 			dos_out.logscale_x = 0;
 			dos_out.logscale_y = 0;
 			buffer_add_info(&dos_out);
@@ -475,8 +486,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 			strcpy(dos_out.type, "xy");
 			strcpy(dos_out.x_label, "Energy");
 			strcpy(dos_out.y_label, "Density of states");
-			strcpy(dos_out.x_units, "$eV$");
-			strcpy(dos_out.y_units, "$m^{-3}eV^{-1}$");
+			strcpy(dos_out.x_units, "eV");
+			strcpy(dos_out.y_units, "m^{-3}eV^{-1}");
 			dos_out.logscale_x = 0;
 			dos_out.logscale_y = 0;
 			buffer_add_info(&dos_out);
@@ -730,8 +741,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 					FILE *bandsdump;
 					if (electrons == TRUE) {
 						bandsdump =
-						    fopen("./lumo_out.dat",
-							  "w");
+						    fopen("lumo_out.dat", "w");
 						for (band = 0;
 						     band < in->srh_bands;
 						     band++) {
@@ -744,8 +754,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						fclose(bandsdump);
 					} else {
 						bandsdump =
-						    fopen("./homo_out.dat",
-							  "w");
+						    fopen("homo_out.dat", "w");
 						for (band = 0;
 						     band < in->srh_bands;
 						     band++) {
@@ -796,14 +805,14 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 #ifdef dos_test_stats
 			if (electrons == TRUE) {
-				freetest = fopen("./freetestn.dat", "a");
+				freetest = fopen("freetestn.dat", "a");
 
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
 					(3.0 / 2.0) * kb * tpos / Q);
 				fclose(freetest);
 			} else {
-				freetest = fopen("./freetestp.dat", "a");
+				freetest = fopen("freetestp.dat", "a");
 
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
@@ -851,12 +860,12 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 	if (get_dump_status(dump_write_out_band_structure) == TRUE) {
 		if (electrons == TRUE) {
-			sprintf(name, "./dosoutn%d.dat", mat);
+			sprintf(name, "%s_dosoutn.dat", confige[mat].dos_name);
 		} else {
-			sprintf(name, "./dosoutp%d.dat", mat);
+			sprintf(name, "%s_dosoutp.dat", configh[mat].dos_name);
 		}
 
-		buffer_dump("./", name, &dos_out);
+		buffer_dump(name, &dos_out);
 		buffer_free(&dos_out);
 
 	}
@@ -904,159 +913,159 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	return;
 }
 
-void gen_dos_fd_gaus_n(int mat)
-{
+void gen_dos_fd_gaus_n(int mat) {
+	printf(">>>>>>>>>>>>>>>>>>>>gen_dos_fd_gaus_n %d\n", mat);
 	char temp[100];
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Electrons.... %d\n", mat);
-	sprintf(temp, "dosn%d.dat", mat);
-	gen_do(&confige[mat], &configh[mat], temp, TRUE, mat);
-}
-
-void gen_dos_fd_gaus_p(int mat)
-{
+		printf("Electrons.... %s\n", confige[mat].dos_name);
+	 sprintf(temp, "%s_dosn.dat", confige[mat].dos_name);
+	 gen_do(&confige[mat], &configh[mat], temp, TRUE, mat);
+} void gen_dos_fd_gaus_p(int mat) {
 	char temp[100];
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Holes.... %d\n", mat);
-	sprintf(temp, "dosp%d.dat", mat);
-	gen_do(&configh[mat], &confige[mat], temp, FALSE, mat);
-}
-
-void gen_load_dos(int mat)
-{
+		printf("Holes.... %s\n", configh[mat].dos_name);
+	 sprintf(temp, "%s_dosp.dat", configh[mat].dos_name);
+	 gen_do(&configh[mat], &confige[mat], temp, FALSE, mat);
+} void gen_load_dos(int mat, char *dos_name, char *pl_name) {
 	char file_name[100];
 	char temp[100];
+	 strcpy(confige[mat].dos_name, dos_name);
+	 strcpy(configh[mat].dos_name, dos_name);
 
-	sprintf(file_name, "dos%d.inp", mat);
+	 sprintf(file_name, "%s.inp", dos_name);
 	struct inp_file inp;
-	inp_init(&inp);
-	inp_load_from_path(&inp, "./", file_name);
-	inp_check(&inp, 1.2);
+	 inp_init(&inp);
+	 inp_load(&inp, file_name);
+	 inp_check(&inp, 1.21);
 
-	inp_search_string(&inp, temp, "#dostype");
-	confige[mat].dostype = english_to_bin(temp);
-	configh[mat].dostype = confige[mat].dostype;
+	 inp_search_string(&inp, temp, "#dostype");
+	 confige[mat].dostype = english_to_bin(temp);
+	 configh[mat].dostype = confige[mat].dostype;
 
-	inp_search_double(&inp, &(confige[mat].m), "#me");
-	inp_search_double(&inp, &(configh[mat].m), "#mh");
+	 inp_search_double(&inp, &(confige[mat].m), "#me");
+	 inp_search_double(&inp, &(configh[mat].m), "#mh");
 
-	inp_search_double(&inp, &(confige[mat].Nt), "#Ntrape");
-	inp_search_double(&inp, &(configh[mat].Nt), "#Ntraph");
+	 inp_search_double(&inp, &(confige[mat].Nt), "#Ntrape");
+	 inp_search_double(&inp, &(configh[mat].Nt), "#Ntraph");
 
-	confige[mat].Nt = fabs(confige[mat].Nt);
-	configh[mat].Nt = fabs(configh[mat].Nt);
+	 confige[mat].Nt = fabs(confige[mat].Nt);
+	 configh[mat].Nt = fabs(configh[mat].Nt);
 
 	if (confige[mat].Nt < 1e7)
-		confige[mat].Nt = 1e7;
+		 confige[mat].Nt = 1e7;
 	if (configh[mat].Nt < 1e7)
-		configh[mat].Nt = 1e7;
+		 configh[mat].Nt = 1e7;
 
-	inp_search_double(&inp, &(confige[mat].Et), "#Etrape");
-	inp_search_double(&inp, &(configh[mat].Et), "#Etraph");
+	 inp_search_double(&inp, &(confige[mat].Et), "#Etrape");
+	 inp_search_double(&inp, &(configh[mat].Et), "#Etraph");
 
-	confige[mat].Et = fabs(confige[mat].Et);
-	configh[mat].Et = fabs(configh[mat].Et);
+	 confige[mat].Et = fabs(confige[mat].Et);
+	 configh[mat].Et = fabs(configh[mat].Et);
 
 	if (confige[mat].Et < 2e-3)
-		confige[mat].Et = 2e-3;
+		 confige[mat].Et = 2e-3;
 	if (configh[mat].Et < 2e-3)
-		configh[mat].Et = 2e-3;
+		 configh[mat].Et = 2e-3;
 
 	if (confige[mat].Et > 200e-3)
-		confige[mat].Et = 200e-3;
+		 confige[mat].Et = 200e-3;
 	if (configh[mat].Et > 200e-3)
-		configh[mat].Et = 200e-3;
+		 configh[mat].Et = 200e-3;
 
-	inp_search_int(&inp, &(gendos), "#gendos");
+	 inp_search_int(&inp, &(gendos), "#gendos");
 
-	inp_search_double(&inp, &(confige[mat].mu), "#mueffe");
-	inp_search_double(&inp, &(configh[mat].mu), "#mueffh");
+	 inp_search_double(&inp, &(confige[mat].mu), "#mueffe");
+	 inp_search_double(&inp, &(configh[mat].mu), "#mueffh");
 
-	confige[mat].mu = fabs(confige[mat].mu);
-	configh[mat].mu = fabs(configh[mat].mu);
+	 confige[mat].mu = fabs(confige[mat].mu);
+	 configh[mat].mu = fabs(configh[mat].mu);
 
-	inp_search_double(&inp, &(confige[mat].epsilonr), "#epsilonr");
-	confige[mat].epsilonr = fabs(confige[mat].epsilonr);
-	hard_limit("#epsilonr", &(confige[mat].epsilonr));
+	 inp_search_double(&inp, &(confige[mat].epsilonr), "#epsilonr");
+	 confige[mat].epsilonr = fabs(confige[mat].epsilonr);
+	 hard_limit("#epsilonr", &(confige[mat].epsilonr));
 
-	confige[mat].epsilonr = fabs(confige[mat].epsilonr);
-	configh[mat].epsilonr = fabs(confige[mat].epsilonr);
+	 confige[mat].epsilonr = fabs(confige[mat].epsilonr);
+	 configh[mat].epsilonr = fabs(confige[mat].epsilonr);
 
-	inp_search_double(&inp, &(confige[mat].doping), "#doping");
-	configh[mat].doping = confige[mat].doping;
+	 inp_search_double(&inp, &(confige[mat].doping), "#doping");
+	 configh[mat].doping = confige[mat].doping;
 
-	inp_search_double(&inp, &(confige[mat].Tstart), "#Tstart");
-	inp_search_double(&inp, &(confige[mat].Tstop), "#Tstop");
-	inp_search_int(&inp, &(confige[mat].Tsteps), "#Tpoints");
+	 inp_search_double(&inp, &(confige[mat].Tstart), "#Tstart");
+	 inp_search_double(&inp, &(confige[mat].Tstop), "#Tstop");
+	 inp_search_int(&inp, &(confige[mat].Tsteps), "#Tpoints");
 
-	configh[mat].Tstart = confige[mat].Tstart;
-	configh[mat].Tstop = confige[mat].Tstop;
-	configh[mat].Tsteps = confige[mat].Tsteps;
+	 configh[mat].Tstart = confige[mat].Tstart;
+	 configh[mat].Tstop = confige[mat].Tstop;
+	 configh[mat].Tsteps = confige[mat].Tsteps;
 
-	inp_search_double(&inp, &(confige[mat].nstart), "#nstart");
-	inp_search_double(&inp, &(confige[mat].nstop), "#nstop");
-	inp_search_int(&inp, &(confige[mat].npoints), "#npoints");
+	 inp_search_double(&inp, &(confige[mat].nstart), "#nstart");
+	 inp_search_double(&inp, &(confige[mat].nstop), "#nstop");
+	 inp_search_int(&inp, &(confige[mat].npoints), "#npoints");
 
-	inp_search_double(&inp, &(configh[mat].nstart), "#pstart");
-	inp_search_double(&inp, &(configh[mat].nstop), "#pstop");
-	inp_search_int(&inp, &(configh[mat].npoints), "#ppoints");
+	 inp_search_double(&inp, &(configh[mat].nstart), "#pstart");
+	 inp_search_double(&inp, &(configh[mat].nstop), "#pstop");
+	 inp_search_int(&inp, &(configh[mat].npoints), "#ppoints");
 	int bands = 0;
-	inp_search_int(&inp, &(bands), "#srh_bands");
-	confige[mat].srh_bands = bands;
-	configh[mat].srh_bands = bands;
+	 inp_search_int(&inp, &(bands), "#srh_bands");
+	 confige[mat].srh_bands = bands;
+	 configh[mat].srh_bands = bands;
 
-	inp_search_double(&inp, &(confige[mat].srh_start), "#srh_start");
-	configh[mat].srh_start = confige[mat].srh_start;
+	 inp_search_double(&inp, &(confige[mat].srh_start), "#srh_start");
+	 configh[mat].srh_start = confige[mat].srh_start;
 
-	inp_search_double(&inp, &(confige[mat].srh_sigman), "#srhsigman_e");
-	confige[mat].srh_sigman = fabs(confige[mat].srh_sigman);
+	 inp_search_double(&inp, &(confige[mat].srh_sigman), "#srhsigman_e");
+	 confige[mat].srh_sigman = fabs(confige[mat].srh_sigman);
 
-	inp_search_double(&inp, &(confige[mat].srh_sigmap), "#srhsigmap_e");
-	confige[mat].srh_sigmap = fabs(confige[mat].srh_sigmap);
+	 inp_search_double(&inp, &(confige[mat].srh_sigmap), "#srhsigmap_e");
+	 confige[mat].srh_sigmap = fabs(confige[mat].srh_sigmap);
 
-	inp_search_double(&inp, &(confige[mat].srh_vth), "#srhvth_e");
-	confige[mat].srh_vth = fabs(confige[mat].srh_vth);
+	 inp_search_double(&inp, &(confige[mat].srh_vth), "#srhvth_e");
+	 confige[mat].srh_vth = fabs(confige[mat].srh_vth);
 	if (confige[mat].srh_vth < 1e2)
-		confige[mat].srh_vth = 1e2;
+		 confige[mat].srh_vth = 1e2;
 
-	inp_search_double(&inp, &(configh[mat].srh_sigman), "#srhsigman_h");
-	configh[mat].srh_sigman = fabs(configh[mat].srh_sigman);
+	 inp_search_double(&inp, &(configh[mat].srh_sigman), "#srhsigman_h");
+	 configh[mat].srh_sigman = fabs(configh[mat].srh_sigman);
 
-	inp_search_double(&inp, &(configh[mat].srh_sigmap), "#srhsigmap_h");
-	configh[mat].srh_sigmap = fabs(configh[mat].srh_sigmap);
+	 inp_search_double(&inp, &(configh[mat].srh_sigmap), "#srhsigmap_h");
+	 configh[mat].srh_sigmap = fabs(configh[mat].srh_sigmap);
 
-	inp_search_double(&inp, &(configh[mat].srh_vth), "#srhvth_h");
-	configh[mat].srh_vth = fabs(configh[mat].srh_vth);
+	 inp_search_double(&inp, &(configh[mat].srh_vth), "#srhvth_h");
+	 configh[mat].srh_vth = fabs(configh[mat].srh_vth);
 	if (configh[mat].srh_vth < 1e2)
-		configh[mat].srh_vth = 1e2;
+		 configh[mat].srh_vth = 1e2;
 
-	inp_search_double(&inp, &(confige[mat].Nc), "#Nc");
+	 inp_search_double(&inp, &(confige[mat].Nc), "#Nc");
 
-	inp_search_double(&inp, &(confige[mat].Nv), "#Nv");
+	 inp_search_double(&inp, &(confige[mat].Nv), "#Nv");
 
-	inp_search_double(&inp, &(confige[mat].srh_cut), "#srh_cut");
-	confige[mat].srh_cut = -fabs(confige[mat].srh_cut);
-	configh[mat].srh_cut = confige[mat].srh_cut;
+	 inp_search_double(&inp, &(confige[mat].srh_cut), "#srh_cut");
+	 confige[mat].srh_cut = -fabs(confige[mat].srh_cut);
+	 configh[mat].srh_cut = confige[mat].srh_cut;
 
-	inp_search_double(&inp, &(confige[mat].del_start), "#lumodelstart");
+	 inp_search_double(&inp, &(confige[mat].del_start), "#lumodelstart");
 
-	inp_search_double(&inp, &(confige[mat].del_stop), "#lumodelstop");
+	 inp_search_double(&inp, &(confige[mat].del_stop), "#lumodelstop");
 
-	inp_search_double(&inp, &(configh[mat].del_start), "#homodelstart");
+	 inp_search_double(&inp, &(configh[mat].del_start), "#homodelstart");
 
-	inp_search_double(&inp, &(configh[mat].del_stop), "#homodelstop");
+	 inp_search_double(&inp, &(configh[mat].del_stop), "#homodelstop");
 
-	inp_search_double(&inp, &(confige[mat].Xi), "#Xi");
+	 inp_search_double(&inp, &(confige[mat].Xi), "#Xi");
 
-	inp_search_double(&inp, &(confige[mat].Eg), "#Eg");
-	confige[mat].Eg = fabs(confige[mat].Eg);
-	hard_limit("#Eg", &(confige[mat].Eg));
+	 inp_search_double(&inp, &(confige[mat].Eg), "#Eg");
+	 confige[mat].Eg = fabs(confige[mat].Eg);
+	 hard_limit("#Eg", &(confige[mat].Eg));
 
-	inp_search_double(&inp, &(confige[mat].gaus_mull), "#gaus_mull");
-	configh[mat].gaus_mull = confige[mat].gaus_mull;
+	 inp_search_double(&inp, &(confige[mat].gaus_mull), "#gaus_mull");
+	 configh[mat].gaus_mull = confige[mat].gaus_mull;
+
+	 inp_search_double(&inp, &(confige[mat].B),
+			   "#free_to_free_recombination");
+	 configh[mat].B = confige[mat].B;
 
 	int Esteps = 0;
-	inp_search_int(&inp, &(Esteps), "#Esteps");
+	 inp_search_int(&inp, &(Esteps), "#Esteps");
 	int Estep_div = (Esteps / bands) * bands;
 	if (Estep_div != Esteps) {
 		printf("Esteps wanted= %d, given= %d \n", Esteps, Estep_div);
@@ -1089,13 +1098,37 @@ void gen_load_dos(int mat)
 	configh[mat].Nc = confige[mat].Nc;
 	configh[mat].Nv = confige[mat].Nv;
 
+	sprintf(file_name, "%s.inp", pl_name);
+	inp_init(&inp);
+	inp_load(&inp, file_name);
+
+	inp_search_double(&inp, &(confige[mat].pl_fe_fh), "#pl_fe_fh");
+	configh[mat].pl_fe_fh = confige[mat].pl_fe_fh;
+
+	inp_search_double(&inp, &(confige[mat].pl_trap), "#pl_fe_te");
+
+	inp_search_double(&inp, &(confige[mat].pl_recom), "#pl_te_fh");
+
+	inp_search_double(&inp, &(configh[mat].pl_recom), "#pl_th_fe");
+
+	inp_search_double(&inp, &(configh[mat].pl_trap), "#pl_fh_th");
+
+	inp_search_string(&inp, temp, "#pl_enabled");
+	confige[mat].pl_enabled = english_to_bin(temp);
+	configh[mat].pl_enabled = confige[mat].pl_enabled;
+
+	inp_check(&inp, 1.0);
+
+	inp_free(&inp);
 }
 
-void gen_dos_fd_gaus_fd()
-{
+void gen_dos_fd_gaus_fd() {
 
 	char name[100];
+	char pl_name[100];
 
+	struct epitaxy my_epitaxy;
+	epitaxy_load(&my_epitaxy, "epitaxy.inp");
 	int file_bandn = FALSE;
 	int file_bandp = FALSE;
 	int file_dos = FALSE;
@@ -1104,27 +1137,30 @@ void gen_dos_fd_gaus_fd()
 	FILE *file;
 	int mat = 0;
 	int problem_with_dos = FALSE;
+	int file_pl = FALSE;
+
 	file_bandn = FALSE;
 	file_bandp = FALSE;
 	file_dos = FALSE;
+	file_pl = FALSE;
 
 	pick_init(mat);
-	gen_load_dos(mat);
+	gen_load_dos(mat, my_epitaxy.dos_file[mat], my_epitaxy.pl_file[mat]);
 
 	problem_with_dos = FALSE;
-	sprintf(name, "dos%d.inp", mat);
+	sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
 
 	if (md5check(name) == FALSE)
 		problem_with_dos = TRUE;
 
-	sprintf(name, "dosn%d.dat", mat);
+	sprintf(name, "%s_n.dat", my_epitaxy.dos_file[mat]);
 	file = fopen(name, "r");
 	if (!file) {
 		problem_with_dos = TRUE;
 	} else {
 		fclose(file);
 	}
-	sprintf(name, "dosp%d.dat", mat);
+	sprintf(name, "%s_p.dat", my_epitaxy.dos_file[mat]);
 	file = fopen(name, "r");
 	if (!file) {
 		problem_with_dos = TRUE;
@@ -1139,14 +1175,23 @@ void gen_dos_fd_gaus_fd()
 		launch_server = TRUE;
 	}
 
+	sprintf(pl_name, "%s.inp", my_epitaxy.pl_file[mat]);
+
+	if (md5check(pl_name) == FALSE) {
+		file_pl = TRUE;
+		file_bandn = TRUE;
+		file_bandp = TRUE;
+		launch_server = TRUE;
+	}
+
 	if (confige[mat].dostype == dos_read) {
-		sprintf(name, "srhbandn%d.inp", mat);
+		sprintf(name, "%s_srhbandn.inp", my_epitaxy.dos_file[mat]);
 		if (md5check(name) == FALSE) {
 			file_bandn = TRUE;
 			launch_server = TRUE;
 		}
 
-		sprintf(name, "srhbandp%d.inp", mat);
+		sprintf(name, "%s_srhbandp.inp", my_epitaxy.dos_file[mat]);
 		if (md5check(name) == FALSE) {
 			file_bandp = TRUE;
 			launch_server = TRUE;
@@ -1154,26 +1199,32 @@ void gen_dos_fd_gaus_fd()
 	}
 
 	if ((gendos == TRUE) && (launch_server == TRUE)) {
-		sprintf(name, "gendosn%d.inp", mat);
-
+		sprintf(name, "gendosn_%d", mat);
 		if (file_bandn == TRUE)
 			server_add_job(&globalserver, name, name);
-		sprintf(name, "gendosp%d.inp", mat);
+
+		sprintf(name, "gendosp_%d", mat);
 		if (file_bandp == TRUE)
 			server_add_job(&globalserver, name, name);
 
 		pick_dump();
-		sprintf(name, "dos%d.inp", mat);
+		sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
 		if (file_dos == TRUE)
 			md5write(name);
 
+		if (file_pl == TRUE) {
+			md5write(pl_name);
+		}
+
 		if (confige[mat].dostype == dos_read) {
-			sprintf(name, "srhbandn%d.inp", mat);
+			sprintf(name, "%s_srhbandn.inp",
+				my_epitaxy.dos_file[mat]);
 			safe_file(name);
 			if (file_bandn == TRUE)
 				md5write(name);
 
-			sprintf(name, "srhbandp%d.inp", mat);
+			sprintf(name, "%s_srhbandp.inp",
+				my_epitaxy.dos_file[mat]);
 			safe_file(name);
 			if (file_bandp == TRUE)
 				md5write(name);

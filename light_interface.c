@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,6 +43,7 @@
 #include "dump_ctrl.h"
 #include "config.h"
 #include "complex_solver.h"
+#include "cal_path.h"
 
 static int unused __attribute__ ((unused));
 
@@ -60,8 +62,8 @@ void light_transfer_gen_rate_to_device(struct device *cell, struct light *in)
 			Gp = inter_get_raw(in->x, in->Gp, in->points,
 					   in->device_start +
 					   cell->ymesh[i]) * in->Dphotoneff;
-			cell->Gn[i] = Gn * in->electron_eff;
-			cell->Gp[i] = Gp * in->hole_eff;
+			cell->Gn[i] = Gn * cell->electron_eff;
+			cell->Gp[i] = Gp * cell->hole_eff;
 			cell->Habs[i] = 0.0;
 
 		}
@@ -85,24 +87,19 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	strcpy(in->input_path, cell->inputpath);
 
 	char lib_path[200];
+	char lib_dir[200];
 	double ver;
 	double temp;
 	in->disable_transfer_to_electrical_mesh = FALSE;
 	struct inp_file inp;
 	inp_init(&inp);
 	inp_load_from_path(&inp, cell->inputpath, "light.inp");
-	inp_check(&inp, 1.23);
+	inp_check(&inp, 1.24);
 
 	inp_search_double(&inp, &(temp), "#Psun");
 	cell->Psun = fabs(temp);
 
 	inp_search_string(&inp, in->mode, "#light_model");
-
-	inp_search_double(&inp, &(in->electron_eff), "#electron_eff");
-	in->electron_eff = fabs(in->electron_eff);
-
-	inp_search_double(&inp, &(in->hole_eff), "#hole_eff");
-	in->hole_eff = fabs(in->hole_eff);
 
 	inp_search_double(&inp, &(in->Dphotoneff), "#Dphotoneff");
 	in->Dphotoneff = fabs(in->Dphotoneff);
@@ -125,21 +122,25 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 #endif
 
 #ifndef windows
+	get_light_lib_path(lib_dir);
+
 	sprintf(lib_path, "./light/%s", lib_name);
 
 	if (access(lib_path, F_OK) == -1) {
-		sprintf(lib_path, "/usr/lib64/opvdm/%s", lib_name);
+		join_path(2, lib_path, lib_dir, lib_name);
 	}
 #else
 	char pwd[1000];
 	getcwd(pwd, 1000);
+
 	join_path(3, lib_path, pwd, "light", lib_name);
 
 	FILE *fp = fopen(lib_path, "r");
 	if (fp) {
 		fclose(fp);
 	} else {
-		join_path(2, lib_path, "c:\\opvdm\\light\\", lib_name);
+		get_light_lib_path(lib_dir);
+		join_path(2, lib_path, lib_dir, lib_name);
 	}
 #endif
 

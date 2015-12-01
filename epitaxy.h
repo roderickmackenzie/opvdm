@@ -19,13 +19,24 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#ifndef epitaxy_h
+#define epitaxy_h
 
-#ifndef plot_h
-#define plot_h
-void plot_now_excite(struct device *in);
-void plot_open(struct device *in);
-void plot_now(struct device *in, char *name);
-void plot_close(struct device *in);
-void plot_replot(struct device *in);
-void set_plot_script_dir(char *in);
+struct epitaxy {
+	int layers;
+	int electrical_layers;
+	double width[20];
+	char mat_file[20][100];
+	char dos_file[20][100];
+	char pl_file[20][100];
+	char electrical_layer[20];
+};
+
+void epitaxy_load(struct epitaxy *in, char *file);
+double epitaxy_get_electrical_length(struct epitaxy *in);
+double epitaxy_get_optical_length(struct epitaxy *in);
+int epitaxy_get_optical_material_layer(struct epitaxy *in, double pos);
+int epitaxy_get_electrical_material_layer(struct epitaxy *in, double pos);
+double epitaxy_get_device_start(struct epitaxy *in);
+double epitaxy_get_device_start_i(struct epitaxy *in);
 #endif

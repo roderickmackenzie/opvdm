@@ -32,31 +32,31 @@ void init_dump(struct device *in)
 	int i = 0;
 	if (get_dump_status(dump_iodump) == TRUE) {
 		FILE *out;
-		out = fopena(in->outputpath, "./init_Fi.dat", "w");
+		out = fopena(in->outputpath, "init_Fi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fi[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./init_Ec.dat", "w");
+		out = fopena(in->outputpath, "init_Ec.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ec[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./init_Ev.dat", "w");
+		out = fopena(in->outputpath, "init_Ev.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Ev[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./init_n.dat", "w");
+		out = fopena(in->outputpath, "init_n.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->n[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "./init_p.dat", "w");
+		out = fopena(in->outputpath, "init_p.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->p[i]);
 		}
@@ -143,7 +143,7 @@ void my_guess(struct device *in)
 		printf("Holes on right contact = %e\n", Rp);
 		printf("Electrons on right contact = %e\n", Rn);
 
-		FILE *contacts = fopena(in->outputpath, "./contacts.dat", "w");
+		FILE *contacts = fopena(in->outputpath, "contacts.dat", "w");
 		fprintf(contacts, "%le\n", Lp);
 		fprintf(contacts, "%le\n", Ln);
 
