@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #ifndef h_util
 #define h_util
 #ifdef windows
@@ -42,7 +43,7 @@
 
 void set_ewe_lock_file(char *lockname, char *data);
 void print_hex(unsigned char *data);
-void remove_dir(char *path, char *dir_name, int remove_base_dir);
+void remove_dir(char *dir_name);
 int ewe(const char *format, ...);
 double read_value(char *file, int skip, int line);
 int strcmp_end(char *str, char *end);
@@ -54,9 +55,6 @@ int scanarg(char *in[], int count, char *find);
 int get_arg_plusone_pos(char *in[], int count, char *find);
 char *get_arg_plusone(char *in[], int count, char *find);
 FILE *fopena(char *path, char *name, const char *mode);
-FILE *fopenaa(char *path, char *add0, char *name, const char *mode);
-FILE *fopenaaa(char *path, char *add0, char *add1, char *name,
-	       const char *mode);
 
 void edit_file_int(char *in_name, char *front, int line, int value);
 void edit_file(char *in_name, char *front, int line, double value);
@@ -69,11 +67,8 @@ void write_x_y_to_file(char *name, double *x, double *y, int len);
 void write_x_y_z_to_file(char *name, double *x, double *y, double *z, int len);
 void join_path(int max, ...);
 int file_exists(char *in);
-void hard_limit(char *token, double *value);
-void hard_limit_init();
-void hard_limit_free();
 char *get_dir_name_from_path(char *in);
 char *get_file_name_from_path(char *in);
 void mass_copy_file(char **output, char *input, int n);
-int random_int(int in);
+void string_to_hex(char *out, char *in);
 #endif

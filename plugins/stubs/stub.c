@@ -28,15 +28,28 @@
 #include <util.h>
 #include "../../sim.h"
 #include "../../server.h"
+#include "../../gui_hooks.h"
 
 void server_stop_and_exit()
 {
 	exit(0);
 }
 
+void server_send_finished_to_gui(struct server *myserver)
+{
+	if (strcmp(myserver->dbus_finish_signal, "") != 0) {
+		gui_send_data(myserver->dbus_finish_signal);
+	}
+}
+
+void server_set_dbus_finish_signal(struct server *myserver, char *signal)
+{
+	strcpy(myserver->dbus_finish_signal, signal);
+}
+
 void server_init(struct server *myserver)
 {
-
+	strcpy(myserver->dbus_finish_signal, "");
 }
 
 void print_jobs(struct server *myserver)
@@ -49,9 +62,9 @@ void server_add_job(struct server *myserver, char *command, char *output)
 	int odes = 0;
 
 	if (cmpstr_min(command, "gendosn") == 0) {
-		gen_dos_fd_gaus_n(extract_str_number(command, "gendosn"));
+		gen_dos_fd_gaus_n(extract_str_number(command, "gendosn_"));
 	} else if (cmpstr_min(command, "gendosp") == 0) {
-		gen_dos_fd_gaus_p(extract_str_number(command, "gendosp"));
+		gen_dos_fd_gaus_p(extract_str_number(command, "gendosp_"));
 	} else {
 		odes = run_simulation(command, output);
 	}
@@ -63,18 +76,9 @@ int server_run_jobs(struct server *myserver)
 	return 0;
 }
 
-void server_shut_down(struct server *myserver, char *lock_file)
+void server_shut_down(struct server *myserver)
 {
-	FILE *out;
 
-	if (strcmp(lock_file, "") != 0) {
-		out = fopen(lock_file, "w");
-		if (out != NULL) {
-			fprintf(out, "opvdm lock file\n");
-			fclose(out);
-		} else {
-			ewe("Error with lock file %s", lock_file);
-		}
-	}
+	server_send_finished_to_gui(&globalserver);
 
 }

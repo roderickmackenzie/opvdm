@@ -20,7 +20,22 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef rnd_h
-#define rnd_h
-double mlib_rnd(double mul);
+#ifndef pulse_h
+#define pulse_h
+#include "../../sim.h"
+
+struct pulse {
+	double pulse_Vexternal;
+	double pulse_laser_power;
+	double pulse_shift;
+	double Rshort_pulse;
+};
+void sim_pulse(struct device *in);
+extern struct pulse pulse_config;
+void pulse_load_config(struct pulse *in, struct device *dev);
+void newton_aux_pulse(struct device *in, double V, double *i, double *didv,
+		      double *didphi, double *didxil, double *didxipl,
+		      double *didphir, double *didxir, double *didxipr);
+double newton_pulse(struct device *in, double Vtot, int usecap);
+
 #endif

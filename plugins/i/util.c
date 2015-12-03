@@ -34,9 +34,9 @@
 #include "../../sim_modes.h"
 #include "../../dump_ctrl.h"
 #include "../../dos_types.h"
-#include "../../inp.h"
+#include "../../gui_hooks.h"
+#include "../../server.h"
 
-struct inp_file hard_limit_inp;
 int file_exists(char *in)
 {
 	FILE *f = fopen(in, "r");
@@ -53,6 +53,8 @@ int file_exists(char *in)
 void join_path(int args, ...)
 {
 	int max = args + 1;
+	char temp[1000];
+	strcpy(temp, "");
 	va_list arguments;
 	double sum = 0;
 	int i;
@@ -60,18 +62,32 @@ void join_path(int args, ...)
 	char *ret = va_arg(arguments, char *);
 	strcpy(ret, "");
 	for (i = 1; i < max; i++) {
-		if (i != 1) {
+		if ((i != 1) && (strcmp(temp, "") != 0)) {
 #ifdef windows
 			strcat(ret, "\\");
 #else
 			strcat(ret, "/");
 #endif
 		}
-		strcat(ret, va_arg(arguments, char *));
+		strcpy(temp, va_arg(arguments, char *));
+		strcat(ret, temp);
 	}
 	va_end(arguments);
 
 	return;
+}
+
+void string_to_hex(char *out, char *in)
+{
+	int i;
+	char temp[8];
+	strcpy(out, "");
+
+	for (i = 0; i < strlen(in); i++) {
+		sprintf(temp, "%02x", in[i]);
+		strcat(out, temp);
+	}
+
 }
 
 void print_hex(unsigned char *data)
@@ -94,23 +110,32 @@ void set_ewe_lock_file(char *lockname, char *data)
 
 int ewe(const char *format, ...)
 {
+	FILE *out;
 	char temp[1000];
+	char temp2[1000];
 	va_list args;
 	va_start(args, format);
-
 	vsprintf(temp, format, args);
+
 	printf("%s\n", temp);
-	FILE *out = fopen("error.dat", "w");
-	fprintf(out, "%s\n", temp);
-	fclose(out);
+
+	sprintf(temp2, "error:%s", temp);
+
+	gui_send_data(temp2);
+
+#ifdef windows
+	sleep(1);
+#endif
 
 	va_end(args);
 
-	out = fopen("./server_stop.dat", "w");
-	fprintf(out, "solver\n");
-	fclose(out);
+	server_send_finished_to_gui(&globalserver);
 
-	out = fopen("./server_stop.dat", "w");
+#ifdef windows
+	sleep(1);
+#endif
+
+	out = fopen("server_stop.dat", "w");
 	fprintf(out, "solver\n");
 	fclose(out);
 
@@ -182,6 +207,10 @@ int english_to_bin(char *in)
 		return TRUE;
 	} else if (strcmp(in, "false") == 0) {
 		return FALSE;
+	} else if (strcmp(in, "1") == 0) {
+		return TRUE;
+	} else if (strcmp(in, "0") == 0) {
+		return FALSE;
 	} else if (strcmp(in, "yes") == 0) {
 		return TRUE;
 	} else if (strcmp(in, "no") == 0) {
@@ -204,6 +233,8 @@ int english_to_bin(char *in)
 		return tpv_mode_sun;
 	} else if (strcmp(in, "jv") == 0) {
 		return sim_mode_jv;
+	} else if (strcmp(in, "qe") == 0) {
+		return sim_mode_qe;
 	} else if (strcmp(in, "tpv") == 0) {
 		return sim_mode_tpv;
 	} else if (strcmp(in, "ce") == 0) {
@@ -331,18 +362,6 @@ void waveprint(char *in, double wavelength)
 
 }
 
-int random_int(int in)
-{
-	int random;
-	FILE *fp = fopen("/dev/urandom", "r");
-	fread(&random, sizeof(int), 1, fp);
-	random = fabs(random);
-	random = random % 400;
-	printf("%d\n", random);
-	fclose(fp);
-	return random;
-}
-
 void randomprint(char *in)
 {
 	int i;
@@ -382,33 +401,8 @@ void textcolor(int color)
 FILE *fopena(char *path, char *name, const char *mode)
 {
 	char wholename[200];
-	strcpy(wholename, path);
-	strcat(wholename, name);
-	FILE *pointer;
-	pointer = fopen(wholename, mode);
+	join_path(2, wholename, path, name);
 
-	return pointer;
-}
-
-FILE *fopenaa(char *path, char *add0, char *name, const char *mode)
-{
-	char wholename[200];
-	strcpy(wholename, path);
-	strcat(wholename, add0);
-	strcat(wholename, name);
-	FILE *pointer;
-	pointer = fopen(wholename, mode);
-
-	return pointer;
-}
-
-FILE *fopenaaa(char *path, char *add0, char *add1, char *name, const char *mode)
-{
-	char wholename[200];
-	strcpy(wholename, path);
-	strcat(wholename, add0);
-	strcat(wholename, add1);
-	strcat(wholename, name);
 	FILE *pointer;
 	pointer = fopen(wholename, mode);
 
@@ -590,7 +584,8 @@ void mass_copy_file(char **output, char *input, int n)
 
 	for (i = 0; i < n; i++) {
 		out_fd[i] =
-		    open(output[i], O_WRONLY | O_CREAT, results.st_mode);
+		    open(output[i], O_WRONLY | O_CREAT | O_TRUNC,
+			 results.st_mode);
 		if (out_fd[i] == -1) {
 			ewe("File %s can not be opened\n", output);
 		}
@@ -626,7 +621,8 @@ void copy_file(char *output, char *input)
 
 	stat(input, &results);
 
-	int out_fd = open(output, O_WRONLY | O_CREAT, results.st_mode);
+	int out_fd =
+	    open(output, O_WRONLY | O_CREAT | O_TRUNC, results.st_mode);
 	if (in_fd == -1) {
 		ewe("File %s can not be opened\n", output);
 	}
@@ -706,10 +702,15 @@ char *get_file_name_from_path(char *in)
 {
 	int i = 0;
 	for (i = strlen(in) - 1; i > 0; i--) {
-
+#ifdef windows
+		if (in[i] == '\\') {
+			return (in + i + 1);
+		}
+#else
 		if (in[i] == '/') {
 			return (in + i + 1);
 		}
+#endif
 	}
 	return in;
 }
@@ -721,70 +722,67 @@ char *get_dir_name_from_path(char *in)
 
 	int i = 0;
 	for (i = strlen(in); i > 0; i--) {
+#ifdef windows
+		if (in[i] == '\\') {
+			ret[i] = 0;
+			return ret;
+		}
+#else
 		if (in[i] == '/') {
 			ret[i] = 0;
 			return ret;
 		}
+#endif
 	}
+
+	strcpy(ret, "");
 	return ret;
 }
 
-void remove_dir(char *path, char *dir_name, int remove_base_dir)
+int isdir(const char *path)
+{
+	struct stat statbuf;
+	if (stat(path, &statbuf) != 0) {
+		return 1;
+	} else {
+		if (S_ISDIR(statbuf.st_mode) == 0) {
+			return 1;
+		} else {
+			return 0;
+		}
+	}
+}
+
+void remove_dir(char *dir_name)
 {
 
 	struct dirent *next_file;
 	DIR *theFolder;
 	char filepath[256];
-	char out_dir[256];
 
-	sprintf(out_dir, "%s/%s", path, dir_name);
-
-	theFolder = opendir(out_dir);
+	theFolder = opendir(dir_name);
 	if (theFolder != NULL) {
 		while ((next_file = readdir(theFolder)) != NULL) {
-			sprintf(filepath, "%s/%s", out_dir, next_file->d_name);
+			if ((strcmp(next_file->d_name, ".") != 0)
+			    && (strcmp(next_file->d_name, "..") != 0)) {
+				join_path(2, filepath, dir_name,
+					  next_file->d_name);
+				if (isdir(filepath) == 0) {
+					remove_dir(filepath);
+					printf("Deleting dir =%s\n", filepath);
+#ifdef windows
+					RemoveDirectory(filepath);
+#else
+					remove(filepath);
+#endif
+				} else {
 
-			remove(filepath);
+					remove(filepath);
+				}
+			}
 		}
 
-		if (remove_base_dir == TRUE)
-			remove(out_dir);
 		closedir(theFolder);
 	}
 
-}
-
-void hard_limit_init()
-{
-	inp_init(&hard_limit_inp);
-	inp_load_from_path(&hard_limit_inp, "./", "hard_limit.inp");
-}
-
-void hard_limit_free()
-{
-	inp_free(&hard_limit_inp);
-}
-
-void hard_limit(char *token, double *value)
-{
-	char token0[1000];
-	double ret = *value;
-	double min = 0.0;
-	double max = 0.0;
-	char *text = inp_search_part(&hard_limit_inp, token);
-
-	if (text != NULL) {
-		unused = sscanf(text, "%s %lf %lf", token0, &max, &min);
-
-		if (strcmp(token0, token) == 0) {
-			if (ret > max) {
-				ret = max;
-			}
-
-			if (ret < min) {
-				ret = min;
-			}
-		}
-	}
-	*value = ret;
 }

@@ -28,9 +28,12 @@
 #include "dump.h"
 #include <math.h>
 #include "../../elec_plugins.h"
+#include "../../dynamic_store.h"
 #include "ntricks.h"
 #include "../../inp.h"
 #include "../../buffer.h"
+#include "../../gui_hooks.h"
+#include "../../pl.h"
 
 static int unused __attribute__ ((unused));
 
@@ -39,6 +42,9 @@ void sim_jv(struct device *in)
 	printf("entered jv\n");
 	struct buffer buf;
 	buffer_init(&buf);
+
+	struct dynamic_store store;
+	dump_dynamic_init(&store, in);
 
 	struct jv config;
 	jv_load_config(&config, in);
@@ -69,6 +75,9 @@ void sim_jv(struct device *in)
 	struct istruct klist;
 	inter_init(&klist);
 
+	struct istruct lv;
+	inter_init(&lv);
+
 	in->Vapplied = 0.0;
 	if (fabs(config.Vstart - in->Vapplied) > 0.2) {
 		ramp_externalv(in, 0.0, config.Vstart);
@@ -82,7 +91,7 @@ void sim_jv(struct device *in)
 	if (in->remesh == TRUE) {
 		light_solve_and_update(in, &(in->mylight),
 				       in->Psun * config.jv_light_efficiency,
-				       0.0, 0.0);
+				       0.0);
 	}
 
 	V = in->Vapplied;
@@ -111,6 +120,8 @@ void sim_jv(struct device *in)
 		J = get_equiv_J(in);
 		Vexternal = get_equiv_V(in);
 
+		gui_send_data("pulse");
+
 		if (ittr > 0) {
 
 			inter_append(&jvexternal, get_equiv_V(in),
@@ -128,6 +139,7 @@ void sim_jv(struct device *in)
 		Pden = fabs(J * Vexternal);
 
 		plot_now(in, "jv.plot");
+		dump_dynamic_add_data(&store, in, get_equiv_V(in));
 
 		if (first == FALSE) {
 
@@ -183,6 +195,8 @@ void sim_jv(struct device *in)
 
 		dump_write_to_disk(in);
 
+		inter_append(&lv, get_equiv_V(in), pl_get_light_energy());
+
 		V += Vstep;
 		Vstep *= config.jv_step_mul;
 
@@ -224,7 +238,7 @@ void sim_jv(struct device *in)
 	}
 
 	FILE *out;
-	out = fopena(in->inputpath, "./sim_info.dat", "w");
+	out = fopena(in->inputpath, "sim_info.dat", "w");
 	fprintf(out, "#ff\n%le\n", in->FF);
 	fprintf(out, "#pce\n%le\n", fabs(in->Pmax / (in->Psun / 1000)) * 100.0);
 	fprintf(out, "#voc\n%le\n", in->Voc);
@@ -264,7 +278,7 @@ void sim_jv(struct device *in)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, charge.x, charge.data, charge.len);
-	buffer_dump(in->outputpath, "charge.dat", &buf);
+	buffer_dump_path(in->outputpath, "charge.dat", &buf);
 	buffer_free(&buf);
 
 	inter_save_a(&charge_tot, in->outputpath, "charge_tot.dat");
@@ -283,7 +297,7 @@ void sim_jv(struct device *in)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
-	buffer_dump(in->outputpath, "jvexternal.dat", &buf);
+	buffer_dump_path(in->outputpath, "jvexternal.dat", &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
@@ -299,12 +313,32 @@ void sim_jv(struct device *in)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
-	buffer_dump(in->outputpath, "ivexternal.dat", &buf);
+	buffer_dump_path(in->outputpath, "ivexternal.dat", &buf);
+	buffer_free(&buf);
+
+	buffer_malloc(&buf);
+	buf.y_mul = 1000.0;
+	buf.x_mul = 1.0;
+	strcpy(buf.title, "Voltage - Light generated");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Applied Voltage");
+	strcpy(buf.y_label, "Light power");
+	strcpy(buf.x_units, "Volts");
+	strcpy(buf.y_units, "mW");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, lv.x, lv.data, lv.len);
+	buffer_dump_path(in->outputpath, "lv.dat", &buf);
 	buffer_free(&buf);
 
 	inter_free(&jvexternal);
 	inter_free(&charge);
 	inter_free(&ivexternal);
+	inter_free(&lv);
+
+	dump_dynamic_save(in->outputpath, &store);
+	dump_dynamic_free(&store);
 }
 
 void jv_load_config(struct jv *in, struct device *dev)

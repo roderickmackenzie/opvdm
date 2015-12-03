@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
 #include <stdio.h>
@@ -30,6 +31,7 @@
 
 #include "i.h"
 #include "true_false.h"
+#include "util.h"
 
 static int unused __attribute__ ((unused));
 static char *unused_pchar __attribute__ ((unused));
@@ -970,9 +972,6 @@ int inter_get_col_n(char *name)
 {
 	int i = 0;
 	char temp[10000];
-	int pos[10000];
-	double x;
-	double y;
 	char *token;
 	int col = 0;
 
@@ -984,7 +983,7 @@ int inter_get_col_n(char *name)
 	}
 
 	do {
-		memset(temp, 10000, 0);
+		memset(temp, 0, 10000);
 		unused_pchar = fgets(temp, 10000, file);
 		const char s[2] = " ";
 		for (i = 0; i < strlen(temp); i++) {
@@ -1020,7 +1019,6 @@ void inter_load_by_col(struct istruct *in, char *name, int col)
 {
 	int i = 0;
 	char temp[1000];
-	int pos[1000];
 	double x;
 	double y;
 	char *token;
@@ -1036,7 +1034,7 @@ void inter_load_by_col(struct istruct *in, char *name, int col)
 
 	inter_init(in);
 	do {
-		memset(temp, 1000, 0);
+		memset(temp, 0, 1000);
 		unused_pchar = fgets(temp, 1000, file);
 		const char s[2] = " ";
 		for (i = 0; i < strlen(temp); i++) {
@@ -1162,7 +1160,6 @@ void inter_swap(struct istruct *in)
 
 void inter_load(struct istruct *in, char *name)
 {
-	int i = 0;
 	char temp[1000];
 	double x;
 	double y;
@@ -1172,7 +1169,7 @@ void inter_load(struct istruct *in, char *name)
 	FILE *file;
 	file = fopen(name, "r");
 	if (file == NULL) {
-		printf("inter_load_a can not open file %s\n", name);
+		printf("inter_load can not open file %s\n", name);
 		exit(0);
 	}
 
@@ -1286,7 +1283,7 @@ void inter_save_backup(struct istruct *in, char *name, int backup)
 void inter_save_a(struct istruct *in, char *path, char *name)
 {
 	char wholename[200];
-	sprintf(wholename, "%s/%s", path, name);
+	join_path(2, wholename, path, name);
 	inter_save(in, wholename);
 }
 
@@ -1298,10 +1295,13 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 	int count_max = in->len / seg;
 	int count = 0;
 	char temp[1000];
+	char file_name[1000];
 	int file_count = 0;
 	for (i = 0; i < in->len; i++) {
 		if (count == 0) {
-			sprintf(temp, "%s/%s%d.dat", path, name, file_count);
+			sprintf(file_name, "%s%d.dat", name, file_count);
+
+			join_path(2, temp, path, file_name);
 
 			file = fopen(temp, "w");
 			file_count++;
@@ -1478,4 +1478,39 @@ double inter_array_get_max(double *data, int len)
 			max = data[i];
 	}
 	return max;
+}
+
+double inter_join_bins(struct istruct *in, double delta)
+{
+	int i;
+	double tot = 0.0;
+	int pos = 0;
+	double bin = in->x[0];
+	int move_on = FALSE;
+	for (i = 0; i < in->len; i++) {
+		move_on = FALSE;
+
+		if (fabs(bin - in->x[i]) < delta) {
+			tot += in->data[i];
+
+		} else {
+			move_on = TRUE;
+		}
+
+		if (i == in->len - 1) {
+			move_on = TRUE;
+		}
+
+		if (move_on == TRUE) {
+			in->data[pos] = tot;
+			in->x[pos] = bin;
+			bin = in->x[i];
+			tot = in->data[i];
+			pos++;
+
+		}
+
+	}
+	in->len = pos;
+	return;
 }

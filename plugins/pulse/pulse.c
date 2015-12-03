@@ -1,0 +1,229 @@
+//    Organic Photovoltaic Device Model - a drift diffusion base/Shockley-Read-Hall
+//    model for organic solar cells. 
+//    Copyright (C) 2012 Roderick C. I. MacKenzie
+//
+//	roderick.mackenzie@nottingham.ac.uk
+//	www.roderickmackenzie.eu
+//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//
+//    This program is free software; you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation; either version 2 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License along
+//    with this program; if not, write to the Free Software Foundation, Inc.,
+//    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "../../sim.h"
+#include "../../dump.h"
+#include "../../ntricks.h"
+#include "../../dynamic_store.h"
+#include "pulse.h"
+#include "../../inp.h"
+#include "../../buffer.h"
+#include "../../gui_hooks.h"
+
+static int unused __attribute__ ((unused));
+
+struct pulse pulse_config;
+
+void sim_pulse(struct device *in)
+{
+	struct buffer buf;
+	buffer_init(&buf);
+	pulse_load_config(&pulse_config, in);
+
+	in->go_time = FALSE;
+
+	in->externalv = pulse_config.pulse_Vexternal;
+	printf("Running pulse. %e\n", in->externalv);
+	int ittr = 0;
+
+	int step = 0;
+
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
+
+	sim_externalv(in, pulse_config.pulse_Vexternal);
+	in->Vapplied = pulse_config.pulse_Vexternal;
+	double V = in->Vapplied;
+	double V0 = pulse_config.pulse_Vexternal;
+	printf("%le %le\n", V, V0);
+	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
+
+	in->time = 0.0;
+
+	time_init(in);
+	time_load_mesh(in);
+
+	device_timestep(in);
+
+	in->go_time = TRUE;
+
+	struct dynamic_store store;
+	dump_dynamic_init(&store, in);
+
+	struct istruct out_i;
+	inter_init(&out_i);
+
+	struct istruct out_v;
+	inter_init(&out_v);
+
+	struct istruct out_G;
+	inter_init(&out_G);
+
+	struct istruct lost_charge;
+	inter_init(&lost_charge);
+
+	double extracted_through_contacts = 0.0;
+	double Psun = in->Psun;
+	double laser_width = 0.0;
+	double laser_power = 0.0;
+
+	carrier_count_reset(in);
+	reset_np_save(in);
+	do {
+
+		light_solve_and_update(in, &(in->mylight), time_get_sun(),
+				       time_get_laser());
+		V = time_get_voltage();
+		dump_dynamic_add_data(&store, in, in->time);
+
+		double i0 = newton_pulse(in, V, TRUE);
+
+		if (get_dump_status(dump_print_text) == TRUE) {
+			printf("pulse time=%e step=%d %.1e ", in->time, step,
+			       in->last_error);
+			printf("Vtot=%lf current = %e mA (%e A/m^2)\n", V,
+			       get_I(in) / 1e-3, get_J(in));
+		}
+
+		ittr++;
+
+		gui_send_data("pulse");
+		dump_write_to_disk(in);
+
+		plot_now(in, "pulse.plot");
+
+		inter_append(&out_i, in->time, i0);
+		inter_append(&out_v, in->time, V);
+		inter_append(&out_G, in->time, in->Gn[0]);
+		inter_append(&lost_charge, in->time,
+			     extracted_through_contacts -
+			     fabs(get_extracted_n(in) +
+				  get_extracted_p(in)) / 2.0);
+
+		device_timestep(in);
+		step++;
+
+		if (time_run() == FALSE)
+			break;
+
+	} while (1);
+	char outpath[1000];
+	struct istruct out_flip;
+
+	dump_dynamic_save(in->outputpath, &store);
+	dump_dynamic_free(&store);
+
+	buffer_malloc(&buf);
+	buf.y_mul = 1e3;
+	buf.x_mul = 1e6;
+	strcpy(buf.title, "Time - current");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Time");
+	strcpy(buf.y_label, "Current");
+	strcpy(buf.x_units, "us");
+	strcpy(buf.y_units, "m");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, out_i.x, out_i.data, out_i.len);
+	buffer_dump_path(in->outputpath, "pulse_i.dat", &buf);
+	buffer_free(&buf);
+
+	inter_copy(&out_flip, &out_i, TRUE);
+	inter_mul(&out_flip, -1.0);
+
+	buffer_malloc(&buf);
+	buf.y_mul = 1e3;
+	buf.x_mul = 1e6;
+	strcpy(buf.title, "Time - -current");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Time");
+	strcpy(buf.y_label, "-Current");
+	strcpy(buf.x_units, "us");
+	strcpy(buf.y_units, "mA");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, out_flip.x, out_flip.data, out_flip.len);
+	buffer_dump_path(in->outputpath, "pulse_i_pos.dat", &buf);
+	buffer_free(&buf);
+
+	inter_free(&out_flip);
+
+	buffer_malloc(&buf);
+	buf.y_mul = 1.0;
+	buf.x_mul = 1e6;
+	strcpy(buf.title, "Time - Voltage");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Time");
+	strcpy(buf.y_label, "Volts");
+	strcpy(buf.x_units, "us");
+	strcpy(buf.y_units, "Voltage");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, out_v.x, out_v.data, out_v.len);
+	buffer_dump_path(in->outputpath, "pulse_v.dat", &buf);
+	buffer_free(&buf);
+
+	buffer_malloc(&buf);
+	buf.y_mul = 1.0;
+	buf.x_mul = 1e6;
+	strcpy(buf.title, "Time - Photogeneration rate");
+	strcpy(buf.type, "xy");
+	strcpy(buf.x_label, "Time");
+	strcpy(buf.y_label, "Generation rate");
+	strcpy(buf.x_units, "s");
+	strcpy(buf.y_units, "m^{-3} s^{-1}");
+	buf.logscale_x = 0;
+	buf.logscale_y = 0;
+	buffer_add_info(&buf);
+	buffer_add_xy_data(&buf, out_G.x, out_G.data, out_G.len);
+	buffer_dump_path(in->outputpath, "pulse_G.dat", &buf);
+	buffer_free(&buf);
+
+	in->go_time = FALSE;
+
+	inter_free(&out_G);
+	inter_free(&out_i);
+	inter_free(&out_v);
+	time_memory_free();
+}
+
+void pulse_load_config(struct pulse *in, struct device *dev)
+{
+	struct inp_file inp;
+	inp_init(&inp);
+	inp_load_from_path(&inp, dev->inputpath, "pulse.inp");
+	inp_check(&inp, 1.24);
+
+	inp_search_double(&inp, &(in->pulse_Vexternal), "#pulse_Vexternal");
+	inp_search_double(&inp, &(in->Rshort_pulse), "#Rshort_pulse");
+	inp_search_double(&inp, &(in->pulse_laser_power), "#pulse_laser_power");
+	inp_search_double(&inp, &(in->pulse_shift), "#pulse_shift");
+
+	inp_free(&inp);
+
+}

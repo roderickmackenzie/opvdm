@@ -19,6 +19,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -508,10 +509,11 @@ void fill_matrix(struct device *in)
 		dnc = in->dn[i];
 		dpc = in->dp[i];
 
-		Bfree = in->B;
+		Bfree = in->B[i];
 		nceq = in->nfequlib[i];
 		pceq = in->pfequlib[i];
 		Rfree = Bfree * (nc * pc - nceq * pceq);
+		in->Rfree[i] = Rfree;
 
 		Gn = in->Gn[i];
 		Gp = in->Gp[i];
@@ -1032,14 +1034,12 @@ void fill_matrix(struct device *in)
 		in->b[in->ymeshpoints * (1) + i] =
 		    -((Jnr - Jnl) / (dylh + dyrh) - Rtrapn - Rfree);
 
-		if (in->Dphoton == TRUE)
-			in->b[in->ymeshpoints * (1) + i] -= Gn;
+		in->b[in->ymeshpoints * (1) + i] -= Gn;
 
 		in->b[in->ymeshpoints * (1 + 1) + i] =
 		    -((Jpr - Jpl) / (dylh + dyrh) + Rtrapp + Rfree);
 
-		if (in->Dphoton == TRUE)
-			in->b[in->ymeshpoints * (1 + 1) + i] -= -Gp;
+		in->b[in->ymeshpoints * (1 + 1) + i] -= -Gp;
 
 		if (in->ntrapnewton == TRUE) {
 			for (band = 0; band < in->srh_bands; band++) {
@@ -1391,7 +1391,7 @@ int solve_cur(struct device *in)
 
 		if (get_dump_status(dump_write_converge) == TRUE) {
 			in->converge =
-			    fopena(in->outputpath, "./converge.dat", "a");
+			    fopena(in->outputpath, "converge.dat", "a");
 			fprintf(in->converge, "%e\n", error);
 			fclose(in->converge);
 		}
@@ -1425,7 +1425,7 @@ int solve_cur(struct device *in)
 	in->newton_last_ittr = ittr;
 
 	if (get_dump_status(dump_newton) == TRUE) {
-		dump_1d_slice(in, "");
+		dump_1d_slice(in, "", "");
 	}
 
 	in->odes += in->M;
