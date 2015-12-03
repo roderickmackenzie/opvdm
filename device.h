@@ -174,6 +174,10 @@ struct device {
 	int Tliso;
 	double dt;
 	int srh_sim;
+	int go_time;
+	double time;
+	double *nlast;
+	double *plast;
 	int ntrapnewton;
 	int ptrapnewton;
 
@@ -191,6 +195,7 @@ struct device {
 
 	double *nt_all;
 	double **nt;
+	double **ntlast;
 	double **dnt;
 	double **srh_n_r1;
 	double **srh_n_r2;
@@ -211,6 +216,7 @@ struct device {
 
 	double *pt_all;
 	double **pt;
+	double **ptlast;
 	double **dpt;
 	double **srh_p_r1;
 	double **srh_p_r2;
