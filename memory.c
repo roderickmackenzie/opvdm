@@ -109,6 +109,8 @@ void device_free(struct device *in)
 	free(in->He);
 	free(in->Hh);
 	free(in->Habs);
+	free(in->nlast);
+	free(in->plast);
 
 	free(in->wn);
 	free(in->wp);
@@ -133,6 +135,8 @@ void device_free(struct device *in)
 	free_srh_bands(in, in->nt_r3);
 	free_srh_bands(in, in->nt_r4);
 
+	free_srh_bands(in, in->ntlast);
+
 	free(in->tt);
 	free(in->dostype);
 	free(in->Rbi_k);
@@ -156,6 +160,8 @@ void device_free(struct device *in)
 	free_srh_bands(in, in->pt_r2);
 	free_srh_bands(in, in->pt_r3);
 	free_srh_bands(in, in->pt_r4);
+
+	free_srh_bands(in, in->ptlast);
 
 	free(in->tpt);
 
@@ -387,6 +393,12 @@ void device_get_memory(struct device *in)
 	in->Hh = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->Hh, 0, in->ymeshpoints * sizeof(double));
 
+	in->nlast = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->nlast, 0, in->ymeshpoints * sizeof(double));
+
+	in->plast = malloc(in->ymeshpoints * sizeof(double));
+	memset(in->plast, 0, in->ymeshpoints * sizeof(double));
+
 	in->wn = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->wn, 0, in->ymeshpoints * sizeof(double));
 
@@ -400,6 +412,8 @@ void device_get_memory(struct device *in)
 	memset(in->phi_save, 0, in->ymeshpoints * sizeof(double));
 
 	malloc_srh_bands(in, &(in->nt));
+	malloc_srh_bands(in, &(in->ntlast));
+
 	malloc_srh_bands(in, &(in->xt));
 	malloc_srh_bands(in, &(in->dnt));
 	malloc_srh_bands(in, &(in->srh_n_r1));
@@ -428,6 +442,8 @@ void device_get_memory(struct device *in)
 	memset(in->pt_all, 0, in->ymeshpoints * sizeof(double));
 
 	malloc_srh_bands(in, &(in->pt));
+	malloc_srh_bands(in, &(in->ptlast));
+
 	malloc_srh_bands(in, &(in->xpt));
 	malloc_srh_bands(in, &(in->dpt));
 	malloc_srh_bands(in, &(in->srh_p_r1));
