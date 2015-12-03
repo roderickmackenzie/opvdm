@@ -39,7 +39,7 @@ void epitaxy_load(struct epitaxy *in, char *file)
 
 	inp_init(&inp);
 	inp_load(&inp, file);
-	inp_check(&inp, 1.1);
+	inp_check(&inp, 1.2);
 	inp_reset_read(&inp);
 	inp_get_string(&inp);
 	sscanf(inp_get_string(&inp), "%d", &(in->layers));
@@ -54,6 +54,7 @@ void epitaxy_load(struct epitaxy *in, char *file)
 
 	for (i = 0; i < in->layers; i++) {
 		inp_get_string(&inp);
+		strcpy(in->name[i], inp_get_string(&inp));
 		sscanf(inp_get_string(&inp), "%le", &(in->width[i]));
 		in->width[i] = fabs(in->width[i]);
 		strcpy(in->mat_file[i], inp_get_string(&inp));

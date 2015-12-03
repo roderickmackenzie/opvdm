@@ -26,6 +26,7 @@ struct epitaxy {
 	int layers;
 	int electrical_layers;
 	double width[20];
+	char name[20][100];
 	char mat_file[20][100];
 	char dos_file[20][100];
 	char pl_file[20][100];

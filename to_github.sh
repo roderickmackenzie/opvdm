@@ -36,6 +36,7 @@ cp plugins $dest/ -r
 mkdir $dest/light
 cp ./light/exp $dest/light/ -r
 cp ./light/flat $dest/light/ -r
+cp ./light/full $dest/light/ -r
 
 cd $dest
 
