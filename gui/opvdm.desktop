@@ -1,0 +1,9 @@
+[Desktop Entry]
+	Name=opvdm
+	Exec=opvdm
+	Icon=/usr/share/opvdm/gui/image.jpg
+	Type=Application
+	MimeType=application/opvdm
+	Exec=opvdm %F
+	Terminal=true
+	Categories=GTK;GNOME;Education;Science;
