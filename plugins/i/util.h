@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -66,9 +65,11 @@ int english_to_bin(char *in);
 void write_x_y_to_file(char *name, double *x, double *y, int len);
 void write_x_y_z_to_file(char *name, double *x, double *y, double *z, int len);
 void join_path(int max, ...);
-int file_exists(char *in);
 char *get_dir_name_from_path(char *in);
 char *get_file_name_from_path(char *in);
 void mass_copy_file(char **output, char *input, int n);
 void string_to_hex(char *out, char *in);
+int strextract_name(char *out, char *in);
+int strextract_int(char *in);
+char *strextract_domain(char *in);
 #endif

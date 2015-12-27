@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -26,11 +26,114 @@
 #include <zip.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <dirent.h>
 
 #include "inp.h"
 #include "util.h"
 #include "code_ctrl.h"
 #include "true_false.h"
+
+void inp_listdir(struct inp_list *out)
+{
+	char pwd[1000];
+	int mylen = 0;
+	int i = 0;
+	int err = 0;
+	char temp[200];
+	if (getcwd(pwd, 1000) == NULL) {
+		ewe("IO error\n");
+	}
+
+	out->names = (char **)malloc(sizeof(char *) * 2000);
+	out->len = 0;
+
+	struct zip *z = zip_open("sim.opvdm", 0, &err);
+
+	if (z != NULL) {
+		int files = zip_get_num_files(z);
+		for (i = 0; i < files; i++) {
+			strcpy(temp, zip_get_name(z, i, ZIP_FL_UNCHANGED));
+			if (inp_listcmp(out, temp) != 0) {
+				mylen = strlen(temp);
+				out->names[out->len] =
+				    (char *)malloc(sizeof(char) * (mylen + 1));
+				strcpy(out->names[out->len], temp);
+				out->len++;
+			}
+
+		}
+
+		zip_close(z);
+
+	}
+
+}
+
+void inp_list_free(struct inp_list *in)
+{
+	int i = 0;
+
+	for (i = 0; i < in->len; i++) {
+		free(in->names[i]);
+	}
+
+	free(in->names);
+}
+
+int inp_listcmp(struct inp_list *in, char *name)
+{
+	int i = 0;
+
+	for (i = 0; i < in->len; i++) {
+		if (strcmp(name, in->names[i]) == 0) {
+			return 0;
+		}
+	}
+
+	return -1;
+}
+
+int isfile(char *in)
+{
+	FILE *f = fopen(in, "r");
+
+	if (f == NULL) {
+		return -1;
+	}
+
+	fclose(f);
+	return 0;
+
+}
+
+int zip_is_in_archive(char *full_file_name)
+{
+	char zip_path[1000];
+	char *file_path = get_dir_name_from_path(full_file_name);
+	char *file_name = get_file_name_from_path(full_file_name);
+
+	join_path(2, zip_path, file_path, "sim.opvdm");
+
+	int err = 0;
+	struct zip *z = zip_open(zip_path, 0, &err);
+
+	if (z != NULL) {
+		//Search for the file of given name
+		struct zip_stat st;
+		zip_stat_init(&st);
+		int ret = zip_stat(z, file_name, 0, &st);
+
+		if (ret == 0) {
+			return 0;
+		} else {
+			return -1;
+		}
+		zip_close(z);
+		return 0;
+	} else {
+		return -1;
+	}
+}
 
 int inp_isfile(char *full_file_name)
 {
@@ -39,33 +142,9 @@ int inp_isfile(char *full_file_name)
 		fclose(f);
 		return 0;
 	} else {
-		char zip_path[1000];
-		char *file_path = get_dir_name_from_path(full_file_name);
-		char *file_name = get_file_name_from_path(full_file_name);
-
-		join_path(2, zip_path, file_path, "sim.opvdm");
-
-		int err = 0;
-		struct zip *z = zip_open(zip_path, 0, &err);
-
-		if (z != NULL) {
-
-			struct zip_stat st;
-			zip_stat_init(&st);
-			int ret = zip_stat(z, file_name, 0, &st);
-
-			if (ret == 0) {
-				return 0;
-			} else {
-				return -1;
-			}
-			zip_close(z);
-			return 0;
-		} else {
-			return -1;
-		}
-
+		return zip_is_in_archive(full_file_name);
 	}
+//#endif
 
 }
 
@@ -76,7 +155,7 @@ int inp_search_pos(struct inp_file *in, char *token)
 	char *line = NULL;
 	do {
 		line = inp_get_string(in);
-
+		//printf("'%s' '%s'\n", line,token);
 		if (strcmp(line, token) == 0) {
 			return pos;
 		}
@@ -121,53 +200,40 @@ char *inp_get_string(struct inp_file *in)
 
 int inp_read_buffer(char **buf, long *len, char *full_file_name)
 {
+	char zip_path[1000];
+	char *file_path = get_dir_name_from_path(full_file_name);
+	char *file_name = get_file_name_from_path(full_file_name);
 
-	FILE *f = fopen(full_file_name, "rb");
-	if (f != NULL) {
-		fseek(f, 0, SEEK_END);
-		*len = ftell(f);
-		fseek(f, 0, SEEK_SET);
+	join_path(2, zip_path, file_path, "sim.opvdm");
+	//printf("1>%s 2>%s 3>%s 4>%s\n",full_file_name,file_path,file_name,zip_path);
+	int err = 0;
+	struct zip *z = zip_open(zip_path, 0, &err);
 
-		*buf = malloc(((*len) + 2) * sizeof(char));
-		memset(*buf, 0, ((*len) + 2) * sizeof(char));
-		fread(*buf, *len, 1, f);
-		fclose(f);
-		return 0;
+	if (z != NULL) {
+		//Search for the file of given name
+		struct zip_stat st;
+		zip_stat_init(&st);
+		int ret = zip_stat(z, file_name, 0, &st);
 
-	} else {
-		char zip_path[1000];
-		char *file_path = get_dir_name_from_path(full_file_name);
-		char *file_name = get_file_name_from_path(full_file_name);
+		if (ret == 0) {
+			//printf ("Read zip file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 
-		join_path(2, zip_path, file_path, "sim.opvdm");
+			//Alloc memory for its uncompressed contents
+			*len = st.size * sizeof(char);
+			*buf = (char *)malloc(*len);
 
-		int err = 0;
-		struct zip *z = zip_open(zip_path, 0, &err);
+			//Read the compressed file
+			struct zip_file *f = zip_fopen(z, file_name, 0);
+			zip_fread(f, *buf, st.size);
+			zip_fclose(f);
 
-		if (z != NULL) {
-
-			struct zip_stat st;
-			zip_stat_init(&st);
-			int ret = zip_stat(z, file_name, 0, &st);
-
-			if (ret == 0) {
-
-				*len = st.size * sizeof(char);
-				*buf = (char *)malloc(*len);
-
-				struct zip_file *f = zip_fopen(z, file_name, 0);
-				zip_fread(f, *buf, st.size);
-				zip_fclose(f);
-
-			} else {
-				ewe("File %s not found\n", file_name);
-			}
-			zip_close(z);
-			return 0;
 		} else {
-			return -1;
+			ewe("File %s not found\n", file_name);
 		}
-
+		zip_close(z);
+		return 0;
+	} else {
+		return -1;
 	}
 
 }
@@ -193,7 +259,7 @@ int inp_load(struct inp_file *in, char *file)
 	int ret = 0;
 	in->pos = 0;
 	if (strcmp(in->full_name, file) != 0) {
-
+		//printf("Reload %s %s\n",in->full_name,file);
 		if (in->data != NULL) {
 			inp_free(in);
 		}
@@ -251,48 +317,69 @@ void inp_replace(struct inp_file *in, char *token, char *text)
 	free(temp);
 }
 
-void inp_save(struct inp_file *in)
+int zip_write_buffer(char *full_file_name, char *buffer, int len)
+{
+	int in_zip_file = -1;
+	int outside_zip_file = -1;
+
+	in_zip_file = zip_is_in_archive(full_file_name);
+	outside_zip_file = isfile(full_file_name);
+
+	if ((in_zip_file != 0) || (outside_zip_file == 0)) {
+		int out_fd =
+		    open(full_file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+
+		if (out_fd == -1) {
+			ewe("File %s can not be opened\n", full_file_name);
+		}
+
+		if (ftruncate(out_fd, 0) == -1) {
+			ewe("Error with truncate command\n");
+		}
+
+		if (write(out_fd, buffer, len * sizeof(char)) == -1) {
+			ewe("Error writing data to file.\n");
+		}
+		close(out_fd);
+	} else {
+		char zip_path[1000];
+		char *file_path = get_dir_name_from_path(full_file_name);
+		char *file_name = get_file_name_from_path(full_file_name);
+
+		join_path(2, zip_path, file_path, "sim.opvdm");
+
+		int err = 0;
+		struct zip *z = zip_open(zip_path, 0, &err);
+
+		if (z != NULL) {
+			struct zip_source *s;
+			s = zip_source_buffer(z, buffer, len, 0);
+			int index = zip_name_locate(z, file_name, 0);
+
+			if (index == -1) {
+				zip_add(z, file_name, s);
+			} else {
+				zip_replace(z, index, s);
+			}
+
+			zip_close(z);
+		} else {
+			return -1;
+		}
+
+	}
+	return 0;
+}
+
+int inp_save(struct inp_file *in)
 {
 
 	if (in->edited == TRUE) {
-		int out_fd =
-		    open(in->full_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-
-		if (out_fd == -1) {
-			ewe("File %s can not be opened\n", in->full_name);
-		}
-
-		ftruncate(out_fd, 0);
-
-		write(out_fd, in->data, in->fsize * sizeof(char));
-		close(out_fd);
-
+		zip_write_buffer(in->full_name, in->data, in->fsize);
 		in->edited = FALSE;
-
-		/*FILE *f = fopen(in->full_name, "rb");
-		   if (f!=NULL)
-		   {
-		   fseek(f, 0, SEEK_END);
-		   int len = ftell(f);
-		   fseek(f, 0, SEEK_SET);
-
-		   char *buf = malloc(((len) + 2)*sizeof(char));
-		   memset(buf, 0, ((len) + 2)*sizeof(char));
-		   fread(buf, len, 1, f);
-		   printf("read'%s' %d\n",buf,len);
-		   fclose(f);
-		   if (strcmp(buf,in->data)!=0)
-		   {
-		   ewe("Buffers did not match\n");
-		   }
-		   free(buf);
-		   }else
-		   {
-		   ewe("Can't open file\n");
-		   } */
-
 	}
 
+	return 0;
 }
 
 void inp_free(struct inp_file *in)
@@ -354,7 +441,7 @@ char *inp_search_part(struct inp_file *in, char *token)
 	inp_reset_read(in);
 	char *line = inp_get_string(in);
 	while (line != NULL) {
-
+		//printf("'%s' '%s'\n", line,token);
 		if (cmpstr_min(line, token) == 0) {
 			return line;
 		}
@@ -370,7 +457,7 @@ char *inp_search(struct inp_file *in, char *token)
 	inp_reset_read(in);
 	char *line = inp_get_string(in);
 	while (line != NULL) {
-
+		//printf("'%s' '%s'\n", line,token);
 		if (strcmp(line, token) == 0) {
 			line = inp_get_string(in);
 			return line;
@@ -388,7 +475,7 @@ int inp_search_english(struct inp_file *in, char *token)
 	inp_reset_read(in);
 	char *line = inp_get_string(in);
 	while (line != NULL) {
-
+		//printf("'%s' '%s'\n", line,token);
 		if (strcmp(line, token) == 0) {
 			line = inp_get_string(in);
 			return english_to_bin(line);

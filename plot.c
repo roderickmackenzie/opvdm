@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -48,7 +48,9 @@ void plot_open(struct device *in)
 		in->gnuplot = popen("gnuplot -persist", "w");
 		fprintf(in->gnuplot,
 			"set terminal x11 title 'Organic Photovoltaic Device Model - www.opvdm.com' \n");
-
+		//fprintf(in->gnuplot, "clear\n");
+		//fprintf(in->gnuplot, "set multiplot\n");
+		//fprintf(in->gnuplot, "set data style lines\n");
 		fflush(in->gnuplot);
 
 	}

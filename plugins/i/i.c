@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +19,9 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+/** @file i.c
+	@brief Simple functions to read in scientific data from text files and perform simple maths on the data.
+*/
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
 #include <stdio.h>
@@ -182,6 +184,11 @@ void inter_sort(struct istruct *in)
 	free(data);
 }
 
+/**Do a chop search for a value
+@param x index array
+@param N length
+@param find Value to find
+*/
 int search(double *x, int N, double find)
 {
 	if (N == 1)
@@ -220,6 +227,9 @@ int search(double *x, int N, double find)
 	return pos;
 }
 
+/**Get length of a file in lines
+@param file_name file name
+*/
 int get_file_len(char *file_name)
 {
 	FILE *file;
@@ -239,7 +249,7 @@ int get_file_len(char *file_name)
 		if (buffer[0] == '#') {
 			i--;
 		} else {
-
+			//Check for empty line
 			while (*p == ' ' || *p == '\t')
 				p++;
 			if ((*p == '\r') || (*p == '\n') || (*p == 0))
@@ -247,11 +257,15 @@ int get_file_len(char *file_name)
 		}
 		i++;
 	} while (!feof(file));
-
+//i--;
 	fclose(file);
 	return i;
 }
 
+/**Get position of quartile
+@param in input structure
+@param value Value to find
+*/
 double inter_get_quartile(struct istruct *in, double value)
 {
 	int i;
@@ -299,6 +313,10 @@ double inter_get_quartile(struct istruct *in, double value)
 	return 0.0;
 }
 
+/**Add together istruct structures
+@param out output structure 
+@param in structure to add
+*/
 void inter_add(struct istruct *out, struct istruct *in)
 {
 	int i;
@@ -308,12 +326,21 @@ void inter_add(struct istruct *out, struct istruct *in)
 
 }
 
+/**Allocate istruct as a 2D array 
+@param in the array to allocate
+@param m number of coloums
+@param len length of data to store in the array
+*/
 void inter_alloc(struct istruct *in, int len)
 {
 	in->x = (double *)malloc(len * sizeof(double));
 	in->data = (double *)malloc(len * sizeof(double));
 }
 
+/**Translate the input istruct to a log struct
+@param in inout istruct 
+@param out output istruct
+*/
 void inter_to_log_mesh(struct istruct *out, struct istruct *in)
 {
 	double a = log10(in->x[0]);
@@ -330,6 +357,10 @@ void inter_to_log_mesh(struct istruct *out, struct istruct *in)
 
 }
 
+/**Use linear interpolation to project an istruct array to a new linear mesh
+@param in input istruct 
+@param out output istruct
+*/
 void inter_to_new_mesh(struct istruct *in, struct istruct *out)
 {
 	int i;
@@ -349,18 +380,27 @@ void inter_to_new_mesh(struct istruct *in, struct istruct *out)
 		out->x[i] = pos;
 		out->data[i] = y0 + ((y1 - y0) / (x1 - x0)) * (pos - x0);
 
+		//printf("%d %d %le %le %le %le \n",i,ii,out->x[i],out->data[i],delta,in->x[i]);
 		pos += delta;
 	}
 
 	return;
 }
 
+/**Change the size of an allocated istruct
+@param in inout istruct 
+@param len new length
+*/
 void inter_realloc(struct istruct *in, int len)
 {
 	in->x = (double *)realloc(in->x, len * sizeof(double));
 	in->data = (double *)realloc(in->data, len * sizeof(double));
 }
 
+/**Allocate a new 1D istruct
+@param in input istruct 
+@param len new length
+*/
 void inter_new(struct istruct *in, int len)
 {
 	int i;
@@ -376,6 +416,9 @@ void inter_new(struct istruct *in, int len)
 
 }
 
+/**Sum a 1D istruct whilst taking the modulus of the data. 
+@param in input istruct 
+*/
 double inter_sum_mod(struct istruct *in)
 {
 	int i;
@@ -387,6 +430,12 @@ double inter_sum_mod(struct istruct *in)
 	return sum;
 }
 
+/**Get the average value of the data in a 1D istruct between two points
+@param in input istruct
+@param start start point
+@param stop stop point
+
+*/
 double inter_avg_range(struct istruct *in, double start, double stop)
 {
 	int i;
@@ -401,6 +450,9 @@ double inter_avg_range(struct istruct *in, double start, double stop)
 	return sum / points;
 }
 
+/**Get the average value of the data in a 1D istruct 
+@param in input istruct 
+*/
 double inter_avg(struct istruct *in)
 {
 	int i;
@@ -412,6 +464,9 @@ double inter_avg(struct istruct *in)
 	return sum / ((double)(in->len));
 }
 
+/**Sum a 1D istruct (no modulus) 
+@param in input istruct 
+*/
 double inter_sum(struct istruct *in)
 {
 	int i;
@@ -423,18 +478,27 @@ double inter_sum(struct istruct *in)
 	return sum;
 }
 
+/**Convolve two istructs  
+@param one input/output istruct
+@param two input istruct
+*/
 void inter_convolve(struct istruct *one, struct istruct *two)
 {
 	int i;
+//double sum=0.0;
 
 	for (i = 0; i < one->len; i++) {
 		one->data[i] *= two->data[i];
 	}
 }
 
+/**Multiply the data in a 1D istruct by a number   
+@param in input istruct 
+*/
 void inter_mul(struct istruct *in, double mul)
 {
 	int i;
+//double sum=0.0;
 
 	for (i = 0; i < in->len; i++) {
 		in->data[i] *= mul;
@@ -464,7 +528,7 @@ double inter_get_diff(char *out_path, struct istruct *one, struct istruct *two,
 				 inter_get_noend(two,
 						 pos)) * inter_get_noend(mull,
 									 pos);
-
+			//printf("%le %le %le %lf\n",pos,inter_get_noend(one,pos),inter_get_noend(two,pos),inter_get_noend(mull,pos));
 			if (out_path != NULL)
 				fprintf(out, "%le %le\n", pos, etemp);
 			error += etemp;
@@ -479,14 +543,17 @@ double inter_get_diff(char *out_path, struct istruct *one, struct istruct *two,
 	return error / points;
 }
 
+/**Integrate the data
+@param in the structure to integrate
+*/
 double inter_intergrate(struct istruct *in)
 {
 	int i;
 	double tn = 0.0;
 	double tp = 0.0;
-
+//double t=0.0;
 	double dt = 0.0;
-
+//double Eomega=0.0;
 	double sum = 0.0;
 	double n;
 
@@ -513,14 +580,19 @@ double inter_intergrate(struct istruct *in)
 	return sum;
 }
 
+/**Integrate the data between limits
+@param in the structure to integrate
+@param from lower limit
+@param from upper limit
+*/
 double inter_intergrate_lim(struct istruct *in, double from, double to)
 {
 	int i;
 	double tn = 0.0;
 	double tp = 0.0;
-
+//double t=0.0;
 	double dt = 0.0;
-
+//double Eomega=0.0;
 	double sum = 0.0;
 	double n;
 
@@ -577,6 +649,9 @@ double inter_norm_to_one_range(struct istruct *in, double start, double stop)
 	return max;
 }
 
+/**Get maximum value of an istruct   
+@param in input istruct 
+*/
 double inter_get_max(struct istruct *in)
 {
 	double max = 0.0;
@@ -593,7 +668,7 @@ double inter_get_max_range(struct istruct *in, int start, int stop)
 	if (start < in->len) {
 		max = in->data[start];
 	}
-
+//if (in->len>0) max=in->data[0];
 	for (i = start; i < stop; i++) {
 		if (in->data[i] > max)
 			max = in->data[i];
@@ -607,7 +682,7 @@ int inter_get_max_pos(struct istruct *in)
 	int i;
 	int pos = 0;
 	double max = in->data[0];
-
+//if (in->len>0) max=in->data[0];
 	for (i = 0; i < in->len; i++) {
 		if (in->data[i] > max) {
 			max = in->data[i];
@@ -618,11 +693,14 @@ int inter_get_max_pos(struct istruct *in)
 	return pos;
 }
 
+/**Get maximum value of an istruct   
+@param in input istruct 
+*/
 double inter_get_fabs_max(struct istruct *in)
 {
 	int i;
 	double max = fabs(in->data[0]);
-
+//if (in->len>0) max=in->data[0];
 	for (i = 0; i < in->len; i++) {
 		if (fabs(in->data[i]) > max)
 			max = fabs(in->data[i]);
@@ -631,11 +709,14 @@ double inter_get_fabs_max(struct istruct *in)
 	return max;
 }
 
+/**Norm istruct to max value   
+@param in input istruct 
+*/
 double inter_norm(struct istruct *in, double mul)
 {
 	int i;
 	double max = in->data[0];
-
+//if (in->len>0) max=in->data[0];
 	for (i = 0; i < in->len; i++) {
 		if (in->data[i] > max)
 			max = in->data[i];
@@ -648,6 +729,9 @@ double inter_norm(struct istruct *in, double mul)
 	return max;
 }
 
+/**Perform log10 on data in istruct   
+@param in input istruct 
+*/
 void inter_log_y_m(struct istruct *in)
 {
 	int i;
@@ -661,6 +745,9 @@ void inter_log_y_m(struct istruct *in)
 	}
 }
 
+/**Perform log10 on data in istruct   
+@param in input istruct 
+*/
 void inter_log_y(struct istruct *in)
 {
 	int i;
@@ -669,6 +756,9 @@ void inter_log_y(struct istruct *in)
 	}
 }
 
+/**Perform log10 on x axis in istruct   
+@param in input istruct 
+*/
 void inter_log_x(struct istruct *in)
 {
 	int i;
@@ -678,6 +768,9 @@ void inter_log_x(struct istruct *in)
 	}
 }
 
+/**Smooth istruct with a window 
+@param points input istruct 
+*/
 void inter_smooth_range(struct istruct *out, struct istruct *in, int points,
 			double x)
 {
@@ -692,8 +785,8 @@ void inter_smooth_range(struct istruct *out, struct istruct *in, int points,
 			pos = i + ii;
 
 			if ((pos < in->len) && (pos >= 0)) {
-				tot += in->data[pos];
-				tot_point += 1.0;
+				tot += in->data[pos];	//*dx;
+				tot_point += 1.0;	//dx;
 			}
 		}
 
@@ -707,6 +800,9 @@ void inter_smooth_range(struct istruct *out, struct istruct *in, int points,
 	}
 }
 
+/**Smooth istruct with a window   
+@param points input istruct 
+*/
 void inter_smooth(struct istruct *out, struct istruct *in, int points)
 {
 	int i = 0;
@@ -720,8 +816,8 @@ void inter_smooth(struct istruct *out, struct istruct *in, int points)
 			pos = i + ii;
 
 			if ((pos < in->len) && (pos >= 0)) {
-				tot += in->data[pos];
-				tot_point += 1.0;
+				tot += in->data[pos];	//*dx;
+				tot_point += 1.0;	//dx;
 			}
 		}
 
@@ -731,6 +827,9 @@ void inter_smooth(struct istruct *out, struct istruct *in, int points)
 	}
 }
 
+/**Remove zeros from the data stored in istruct
+@param in input istruct 
+*/
 void inter_purge_zero(struct istruct *in)
 {
 	int i;
@@ -739,20 +838,23 @@ void inter_purge_zero(struct istruct *in)
 	for (i = 0; i < in->len; i++) {
 		in->data[write] = in->data[read];
 		in->x[write] = in->x[read];
-
+		//if (in->len==24) printf("%le\n",in->data[read]);
 		if (in->data[read] == 0.0) {
 			write--;
 		}
 		read++;
 		write++;
 	}
-
+//printf("%ld set to %ld\n",in->len,write);
 	in->len = write;
 
 	inter_realloc(in, in->len);
 
 }
 
+/**Get the smallest data stored in an istruct array
+@param in input istruct 
+*/
 double inter_get_min(struct istruct *in)
 {
 	int i = 0;
@@ -765,6 +867,9 @@ double inter_get_min(struct istruct *in)
 	return min;
 }
 
+/**Get the smallest data stored in an istruct array
+@param in input istruct 
+*/
 double inter_get_min_range(struct istruct *in, double min, double max)
 {
 	int i = 0;
@@ -779,6 +884,10 @@ double inter_get_min_range(struct istruct *in, double min, double max)
 	return ret;
 }
 
+/**Chop an istruct array between two points 
+@param min min point
+@param min max point 
+*/
 void inter_chop(struct istruct *in, double min, double max)
 {
 	int i;
@@ -802,6 +911,9 @@ void inter_chop(struct istruct *in, double min, double max)
 	inter_realloc(in, in->len);
 }
 
+/**Divide the data in an istruct by a value
+@param div value to divide the data by
+*/
 void inter_div_double(struct istruct *in, double div)
 {
 	int i;
@@ -810,6 +922,12 @@ void inter_div_double(struct istruct *in, double div)
 	}
 
 }
+
+/**Rescale the scale and the data
+@param in The structure holding the data
+@param xmul multiply x axis by this
+@param ymul multiply y axis by this
+*/
 
 void inter_rescale(struct istruct *in, double xmul, double ymul)
 {
@@ -821,6 +939,9 @@ void inter_rescale(struct istruct *in, double xmul, double ymul)
 
 }
 
+/**Make all the data positive
+@param in the structure holding the data
+*/
 void inter_mod(struct istruct *in)
 {
 	int i;
@@ -831,6 +952,9 @@ void inter_mod(struct istruct *in)
 
 }
 
+/**Raise the data in an istruct by a power  
+@param p power to raise the data by
+*/
 void inter_pow(struct istruct *in, double p)
 {
 	int i;
@@ -840,6 +964,9 @@ void inter_pow(struct istruct *in, double p)
 
 }
 
+/**Add a value from every x element in the array  
+@param value value to subtract from data 
+*/
 void inter_add_x(struct istruct *in, double value)
 {
 	int i;
@@ -849,6 +976,9 @@ void inter_add_x(struct istruct *in, double value)
 
 }
 
+/**Subtract a value from every data element in the array  
+@param value value to subtract from data 
+*/
 void inter_sub_double(struct istruct *in, double value)
 {
 	int i;
@@ -858,6 +988,11 @@ void inter_sub_double(struct istruct *in, double value)
 
 }
 
+/**Divide one array by the other they must be of the same length/x-asis
+@param in opperand one, then result
+@param in opperand two
+ 
+*/
 void inter_div(struct istruct *one, struct istruct *two)
 {
 	if (one->len != two->len) {
@@ -877,6 +1012,11 @@ void inter_div(struct istruct *one, struct istruct *two)
 
 }
 
+/**Subtract two arrays they must be of the same length/x-asis
+@param in opperand one, then result
+@param in opperand two
+ 
+*/
 void inter_sub(struct istruct *one, struct istruct *two)
 {
 	if (one->len != two->len) {
@@ -895,6 +1035,10 @@ void inter_sub(struct istruct *one, struct istruct *two)
 
 }
 
+/**Add a number to an istruct  
+@param in input istruct
+@param value value to add to istruct
+*/
 void inter_add_double(struct istruct *in, double value)
 {
 	int i;
@@ -904,6 +1048,10 @@ void inter_add_double(struct istruct *in, double value)
 
 }
 
+/**Normalize the area under a 1D istruct to one multiplied by a constant
+@param in input istruct
+@param mul number to multiply the istruct by
+*/
 void inter_norm_area(struct istruct *in, double mul)
 {
 	int i;
@@ -961,6 +1109,9 @@ void inter_init_mesh(struct istruct *in, int len, double min, double max)
 
 }
 
+/**Initialize a 1D istruct
+@param in input istruct
+*/
 void inter_init(struct istruct *in)
 {
 	in->len = 0;
@@ -1042,6 +1193,7 @@ void inter_load_by_col(struct istruct *in, char *name, int col)
 				temp[i] = ' ';
 		}
 
+		//printf("read=%s\n",temp);
 		if ((temp[0] != '#') && (temp[0] != '\n') && (temp[0] != '\r')
 		    && (temp[0] != 0)) {
 			token = strtok(temp, s);
@@ -1063,6 +1215,7 @@ void inter_load_by_col(struct istruct *in, char *name, int col)
 				if (ret == 1)
 					inter_append(in, x, y);
 			}
+			//printf("added= %le %le\n",x,y);
 
 		}
 
@@ -1070,6 +1223,11 @@ void inter_load_by_col(struct istruct *in, char *name, int col)
 	fclose(file);
 }
 
+/**Make a copy of one istruct
+@param in input istruct
+@param output istruct
+@param alloc initialize the memory in the output istruct
+*/
 void inter_copy(struct istruct *in, struct istruct *orig, int alloc)
 {
 	int i;
@@ -1103,6 +1261,10 @@ void inter_import_array(struct istruct *in, double *x, double *y, int len,
 
 }
 
+/**Take the derivative with respect to the x axis of an istruct
+@param in input istruct
+@param output istruct
+*/
 void inter_deriv(struct istruct *out, struct istruct *in)
 {
 	int i;
@@ -1138,6 +1300,9 @@ void inter_deriv(struct istruct *out, struct istruct *in)
 
 }
 
+/**Invert data on x axis of istruct
+@param in istruct to operate on
+*/
 void inter_swap(struct istruct *in)
 {
 	int i;
@@ -1158,6 +1323,10 @@ void inter_swap(struct istruct *in)
 	free(dtemp);
 }
 
+/**Load data from a file
+@param in the istruct holding the data
+@param name The file name.
+*/
 void inter_load(struct istruct *in, char *name)
 {
 	char temp[1000];
@@ -1177,11 +1346,11 @@ void inter_load(struct istruct *in, char *name)
 	do {
 		temp[0] = 0;
 		unused_pchar = fgets(temp, 1000, file);
-
+		//printf("read=%s\n",temp);
 		if ((temp[0] != '#') && (temp[0] != '\n') && (temp[0] != '\r')
 		    && (temp[0] != 0)) {
 			sscanf(temp, "%le %le", &(x), &(y));
-
+			//printf("added= %le %le\n",x,y);
 			inter_append(in, x, y);
 		}
 
@@ -1198,6 +1367,9 @@ void inter_set_value(struct istruct *in, double value)
 
 }
 
+/**Take segments of dx and multiply them by the y-axis.
+@param in struct to work on
+*/
 void inter_y_mul_dx(struct istruct *in)
 {
 	int i = 0;
@@ -1224,6 +1396,9 @@ void inter_y_mul_dx(struct istruct *in)
 
 }
 
+/**Make a cumulative graph.
+@param in struct to work on
+*/
 void inter_make_cumulative(struct istruct *in)
 {
 	int i = 0;
@@ -1251,6 +1426,9 @@ void inter_make_cumulative(struct istruct *in)
 
 }
 
+/**Print istruct to screen
+@param in struct to print
+*/
 void inter_dump(struct istruct *in)
 {
 	int i = 0;
@@ -1260,6 +1438,11 @@ void inter_dump(struct istruct *in)
 
 }
 
+/**Save an istruct to disk and define path
+@param in struct to save
+@param path path of output file
+@param path name of output file
+*/
 void inter_save_backup(struct istruct *in, char *name, int backup)
 {
 	char wholename[200];
@@ -1280,6 +1463,11 @@ void inter_save_backup(struct istruct *in, char *name, int backup)
 
 }
 
+/**Save an istruct to disk and define path
+@param in struct to save
+@param path path of output file
+@param path name of output file
+*/
 void inter_save_a(struct istruct *in, char *path, char *name)
 {
 	char wholename[200];
@@ -1291,7 +1479,8 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 {
 	FILE *file = NULL;
 	int i = 0;
-
+//printf("%d %d\n",in->len);
+//getchar();
 	int count_max = in->len / seg;
 	int count = 0;
 	char temp[1000];
@@ -1303,6 +1492,7 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 
 			join_path(2, temp, path, file_name);
 
+			//printf("%s\n",temp);
 			file = fopen(temp, "w");
 			file_count++;
 		}
@@ -1322,6 +1512,10 @@ void inter_save_seg(struct istruct *in, char *path, char *name, int seg)
 
 }
 
+/**Save an istruct to disk
+@param in struct to save
+@param name outputfile
+*/
 void inter_save(struct istruct *in, char *name)
 {
 	FILE *file;
@@ -1374,6 +1568,11 @@ double inter_get_raw(double *x, double *data, int len, double pos)
 	return ret;
 }
 
+/**Get interpolated data from a data set
+@param in The structure holding the data
+@param x the position of the data.
+@return the interpolated data value
+*/
 double inter_get(struct istruct *in, double x)
 {
 	double x0;
@@ -1384,13 +1583,30 @@ double inter_get(struct istruct *in, double x)
 	double ret;
 	int i = 0;
 
+//if (x>in->x[in->len-1]) return 0.0;
 	if (x < in->x[0]) {
 
 		return 0.0;
 	}
 
-	if (x >= in->x[in->len - 1]) {
+/*for (i=0;i<in->len;i++)
+{
+	if (in->x[i]>x)
+	{
+		break;
+	}
+}
 
+i--;
+if (i<0) i=0;
+
+if (i>=(in->len-1)) i=in->len-2;
+*/
+
+	if (x >= in->x[in->len - 1]) {
+//inter_dump(in);
+//printf("%s\n",in->name);
+//getchar();
 		i = in->len - 1;
 		x0 = in->x[i - 1];
 		x1 = in->x[i];
@@ -1412,6 +1628,13 @@ double inter_get(struct istruct *in, double x)
 
 double inter_get_hard(struct istruct *in, double x)
 {
+//double x0;
+//double x1;
+//double y0;
+//double y1;
+
+//double ret;
+//int i=0;
 
 	if (x > in->x[in->len - 1]) {
 
@@ -1461,6 +1684,9 @@ double inter_get_noend(struct istruct *in, double x)
 	return ret;
 }
 
+/**Free the structure holding the data
+@param in The structure holding the data
+*/
 void inter_free(struct istruct *in)
 {
 	in->len = 0;

@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "advmath.h"
 
+//Taken from mathworld and wikipidia
 double dB(double x)
 {
 	double ret;
@@ -44,7 +44,7 @@ double B(double x)
 {
 	double ret;
 	if (fabs(x) < 1e-16) {
-
+//From mathworld and wikipidia
 		ret =
 		    1 - x / 2.0 + pow(x, 2.0) / 12.0 - pow(x,
 							   4.0) / 720.0 + pow(x,

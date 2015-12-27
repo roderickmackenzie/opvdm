@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,9 +18,13 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+/** @file vec.c
+	@brief Basic vector manipulation routines
+*/
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
-
+//<clean=none></clean>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -30,6 +33,14 @@
 #include <stdlib.h>
 #include "vec.h"
 
+/** @brief Basic vector manipulation routines
+this function needs four points and will calculate the dihedral angle
+
+ a            d
+  \          / 
+   \        /  
+    b------c   
+*/
 double vec_get_dihedral(struct vec *a, struct vec *b, struct vec *c,
 			struct vec *d)
 {
@@ -65,6 +76,13 @@ double vec_get_dihedral(struct vec *a, struct vec *b, struct vec *c,
 	return cos_;
 }
 
+/**Rotate a vector around an arbitrary axis
+@arg in   Input vector
+@arg unit A unit vector by around which the vector should be rotated
+@arg base ??
+@arg ang  Angle by which the rotation should be performed
+*/
+
 void rot_vec(struct vec *in, struct vec *unit, struct vec *base, double ang)
 {
 	struct vec temp;
@@ -94,6 +112,28 @@ void rot_vec(struct vec *in, struct vec *unit, struct vec *base, double ang)
 	cpy_vec(in, &temp);
 }
 
+/*void rotx_vec(struct vec *out, struct vec *in,double a)
+{
+	out->x=in->atom[i].x*1.0 + in->atom[i].y*0.0 +in->atom[i].z*0.0;
+	out->y=in->atom[i].x*0.0 + in->atom[i].y*cos(a) +in->atom[i].z*(-sin(a));
+	out->z=in->atom[i].x*0.0 + in->atom[i].y*sin(a) +in->atom[i].z*cos(a);
+}
+
+void roty_vec(struct vec *out, struct vec *in,double a)
+{
+	out->x=in->atom[i].x*cos(a)    + in->atom[i].y*0.0 + in->atom[i].z*sin(a);
+	out->y=in->atom[i].x*0.0       + in->atom[i].y*1.0 + in->atom[i].z*0.0;
+	out->z=in->atom[i].x*(-sin(a)) + in->atom[i].y*0.0 + in->atom[i].z*cos(a);
+}
+
+void rotz_vec(struct vec *out, struct vec *in,double a)
+{
+	out->x=in->atom[i].x*cos(a) + in->atom[i].y*(-sin(a)) +in->atom[i].z*0.0;
+	out->y=in->atom[i].x*sin(a) + in->atom[i].y*cos(a) +in->atom[i].z*0.0;
+	out->z=in->atom[i].x*0.0 + in->atom[i].y*0.0 +in->atom[i].z*1.0;
+}*/
+
+///Set a vector
 void set_vec(struct vec *my_vec, double x, double y, double z)
 {
 	my_vec->x = x;
@@ -101,6 +141,7 @@ void set_vec(struct vec *my_vec, double x, double y, double z)
 	my_vec->z = z;
 }
 
+///Add to a vector
 void add_to_vec(struct vec *my_vec, double x, double y, double z)
 {
 	my_vec->x += x;
@@ -108,6 +149,7 @@ void add_to_vec(struct vec *my_vec, double x, double y, double z)
 	my_vec->z += z;
 }
 
+///Copy a vector
 void cpy_vec(struct vec *my_vec1, struct vec *my_vec2)
 {
 	my_vec1->x = my_vec2->x;
@@ -115,18 +157,20 @@ void cpy_vec(struct vec *my_vec1, struct vec *my_vec2)
 	my_vec1->z = my_vec2->z;
 }
 
+///Compare two vector
 int cmp_vec(struct vec *my_vec1, struct vec *my_vec2)
 {
 	struct vec temp;
 	cpy_vec(&temp, my_vec1);
 	sub_vec(&temp, my_vec2);
-
+//printf ("%lf\n",);
 	double test = mod_vec(&temp);
 	if (test < 1e-6)
 		return 0;
 	return 1;
 }
 
+///Add two vectors together
 void add_vec(struct vec *my_vec1, struct vec *my_vec2)
 {
 	my_vec1->x += my_vec2->x;
@@ -134,6 +178,7 @@ void add_vec(struct vec *my_vec1, struct vec *my_vec2)
 	my_vec1->z += my_vec2->z;
 }
 
+///Subtract two vectors
 void sub_vec(struct vec *my_vec1, struct vec *my_vec2)
 {
 	my_vec1->x -= my_vec2->x;
@@ -141,6 +186,7 @@ void sub_vec(struct vec *my_vec1, struct vec *my_vec2)
 	my_vec1->z -= my_vec2->z;
 }
 
+///Divide one vector by a double
 void div_vec(struct vec *my_vec1, double n)
 {
 	my_vec1->x /= n;
@@ -148,6 +194,7 @@ void div_vec(struct vec *my_vec1, double n)
 	my_vec1->z /= n;
 }
 
+///Calculate the smallest angle between two vectors
 double ang_vec(struct vec *one, struct vec *two)
 {
 	double dot;
@@ -157,10 +204,12 @@ double ang_vec(struct vec *one, struct vec *two)
 
 	cos_ =
 	    (acos(dot / (mod_vec(one) * mod_vec(two))) / (3.1415026)) * 180.0;
-
+	//if (dot<0) cos_=360.0-cos_;
+	//printf("%lf\n",dot);
 	return cos_;
 }
 
+///Multiply a vector by a double
 void mul_vec(struct vec *my_vec1, double n)
 {
 	my_vec1->x *= n;
@@ -168,12 +217,14 @@ void mul_vec(struct vec *my_vec1, double n)
 	my_vec1->z *= n;
 }
 
+///Return |Vector|
 double mod_vec(struct vec *my_vec)
 {
 	return sqrt(pow(my_vec->x, 2.0) + pow(my_vec->y, 2.0) +
 		    pow(my_vec->z, 2.0));
 }
 
+///Normalize a vector
 void norm_vec(struct vec *my_vec1)
 {
 	double mod = mod_vec(my_vec1);
@@ -182,6 +233,7 @@ void norm_vec(struct vec *my_vec1)
 	my_vec1->z /= mod;
 }
 
+///Make all vector component signs positive
 void plus_vec(struct vec *my_vec1)
 {
 	if (my_vec1->x < 0)
@@ -192,6 +244,7 @@ void plus_vec(struct vec *my_vec1)
 		my_vec1->z *= -1.0;
 }
 
+///Perform a dot product between two vectors
 double dot_vec(struct vec *a, struct vec *b)
 {
 	return (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
@@ -199,6 +252,7 @@ double dot_vec(struct vec *a, struct vec *b)
 
 struct vec null_vec;
 
+///Perform the cross product of two vectors
 void cros_vec(struct vec *ret, struct vec *a, struct vec *b)
 {
 	ret->x = (a->y * b->z) - (a->z * b->y);
@@ -209,11 +263,13 @@ void cros_vec(struct vec *ret, struct vec *a, struct vec *b)
 
 }
 
+///Print a vector to stdout
 void print_vec(struct vec *my_vec)
 {
 	printf("%lf %lf %lf\n", my_vec->x, my_vec->y, my_vec->z);
 }
 
+///Print a vector to a file
 void fprint_vec(FILE * out, struct vec *my_vec)
 {
 	fprintf(out, "%lf %lf %lf\n", my_vec->x, my_vec->y, my_vec->z);

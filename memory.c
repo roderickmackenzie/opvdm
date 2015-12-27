@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <string.h>
 #include "sim.h"
 #include "dump.h"
+#include "mesh.h"
 #include <math.h>
 
 void free_srh_bands(struct device *in, double **var)
@@ -79,7 +80,6 @@ void device_free(struct device *in)
 	free(in->Te);
 	free(in->Th);
 	free(in->R);
-	free(in->imat);
 	free(in->Fi);
 	free(in->Jn);
 	free(in->Jp);
@@ -175,7 +175,7 @@ void device_free(struct device *in)
 	free(in->ntequlib);
 	free(in->ptequlib);
 
-	free(in->meshdata);
+	mesh_free(in);
 
 	solver_free();
 	complex_solver_free();
@@ -242,7 +242,8 @@ void device_get_memory(struct device *in)
 
 	in->p = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->p, 0, in->ymeshpoints * sizeof(double));
-
+	//malloc_srh_bands(in,&(in->n));
+	//malloc_srh_bands(in,&(in->p));
 	in->dn = malloc(in->ymeshpoints * sizeof(double));
 	memset(in->dn, 0, in->ymeshpoints * sizeof(double));
 

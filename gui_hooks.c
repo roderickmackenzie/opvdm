@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -18,8 +18,7 @@
 //
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
-//    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
+//    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.s
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +40,7 @@ int gui_send_data(char *tx_data_in)
 	char temp[1024];
 	string_to_hex(temp, tx_data_in);
 	sprintf(tx_data, "hex%s", temp);
-
+	//printf("tx: %s\n",tx_data);
 #ifdef dbus
 	DBusConnection *connection;
 	DBusError error;
@@ -62,7 +61,7 @@ int gui_send_data(char *tx_data_in)
 	dbus_connection_send(connection, message, NULL);
 	dbus_connection_flush(connection);
 	dbus_message_unref(message);
-
+	//dbus_connection_close(connection);
 #endif
 
 #ifdef windows
@@ -76,12 +75,13 @@ int gui_send_data(char *tx_data_in)
 		printf("Failed to connect to pipe.");
 		return 1;
 	}
-
+	//int result;
 	DWORD numBytesWritten = 0;
-
+	//result = 
 	WriteFile(pipe, (const wchar_t *)tx_data,
 		  strlen(tx_data) * sizeof(char), &numBytesWritten, NULL);
 
+	// Close our pipe handle
 	CloseHandle(pipe);
 
 #endif

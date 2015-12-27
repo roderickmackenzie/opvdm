@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -27,7 +26,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <util.h>
-
+//#include <zip.h>
 #include "buffer.h"
 #include "true_false.h"
 #include "code_ctrl.h"
@@ -111,14 +110,14 @@ void buffer_add_string(struct buffer *in, char *string)
 	int str_len = strlen(string);
 	int pos = in->len;
 	in->len += str_len;
-
+//the +1 accounts for the zero at the end of a string
 	if (in->len + 100 > in->max_len) {
 		in->max_len += 1024;
 		in->buf =
 		    (char *)realloc((char *)in->buf,
 				    sizeof(char) * in->max_len);
 	}
-
+//printf("%p %d %d\n",in->buf,in->max_len,in->len);
 	strcpy((char *)(in->buf + pos), string);
 }
 

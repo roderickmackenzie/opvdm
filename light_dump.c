@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -225,6 +225,14 @@ void light_dump(struct light *in)
 		buffer_free(&buf);
 
 	}
+//out=fopen("reflect.dat","w");
+
+//for (i=0;i<in->lpoints;i++)
+//{
+//              fprintf(out,"%le %le\n",in->l[i],in->reflect[i]);
+//}
+
+//fclose(out);
 
 }
 
@@ -233,6 +241,8 @@ void light_dump_1d(struct light *in, int i, char *ext)
 	char out_dir[1024];
 	char line[1024];
 	char out_name[200];
+	char temp_name[400];
+
 	struct buffer data_photons;
 	struct buffer data_photons_norm;
 	struct buffer data_light_1d_Ep;
@@ -240,6 +250,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 	struct buffer data_pointing;
 	struct buffer data_E_tot;
 	struct buffer data_1d_photons_tot;
+	struct buffer data_1d_photons_tot_abs;
 	struct buffer data_r;
 	struct buffer data_t;
 	struct buffer buf;
@@ -251,6 +262,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 	buffer_init(&data_pointing);
 	buffer_init(&data_E_tot);
 	buffer_init(&data_1d_photons_tot);
+	buffer_init(&data_1d_photons_tot_abs);
 	buffer_init(&data_r);
 	buffer_init(&data_t);
 	buffer_init(&buf);
@@ -284,7 +296,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 			strcpy(buf.title, "Normalized photon density");
 			strcpy(buf.type, "xy");
 			strcpy(buf.x_label, "Position");
-			strcpy(buf.y_label, "Hole current density");
+			strcpy(buf.y_label, "Photon indesntiy");
 			strcpy(buf.x_units, "$nm$");
 			strcpy(buf.y_units, "$a.u.$");
 			buf.logscale_x = 0;
@@ -303,9 +315,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 			buffer_dump_path(out_dir, out_name, &buf);
 			buffer_free(&buf);
 
-			char name_1d_photons_tot[200];
-			sprintf(name_1d_photons_tot,
-				"light_1d_photons_tot%s.dat", ext);
+			sprintf(temp_name, "light_1d_photons_tot%s.dat", ext);
 
 			for (ii = 0; ii < in->points; ii++) {
 				sprintf(line, "%le %le\n",
@@ -315,8 +325,36 @@ void light_dump_1d(struct light *in, int i, char *ext)
 
 			}
 
-			buffer_dump_path(out_dir, name_1d_photons_tot,
+			buffer_dump_path(out_dir, temp_name,
 					 &data_1d_photons_tot);
+
+			max = inter_array_get_max(in->Gn, in->points);
+			buffer_malloc(&data_1d_photons_tot_abs);
+			buffer_malloc(&buf);
+			buf.y_mul = 1.0;
+			buf.x_mul = 1e9;
+			strcpy(buf.title, "Normalized photons absorbed");
+			strcpy(buf.type, "xy");
+			strcpy(buf.x_label, "Position");
+			strcpy(buf.y_label, "Absorbed photon destiny");
+			strcpy(buf.x_units, "$nm$");
+			strcpy(buf.y_units, "$a.u.$");
+			buf.logscale_x = 0;
+			buf.logscale_y = 0;
+			buffer_add_info(&buf);
+
+			for (ii = 0; ii < in->points; ii++) {
+				sprintf(line, "%le %le\n",
+					in->x[ii] - in->device_start,
+					in->Gn[ii] / max);
+				buffer_add_string(&buf, line);
+			}
+
+			sprintf(out_name, "light_1d_photons_tot_abs_norm%s.dat",
+				ext);
+			buffer_dump_path(out_dir, out_name, &buf);
+			buffer_free(&buf);
+
 		}
 
 		buffer_malloc(&data_photons);
@@ -414,6 +452,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 
 		if (i == 0) {
 			buffer_free(&data_1d_photons_tot);
+			buffer_free(&data_1d_photons_tot_abs);
 		}
 
 		if (get_dump_status(dump_optics_verbose) == TRUE) {

@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,10 +62,12 @@ int random_int(int in)
 	int out = 0;
 	int random;
 	FILE *fp = fopen("/dev/urandom", "r");
-	fread(&random, sizeof(int), 1, fp);
+	if (fread(&random, sizeof(int), 1, fp) == 0) {
+		ewe("No data read from urandom\n");
+	}
 	random = fabs(random);
 	out = random % (in + 1);
-
+//printf("%d\n", out);
 	fclose(fp);
 	return out;
 }
@@ -102,7 +103,7 @@ void randomize_input_files()
 
 		sscanf(data, "%s %s %le %le %le %le", file, token, &man_min,
 		       &man_max, &exp_min, &exp_max);
-
+		//printf("%s '%s' %f %f %f %f\n",file,token,man_min,man_max,exp_min,exp_max);
 		a = (double)random_int_range(man_min, man_max);
 		b = (double)random_int_range(exp_min, exp_max);
 		value = a * pow(10, b);
@@ -110,6 +111,8 @@ void randomize_input_files()
 		inp_load(&ifile, file);
 		inp_replace(&ifile, token, value_string);
 		inp_free(&ifile);
+
+		//printf("%f %f %le\n",a,b,value);
 
 	} while (1);
 

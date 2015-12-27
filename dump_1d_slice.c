@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -33,18 +33,15 @@
 #include "buffer.h"
 #include "util.h"
 
-void dump_1d_slice(struct device *in, char *dump_dir, char *extra)
+void dump_1d_slice(struct device *in, char *out_dir)
 {
 	int i;
 	int band;
 	char name[100];
 	char temp[200];
-	char out_dir[200];
 	double Vexternal = get_equiv_V(in);
 	struct buffer buf;
 	buffer_init(&buf);
-
-	join_path(3, out_dir, in->outputpath, dump_dir, extra);
 
 	struct stat st = { 0 };
 
@@ -1161,7 +1158,5 @@ void dump_1d_slice(struct device *in, char *dump_dir, char *extra)
 	buffer_add_xy_data(&buf, in->ymesh, in->nrelax, in->ymeshpoints);
 	buffer_dump_path(out_dir, name, &buf);
 	buffer_free(&buf);
-
-	dump_device_map(out_dir, extra, in);
 
 }

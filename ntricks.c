@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -109,15 +109,16 @@ void ramp(struct device *in, double from, double to, double steps)
 
 	do {
 		in->Vapplied += dV;
-
+//if (in->Vapplied<-4.0) dV=-0.3;
 		if (get_dump_status(dump_print_text) == TRUE)
 			printf("ramp: %lf %lf %d\n", in->Vapplied, to,
 			       in->kl_in_newton);
 		solve_all(in);
 		plot_now(in, "jv_vars.plot");
+//sim_externalv(in,in->cevoltage);
 
 		if (fabs(in->Vapplied - to) < fabs(dV)) {
-
+//save_state(in,to);
 			break;
 		}
 
@@ -136,7 +137,7 @@ void ramp(struct device *in, double from, double to, double steps)
 
 void save_state(struct device *in, double to)
 {
-
+//<clean>
 	printf("Dumping state\n");
 	int i;
 	int band;
@@ -155,12 +156,12 @@ void save_state(struct device *in, double to)
 
 	}
 	fclose(state);
-
+//</clean>
 }
 
 int load_state(struct device *in, double voltage)
 {
-
+//<clean>
 	printf("Load state\n");
 	int i;
 	int band;
@@ -196,7 +197,7 @@ int load_state(struct device *in, double voltage)
 	}
 	fclose(state);
 	return TRUE;
-
+//</clean>
 }
 
 double sim_externalv_ittr(struct device *in, double wantedv)
@@ -222,10 +223,10 @@ double sim_externalv_ittr(struct device *in, double wantedv)
 	itot = i1 + in->Vapplied / in->Rshunt;
 
 	e1 = fabs(itot * Rs + in->Vapplied - wantedv);
-
+//printf("%le\n",e1);
 	deriv = (e1 - e0) / step;
 	step = -e1 / deriv;
-
+//step=step/(1.0+fabs(step/clamp));
 	in->Vapplied += step;
 	int count = 0;
 	int max = 1000;
@@ -234,10 +235,12 @@ double sim_externalv_ittr(struct device *in, double wantedv)
 		solve_all(in);
 		itot = i1 + in->Vapplied / in->Rshunt;
 		e1 = fabs(itot * Rs + in->Vapplied - wantedv);
-
+//printf("error=%le Vapplied=%le \n",e1,in->Vapplied);
 		deriv = (e1 - e0) / step;
 		step = -e1 / deriv;
-
+//double clamp=0.01;
+//if (e1<clamp) clamp=e1/100.0;
+//step=step/(1.0+fabs(step/clamp));
 		step = step / (1.0 + fabs(step / clamp));
 		in->Vapplied += step;
 		if (count > max)
@@ -246,7 +249,7 @@ double sim_externalv_ittr(struct device *in, double wantedv)
 	} while (e1 > 1e-8);
 
 	double ret = get_I(in) + in->Vapplied / in->Rshunt;
-
+//getchar();
 	return ret;
 }
 

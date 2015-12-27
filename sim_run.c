@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -53,24 +53,29 @@ int run_simulation(char *outputpath, char *inputpath)
 
 	dump_init(&cell);
 	dump_load_config(&cell);
-
+//printf("%d %s\n",get_dump_status(dump_iodump),runpath);
+//getchar();
 	int i;
 
 	printf("Load config\n");
 	load_config(&cell);
 
-	if (cell.simmode != sim_mode_optics) {
+	if (strcmp(cell.simmode, "optics") != 0) {
 		printf("Loading DoS for %d layers\n",
 		       cell.my_epitaxy.electrical_layers);
 		char tempn[100];
 		char tempp[100];
 		i = 0;
-		dos_init(i);
-		printf("Load DoS %d/%d\n", i,
-		       cell.my_epitaxy.electrical_layers);
-		sprintf(tempn, "%s_dosn.dat", cell.my_epitaxy.dos_file[i]);
-		sprintf(tempp, "%s_dosp.dat", cell.my_epitaxy.dos_file[i]);
-		load_dos(&cell, tempn, tempp, i);
+		for (i = 0; i < cell.my_epitaxy.electrical_layers; i++) {
+			dos_init(i);
+			printf("Load DoS %d/%d\n", i,
+			       cell.my_epitaxy.electrical_layers);
+			sprintf(tempn, "%s_dosn.dat",
+				cell.my_epitaxy.dos_file[i]);
+			sprintf(tempp, "%s_dosp.dat",
+				cell.my_epitaxy.dos_file[i]);
+			load_dos(&cell, tempn, tempp, i);
+		}
 
 		if (get_dump_status(dump_write_converge) == TRUE) {
 			cell.converge =
@@ -99,10 +104,12 @@ int run_simulation(char *outputpath, char *inputpath)
 	for (i = 0; i < cell.ymeshpoints; i++) {
 		cell.Nad[i] = get_dos_doping(cell.imat[i]);
 	}
+//getchar();
 
 	init_mat_arrays(&cell);
 
-	if (cell.simmode != sim_mode_optics) {
+//getchar();
+	if (strcmp(cell.simmode, "optics") != 0) {
 		for (i = 0; i < cell.ymeshpoints; i++) {
 			cell.phi[i] = 0.0;
 			cell.R[i] = 0.0;
@@ -122,6 +129,8 @@ int run_simulation(char *outputpath, char *inputpath)
 		light_load_config(&cell.mylight);
 		if (get_dump_status(dump_iodump) == FALSE)
 			set_dump_status(dump_optics, FALSE);
+
+		//update_arrays(&cell);
 
 		cell.Vapplied = 0.0;
 		get_initial(&cell);
@@ -143,13 +152,15 @@ int run_simulation(char *outputpath, char *inputpath)
 		cell.stop = FALSE;
 
 		plot_now(&cell, "plot");
+		//set_solver_dump_every_matrix(1);
 
 		find_n0(&cell);
-
+		//set_solver_dump_every_matrix(0);
 		draw_gaus(&cell);
 
 		if (cell.onlypos == TRUE) {
-			dump_1d_slice(&cell, "equilibrium", "");
+			join_path(2, temp, cell.outputpath, "equilibrium");
+			dump_1d_slice(&cell, temp);
 			device_free(&cell);
 			return 0;
 		}
@@ -158,7 +169,7 @@ int run_simulation(char *outputpath, char *inputpath)
 
 	device_free(&cell);
 
-	if (cell.simmode != sim_mode_optics) {
+	if (strcmp(cell.simmode, "optics") != 0) {
 		plot_close(&cell);
 
 		for (i = 0; i < cell.my_epitaxy.electrical_layers; i++) {

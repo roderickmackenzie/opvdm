@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +33,7 @@ void dump_load_config(struct device *in)
 	struct inp_file inp;
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->inputpath, "dump.inp");
-	inp_check(&inp, 1.32);
+	inp_check(&inp, 1.34);
 
 	dump = inp_search_english(&inp, "#plot");
 	set_dump_status(dump_plot, dump);
@@ -103,6 +102,12 @@ void dump_load_config(struct device *in)
 
 	dump = inp_search_english(&inp, "#dump_write_out_band_structure");
 	set_dump_status(dump_write_out_band_structure, dump);
+
+	dump = inp_search_english(&inp, "#dump_equilibrium");
+	set_dump_status(dump_equilibrium, dump);
+
+	dump = inp_search_english(&inp, "#dump_first_guess");
+	set_dump_status(dump_first_guess, dump);
 
 	inp_free(&inp);
 

@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -60,6 +59,18 @@ static struct dosconfig configh[10];
 
 void dos_double_res()
 {
+/*double number;
+FILE *in=fopen("srhbandp.inp","r");
+FILE *out=fopen("srhbandp.new","w");
+do
+{
+unused=fscanf(in,"%le",&number);
+fprintf(out,"%le\n",number);
+fprintf(out,"%le\n",number);
+}while(!feof(in));
+fclose(in);
+fclose(out);
+*/
 	int i;
 	for (i = 1; i <= 80; i++) {
 		printf("p srhbandp.inp %d 1\n", i);
@@ -163,7 +174,7 @@ void dump_qe()
 	double rh = 0.0;
 	double rhored = 0.0;
 	double rhored_tot = 0.0;
-
+//double Ef=Ec-0.5;
 	pos = start;
 	double max = 0.0;
 	FILE *qe = fopen("qe.dat", "w");
@@ -175,14 +186,14 @@ void dump_qe()
 			re = inter_get(&n, pos + hf);
 			rh = inter_get(&p, pos);
 			rhored = re * rh;
-
+			//printf("%e %e %e %e\n",pos,rhored,re,rh);
 			rhored_tot += rhored;
 			pos += step;
 		} while (pos < stop);
 
 		if (rhored_tot > max)
 			max = rhored_tot;
-
+//getchar();
 		hf += hf_step;
 		printf("%e\n", hf);
 	} while (hf < 2.0);
@@ -201,7 +212,7 @@ void dump_qe()
 
 			pos += step;
 		} while (pos < stop);
-
+//getchar();
 		fprintf(qe, "%e %e\n", hf, rhored_tot / max);
 		hf += hf_step;
 		printf("%e\n", hf);
@@ -313,7 +324,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	tstop = in->Tstop;
 	tsteps = in->Tsteps;
 	dt = (tstop - tstart) / tsteps;
-
+//printf("%le %le\n",in->nstop,in->nstart);
+//getchar();
 	double dxr = (in->nstop - in->nstart) / ((double)in->npoints);
 
 	xpos = in->nstart;
@@ -323,12 +335,12 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #ifdef dos_bin
 	int buf_len = 0;
 	buf_len += 18;
-	buf_len += in->npoints;
-	buf_len += tsteps;
-	buf_len += in->srh_bands;
-	buf_len += in->srh_bands;
-	buf_len += tsteps * in->npoints * 2;
-	buf_len += tsteps * in->npoints * 5 * in->srh_bands;
+	buf_len += in->npoints;	//mesh
+	buf_len += tsteps;	//mesh
+	buf_len += in->srh_bands;	//mesh
+	buf_len += in->srh_bands;	//holds the density
+	buf_len += tsteps * in->npoints * 2;	//data
+	buf_len += tsteps * in->npoints * 5 * in->srh_bands;	//data
 
 	int buf_pos = 0;
 	double *buf = (double *)malloc(buf_len * sizeof(double));
@@ -392,9 +404,11 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #else
 		fprintf(out, "%e\n", srh_pos);
 #endif
-
+		//printf("%le\n",srh_pos);
+		//getchar();
 		srh_pos += srh_delta / 2.0;
 		srh_x[band] = srh_pos;
+		//printf("%d %le\n",band,srh_x[band]);
 
 	}
 
@@ -403,11 +417,14 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	int cur_band = 0;
 	int points_per_band = in->Esteps / in->srh_bands;
 	double pos = in->srh_start;
-
+//printf("%d\n",points_per_band);
+//getchar();
+//FILE *test4=fopen("test4.dat","w");
 	for (i = 0; i < in->Esteps; i++) {
 		band_E_mesh[i] = pos;
 		band_i[i] = cur_band;
-
+		//fprintf(test4,"%le %d\n",band_E_mesh[i],band_i[i]);
+		//getchar();
 		pos += dE;
 		band_pos++;
 		if (band_pos >= points_per_band) {
@@ -416,6 +433,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 		}
 
 	}
+//fclose(test4);
+//getchar();
 
 	tpos = tstart;
 
@@ -521,7 +540,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 			}
 
 			srh_band = 0;
-
+			//printf("start\n");
 			for (e = 0; e < in->Esteps; e++) {
 				E = band_E_mesh[e];
 				srh_band = band_i[e];
@@ -533,12 +552,13 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 					    exp((E -
 						 (-1.0 * (in->Eg + xpos))) * Q /
 						(kb * tpos)));
-
+				//printf("%le %le %le %le\n",f2,-1.0*(in->Eg+xpos),in->Eg,xpos);
+				//getchar();
 				srh_f =
 				    1.0 / (1.0 +
 					   exp((srh_E -
 						xpos) * Q / (kb * tpos)));
-
+				//printf("%le %le\n",xpos,E);
 				if (in->dostype == dos_fd) {
 					if (E > 0) {
 						rho =
@@ -574,11 +594,17 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						    in2->Nt * exp((E) /
 								  (in2->Et));
 					}
+					//if (rho>1e60) rho=0.0;
+					//if (rho2>1e60)        rho2=0.0;
 
 				} else if (in->dostype == dos_exp) {
 
 					rho = in->Nt * exp((E) / (in->Et));
 					rho2 = in2->Nt * exp((E) / (in2->Et));
+
+					//printf("%le %le\n",E,rho);
+					//if (rho>1e40) rho=0.0;
+					//if (rho2>1e40)        rho2=0.0;
 
 					if ((E > in->del_start)
 					    && (E < in->del_stop)) {
@@ -621,31 +647,21 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 				if (E > 0) {
 					sum += rho * f * dE;
 					sum2 += rho2 * f2 * dE;
-
+					//printf("%le %le\n",rho2,f2);
 				} else {
-
+					//printf("%le %le\n",rho,f);
+					//rho=1e47;
 					if (electrons == TRUE) {
 						srh_r1[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigman * rho *
 						    (1.0 - srh_f) * dE;
-						srh_r2[srh_band] +=
-						    in->srh_vth *
-						    in->srh_sigman * in->Nc *
-						    exp((srh_E * Q) /
-							(tpos * kb)) * rho *
-						    srh_f * dE;
+						srh_r2[srh_band] += in->srh_vth * in->srh_sigman * in->Nc * exp((srh_E * Q) / (tpos * kb)) * rho * srh_f * dE;	//in->srh_vth*srh_sigman*rho*(1.0-srh_f)*dE;//
 						srh_r3[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigmap * rho *
 						    srh_f * dE;
-						srh_r4[srh_band] +=
-						    in->srh_vth *
-						    in->srh_sigmap * in->Nv *
-						    exp((-in->Eg * Q -
-							 srh_E * Q) / (tpos *
-								       kb)) *
-						    rho * (1.0 - srh_f) * dE;
+						srh_r4[srh_band] += in->srh_vth * in->srh_sigmap * in->Nv * exp((-in->Eg * Q - srh_E * Q) / (tpos * kb)) * rho * (1.0 - srh_f) * dE;	//in->srh_vth*srh_sigmap*rho*srh_f*dE;//
 						srh_n[srh_band] +=
 						    rho * srh_f * dE;
 						srh_den[srh_band] += rho * dE;
@@ -655,29 +671,20 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 						    in->srh_vth *
 						    in->srh_sigmap * rho *
 						    (1.0 - srh_f) * dE;
-						srh_r2[srh_band] +=
-						    in->srh_vth *
-						    in->srh_sigmap * in->Nv *
-						    exp((srh_E * Q) /
-							(tpos * kb)) * rho *
-						    srh_f * dE;
+						srh_r2[srh_band] += in->srh_vth * in->srh_sigmap * in->Nv * exp((srh_E * Q) / (tpos * kb)) * rho * srh_f * dE;	//in->srh_vth*srh_sigman*rho*(1.0-srh_f)*dE;//
 						srh_r3[srh_band] +=
 						    in->srh_vth *
 						    in->srh_sigman * rho *
 						    srh_f * dE;
-						srh_r4[srh_band] +=
-						    in->srh_vth *
-						    in->srh_sigman * in->Nc *
-						    exp((-in->Eg * Q -
-							 (srh_E * Q)) / (tpos *
-									 kb)) *
-						    rho * (1.0 - srh_f) * dE;
+						srh_r4[srh_band] += in->srh_vth * in->srh_sigman * in->Nc * exp((-in->Eg * Q - (srh_E * Q)) / (tpos * kb)) * rho * (1.0 - srh_f) * dE;	//in->srh_vth*srh_sigmap*rho*srh_f*dE;//
 						srh_n[srh_band] +=
 						    rho * srh_f * dE;
 						srh_den[srh_band] += rho * dE;
 						srh_dE_sum[srh_band] += dE;
 					}
 				}
+
+				//printf("%le\n",E);
 
 #ifdef test_dist
 				if (E >= 0.0) {
@@ -721,7 +728,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #endif
 
 			}
-
+			//printf("stop\n");
+			//getchar();
 #ifdef test_dist
 			fprintf(plotbands, "\n");
 			fprintf(plotbandsfree, "\n");
@@ -735,7 +743,8 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 					fprintf(out, "%le\n", srh_den[band]);
 #endif
 				}
-
+				//printf("%ld\n",get_dump_status(dump_band_structure));
+				//getchar();
 				if (get_dump_status(dump_band_structure) ==
 				    TRUE) {
 					FILE *bandsdump;
@@ -806,14 +815,14 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 #ifdef dos_test_stats
 			if (electrons == TRUE) {
 				freetest = fopen("freetestn.dat", "a");
-
+				//fprintf(freetest,"%.20le %.20le %.20le %.20le %.20le\n",xpos,sum,in->Nc*exp((xpos*Q)/(kb*tpos)),sum2,in->Nv*exp((-(in->Eg+xpos)*Q)/(kb*tpos)));
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
 					(3.0 / 2.0) * kb * tpos / Q);
 				fclose(freetest);
 			} else {
 				freetest = fopen("freetestp.dat", "a");
-
+				//fprintf(freetest,"%.20le %.20le %.20le %.20le %.20le\n",xpos,sum,in->Nv*exp((xpos*Q)/(kb*tpos)),sum2,in->Nc*exp((-(in->Eg+xpos)*Q)/(kb*tpos)));
 				fprintf(freetest, "%.20le %.20le %.20le\n",
 					xpos, (3.0 / 2.0) * w0,
 					(3.0 / 2.0) * kb * tpos / Q);
@@ -843,10 +852,12 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 #ifdef test_dist
 			fprintf(rod, "\n");
-
+			//if (t==0) fprintf(munfile,"%le %le\n",n_tot,mu_tot/n_tot);
 #endif
 
 		}
+
+//getchar();
 
 		tpos += dt;
 	}
@@ -890,6 +901,9 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	fwrite((char *)&temp1, sizeof(int), 1, yes);
 	fclose(yes);
 
+//out = fopen(outfile, "wb");
+//fwrite((char*)buf, buf_len*sizeof(double), 1, out);
+//fclose(out);
 	free(buf);
 #else
 	fclose(out);
@@ -909,6 +923,18 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 
 	free(srh_x);
 	free(srh_mid);
+//printf("%d %d\n",buf_pos,buf_len);
+//getchar();
+//if (electrons==TRUE)
+//{
+//              FILE *test3=fopen("test3.dat","w");
+//              for (srh_band=0;srh_band<in->srh_bands;srh_band++)
+//              {
+//                      fprintf(test3,"%d %le\n",srh_band,srh_den[srh_band]);
+//              }
+//              fclose(test3);
+//              getchar();
+//}
 
 	return;
 }
@@ -1057,6 +1083,10 @@ void gen_dos_fd_gaus_n(int mat) {
 	 confige[mat].Eg = fabs(confige[mat].Eg);
 	 hard_limit("#Eg", &(confige[mat].Eg));
 
+//confige[mat].Eg=fabs(confige[mat].Eg);
+//if (confige[mat].Eg<1.0) configh[mat].Eg=1.0;
+//if (confige[mat].Eg>1.8) configh[mat].Eg=1.8;
+
 	 inp_search_double(&inp, &(confige[mat].gaus_mull), "#gaus_mull");
 	 configh[mat].gaus_mull = confige[mat].gaus_mull;
 
@@ -1094,9 +1124,14 @@ void gen_dos_fd_gaus_n(int mat) {
 	configh[mat].m =
 	    pow(confige[mat].Nv / 2.0,
 		2.0 / 3.0) * hp * hp / kb / 300.0 / m0 / 2.0 / PI;
+//printf("%le %le\n",confige[mat].m,configh[mat].m);
+//getchar();
+//(sqrt(E)/(4.0*PI*PI))*pow((2.0*in->m*m0)/(hbar*hbar),3.0/2.0)
 
 	configh[mat].Nc = confige[mat].Nc;
 	configh[mat].Nv = confige[mat].Nv;
+//printf("%le\n",configh[mat].Nv);
+//getchar();
 
 	sprintf(file_name, "%s.inp", pl_name);
 	inp_init(&inp);
@@ -1127,8 +1162,11 @@ void gen_dos_fd_gaus_fd() {
 	char name[100];
 	char pl_name[100];
 
+	int matnumber = 0;
+
 	struct epitaxy my_epitaxy;
 	epitaxy_load(&my_epitaxy, "epitaxy.inp");
+	matnumber = my_epitaxy.electrical_layers;
 	int file_bandn = FALSE;
 	int file_bandp = FALSE;
 	int file_dos = FALSE;
@@ -1139,97 +1177,102 @@ void gen_dos_fd_gaus_fd() {
 	int problem_with_dos = FALSE;
 	int file_pl = FALSE;
 
-	file_bandn = FALSE;
-	file_bandp = FALSE;
-	file_dos = FALSE;
-	file_pl = FALSE;
+	for (mat = 0; mat < matnumber; mat++) {
+		file_bandn = FALSE;
+		file_bandp = FALSE;
+		file_dos = FALSE;
+		file_pl = FALSE;
 
-	pick_init(mat);
-	gen_load_dos(mat, my_epitaxy.dos_file[mat], my_epitaxy.pl_file[mat]);
+		pick_init(mat);
+		gen_load_dos(mat, my_epitaxy.dos_file[mat],
+			     my_epitaxy.pl_file[mat]);
 
-	problem_with_dos = FALSE;
-	sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
+		problem_with_dos = FALSE;
+		sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
 
-	if (md5check(name) == FALSE)
-		problem_with_dos = TRUE;
+		if (md5check(name) == FALSE)
+			problem_with_dos = TRUE;
 
-	sprintf(name, "%s_n.dat", my_epitaxy.dos_file[mat]);
-	file = fopen(name, "r");
-	if (!file) {
-		problem_with_dos = TRUE;
-	} else {
-		fclose(file);
-	}
-	sprintf(name, "%s_p.dat", my_epitaxy.dos_file[mat]);
-	file = fopen(name, "r");
-	if (!file) {
-		problem_with_dos = TRUE;
-	} else {
-		fclose(file);
-	}
-
-	if (problem_with_dos == TRUE) {
-		file_dos = TRUE;
-		file_bandn = TRUE;
-		file_bandp = TRUE;
-		launch_server = TRUE;
-	}
-
-	sprintf(pl_name, "%s.inp", my_epitaxy.pl_file[mat]);
-
-	if (md5check(pl_name) == FALSE) {
-		file_pl = TRUE;
-		file_bandn = TRUE;
-		file_bandp = TRUE;
-		launch_server = TRUE;
-	}
-
-	if (confige[mat].dostype == dos_read) {
-		sprintf(name, "%s_srhbandn.inp", my_epitaxy.dos_file[mat]);
-		if (md5check(name) == FALSE) {
-			file_bandn = TRUE;
-			launch_server = TRUE;
+		sprintf(name, "%s_n.dat", my_epitaxy.dos_file[mat]);
+		file = fopen(name, "r");
+		if (!file) {
+			problem_with_dos = TRUE;
+		} else {
+			fclose(file);
+		}
+		sprintf(name, "%s_p.dat", my_epitaxy.dos_file[mat]);
+		file = fopen(name, "r");
+		if (!file) {
+			problem_with_dos = TRUE;
+		} else {
+			fclose(file);
 		}
 
-		sprintf(name, "%s_srhbandp.inp", my_epitaxy.dos_file[mat]);
-		if (md5check(name) == FALSE) {
+		if (problem_with_dos == TRUE) {
+			file_dos = TRUE;
+			file_bandn = TRUE;
 			file_bandp = TRUE;
 			launch_server = TRUE;
 		}
-	}
 
-	if ((gendos == TRUE) && (launch_server == TRUE)) {
-		sprintf(name, "gendosn_%d", mat);
-		if (file_bandn == TRUE)
-			server_add_job(&globalserver, name, name);
+		sprintf(pl_name, "%s.inp", my_epitaxy.pl_file[mat]);
 
-		sprintf(name, "gendosp_%d", mat);
-		if (file_bandp == TRUE)
-			server_add_job(&globalserver, name, name);
-
-		pick_dump();
-		sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
-		if (file_dos == TRUE)
-			md5write(name);
-
-		if (file_pl == TRUE) {
-			md5write(pl_name);
+		if (md5check(pl_name) == FALSE) {
+			file_pl = TRUE;
+			file_bandn = TRUE;
+			file_bandp = TRUE;
+			launch_server = TRUE;
 		}
 
 		if (confige[mat].dostype == dos_read) {
 			sprintf(name, "%s_srhbandn.inp",
 				my_epitaxy.dos_file[mat]);
-			safe_file(name);
-			if (file_bandn == TRUE)
-				md5write(name);
+			if (md5check(name) == FALSE) {
+				file_bandn = TRUE;
+				launch_server = TRUE;
+			}
 
 			sprintf(name, "%s_srhbandp.inp",
 				my_epitaxy.dos_file[mat]);
-			safe_file(name);
-			if (file_bandp == TRUE)
-				md5write(name);
+			if (md5check(name) == FALSE) {
+				file_bandp = TRUE;
+				launch_server = TRUE;
+			}
 		}
 
+		if ((gendos == TRUE) && (launch_server == TRUE)) {
+			sprintf(name, "gendosn_%d", mat);
+			if (file_bandn == TRUE)
+				server_add_job(&globalserver, name, name);
+
+			sprintf(name, "gendosp_%d", mat);
+			if (file_bandp == TRUE)
+				server_add_job(&globalserver, name, name);
+
+			pick_dump();
+			sprintf(name, "%s.inp", my_epitaxy.dos_file[mat]);
+			if (file_dos == TRUE)
+				md5write(name);
+
+			if (file_pl == TRUE) {
+				md5write(pl_name);
+			}
+
+			if (confige[mat].dostype == dos_read) {
+				sprintf(name, "%s_srhbandn.inp",
+					my_epitaxy.dos_file[mat]);
+				safe_file(name);
+				if (file_bandn == TRUE)
+					md5write(name);
+
+				sprintf(name, "%s_srhbandp.inp",
+					my_epitaxy.dos_file[mat]);
+				safe_file(name);
+				if (file_bandp == TRUE)
+					md5write(name);
+			}
+
+		}
 	}
 
 	print_jobs(&globalserver);

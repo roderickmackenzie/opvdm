@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -62,8 +62,8 @@ void light_transfer_gen_rate_to_device(struct device *cell, struct light *in)
 			Gp = inter_get_raw(in->x, in->Gp, in->points,
 					   in->device_start +
 					   cell->ymesh[i]) * in->Dphotoneff;
-			cell->Gn[i] = Gn * cell->electron_eff;
-			cell->Gp[i] = Gp * cell->hole_eff;
+			cell->Gn[i] = Gn * in->electron_eff;
+			cell->Gp[i] = Gp * in->hole_eff;
 			cell->Habs[i] = 0.0;
 
 		}
@@ -94,7 +94,7 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	struct inp_file inp;
 	inp_init(&inp);
 	inp_load_from_path(&inp, cell->inputpath, "light.inp");
-	inp_check(&inp, 1.24);
+	inp_check(&inp, 1.25);
 
 	inp_search_double(&inp, &(temp), "#Psun");
 	cell->Psun = fabs(temp);

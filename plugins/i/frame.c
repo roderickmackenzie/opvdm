@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -115,6 +114,8 @@ void frame_data_set(struct map *in, double x, double y, double data)
 	if (ypos >= in->ypoints)
 		ypos = in->ypoints - 1;
 
+//printf("%d %d\n",xpos,ypos);
+
 	in->data[xpos][ypos] = data;
 
 }
@@ -132,6 +133,8 @@ void frame_data_add(struct map *in, double x, double y, double data)
 	if (ypos >= in->ypoints)
 		ypos = in->ypoints - 1;
 
+//printf("%d %d\n",xpos,ypos);
+
 	in->data[xpos][ypos] += data;
 
 }
@@ -140,7 +143,8 @@ void frame_data_set_if_bigger(struct map *in, double x, double y, double data)
 {
 	int xpos = (x - in->xstart) / in->xdelta;
 	int ypos = (y - in->ystart) / in->ydelta;
-
+//printf("%lf %lf %lf %lf\n",(x-in->xstart)/in->xdelta,(y-in->ystart)/in->ydelta,in->xstart,in->ystart);
+//getchar();
 	if (xpos < 0)
 		xpos = 0;
 	if (ypos < 0)
@@ -256,6 +260,7 @@ void frame_dump_outline(char *file, struct map *in)
 
 	}
 
+//list_add(&l,-22.0, -22.0);
 	for (x = 0; x < 20; x++) {
 		list_remove_bump_down(&l, 0);
 	}
@@ -291,7 +296,9 @@ void frame_dump_outline(char *file, struct map *in)
 	for (x = 0; x < 20; x++) {
 		list_remove_bump_up(&l, pos);
 	}
+//list_smooth_y(&l);
 
+//list_smooth_y(&l);
 	list_add(&l, l.list[0].x, l.list[0].y);
 
 	list_dump_2d(file, &l);

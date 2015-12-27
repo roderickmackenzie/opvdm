@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; either version 2 of the License.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +18,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #ifndef device_h
 #define device_h
 #include "code_ctrl.h"
@@ -144,13 +144,14 @@ struct device {
 
 	int N;
 	int M;
-	int *Ti;
-	int *Tj;
-	double *Tx;
+	int *Ti;		//row
+	int *Tj;		//col
+	double *Tx;		//data
 
 	int lr_pcontact;
 	int invert_applied_bias;
 
+//plotting
 	FILE *gnuplot;
 	FILE *gnuplot_time;
 	FILE *converge;
@@ -164,7 +165,7 @@ struct device {
 	double min_cur_error;
 	double Pmax_voltage;
 	int pos_max_ittr;
-
+//Device characterisation
 	double Voc;
 	double Jsc;
 	double FF;
@@ -193,6 +194,7 @@ struct device {
 	double *wn;
 	double *wp;
 
+//n traps
 	double *nt_all;
 	double **nt;
 	double **ntlast;
@@ -213,7 +215,7 @@ struct device {
 	double **nt_r2;
 	double **nt_r3;
 	double **nt_r4;
-
+//p traps
 	double *pt_all;
 	double **pt;
 	double **ptlast;
@@ -260,7 +262,7 @@ struct device {
 	int timedumpcount;
 	char outputpath[200];
 	char inputpath[200];
-	int simmode;
+	char simmode[200];
 	double area;
 
 	double *nrelax;
@@ -326,8 +328,5 @@ struct device {
 	double VCext_last;
 	double VCext;
 	int newton_last_ittr;
-
-	double electron_eff;
-	double hole_eff;
 };
 #endif

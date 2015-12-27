@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "umfpack.h"
@@ -121,10 +120,11 @@ int complex_solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *Txz,
 		   double *b, double *bz)
 {
 
+//getchar();
 	int i;
 	void *Symbolic, *Numeric;
 	int status;
-
+//printf("here1\n");
 	if ((last_col != col) || (last_nz != nz)) {
 		x = realloc(x, col * sizeof(double));
 		xz = realloc(xz, col * sizeof(double));
@@ -138,12 +138,18 @@ int complex_solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *Txz,
 
 	double Info[UMFPACK_INFO], Control[UMFPACK_CONTROL];
 
+// get the default control parameters
 	umfpack_zi_defaults(Control);
 
+//change the default print level for this demo 
+//(otherwise, nothing will print) 
 	Control[UMFPACK_PRL] = 1;
 
+//print the license agreement 
+//umfpack_zi_report_status (Control, UMFPACK_OK) ;
 	Control[UMFPACK_PRL] = 0;
 
+// print the control parameters 
 	umfpack_zi_report_control(Control);
 
 	status =
@@ -154,24 +160,32 @@ int complex_solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *Txz,
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
-
+// symbolic analysis
+//printf("here2 %d\n",col);
+//status = umfpack_di_symbolic(col, col, Ap, Ai, Ax, &Symbolic, NULL, NULL);
 	status =
 	    umfpack_zi_symbolic(col, col, Ap, Ai, Ax, Az, &Symbolic, Control,
 				Info);
 	umfpack_zi_report_status(Control, status);
+//printf("here3\n");
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
-
+// LU factorization 
+//umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, NULL, NULL);
 	umfpack_zi_numeric(Ap, Ai, Ax, Az, Symbolic, &Numeric, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
+// solve system
 
+//umfpack_di_free_symbolic(&Symbolic);
+
+	// umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, x, b, Numeric, NULL, NULL);
 	status =
 	    umfpack_zi_solve(UMFPACK_A, Ap, Ai, Ax, Az, x, xz, b, bz, Numeric,
 			     Control, Info);
@@ -179,7 +193,7 @@ int complex_solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *Txz,
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
-
+//printf ("\nx (solution of Ax=b): ") ;
 	(void)umfpack_zi_report_vector(col, x, xz, Control);
 
 	umfpack_zi_free_symbolic(&Symbolic);

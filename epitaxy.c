@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ void epitaxy_load(struct epitaxy *in, char *file)
 	}
 
 	for (i = 0; i < in->layers; i++) {
-		inp_get_string(&inp);
+		inp_get_string(&inp);	//layer name
 		strcpy(in->name[i], inp_get_string(&inp));
 		sscanf(inp_get_string(&inp), "%le", &(in->width[i]));
 		in->width[i] = fabs(in->width[i]);

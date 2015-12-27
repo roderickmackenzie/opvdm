@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -52,7 +51,7 @@ void get_avg_np_pos(struct device *in, double *nx, double *px)
 	}
 	if (nsum != 0.0) {
 		*nx = navg / nsum;
-
+//printf("%le\n",navg/nsum);
 	} else {
 		*nx = 0.0;
 	}
@@ -71,6 +70,36 @@ double get_charge_change(struct device *in)
 	double diff = 0.0;
 	return diff;
 }
+
+//double get_charge_change(struct device *in)
+//{
+//double n=0.0;
+//double p=0.0;
+//int i=0;
+//double diff=0.0;
+//if (in->go_time==TRUE)
+//{
+//
+//      for (i=0;i<in->ymeshpoints;i++)
+//      {
+//              n=0.0;
+//              p=0.0;
+//
+//              n+=in->nt_save[i];
+//              p+=in->pt_save[i];
+//
+//
+//              n+=in->nf_save[i];
+//              p+=in->pf_save[i];
+//
+//              diff+=fabs(in->p[i]+in->pt_all[i]-in->n[i]-in->nt_all[i]+n-p);
+//      }
+//      //printf("%le\n",diff);
+//      diff/=(n+p);
+//      diff*=100.0;
+//}
+//return diff;
+//}
 
 double get_avg_recom(struct device *in)
 {
@@ -109,6 +138,8 @@ double get_avg_relax_p(struct device *in)
 	return Rtot / (((double)in->ymeshpoints));
 }
 
+//Note this calculates the real free electron recombination rate
+//not the removal of electrons from the band
 double get_avg_recom_n(struct device *in)
 {
 	int i = 0;
@@ -119,6 +150,8 @@ double get_avg_recom_n(struct device *in)
 	return Rtot / (((double)in->ymeshpoints));
 }
 
+//Note this calculates the real free hole recombination rate
+//not the removal of holes from the band
 double get_avg_recom_p(struct device *in)
 {
 	int i = 0;
@@ -266,15 +299,17 @@ void carrier_count_add(struct device *in)
 	p_count += (in->Jp[0] + in->Jp[in->ymeshpoints - 1]) * in->dt / Q;
 
 	double dx = in->ymesh[1] - in->ymesh[0];
-
+//printf("\n\n%e %e\n\n",dx*(double)in->ymeshpoints,in->ymesh[in->ymeshpoints-1]);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		locat_n_tot += in->Rfree[i] * dx;
 		locat_p_tot += in->Rfree[i] * dx;
 	}
-
+//printf("%e\n",in->ymesh[in->ymeshpoints-1]);
+//getchar();
 	rn_count += locat_n_tot * in->dt;
 	rp_count += locat_p_tot * in->dt;
 
+//printf("\n%e %e\n",rn_count,rp_count);
 }
 
 double get_extracted_np(struct device *in)
@@ -289,7 +324,8 @@ double get_extracted_n(struct device *in)
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sum_n += (in->n[i] - in->nf_save[i]);
 		sum_n += (in->nt_all[i] - in->nt_save[i]);
-
+//printf("%le %le %le\n",in->n[i]-in->nfinit[i],in->nt_all[i],in->ntinit[i]);
+//getchar();
 	}
 
 	return sum_n / ((double)(in->ymeshpoints));
@@ -343,7 +379,8 @@ double get_extracted_k(struct device *in)
 		tot += in->Rfree[i];
 		n += in->n[i] * in->p[i];
 	}
-
+//printf("%le %le %le\n",tot,n,tot/n);
+//getchar();
 	return tot / n;
 }
 
@@ -613,7 +650,7 @@ double get_equiv_J(struct device *in)
 	if (in->lr_pcontact == RIGHT)
 		J *= -1.0;
 	J += in->Vapplied / in->Rshunt / in->area;
-
+//printf("%e %e %e\n",(in->xlen*in->zlen),in->Rshunt,in->area);
 	return J;
 }
 
@@ -729,16 +766,21 @@ double get_Jp_drift(struct device *in)
 double get_equiv_V(struct device *in)
 {
 	double J = 0.0;
-
+//if (in->adv_sim==FALSE)
+//{
+//J=get_J_recom(in);
+//}else
+//{
 	J = get_equiv_J(in);
-
+//}
+//printf("%e\n",in->Rcontact);
 	double V = J * in->Rcontact * in->area + in->Vapplied;
 	return V;
 }
 
 double get_J(struct device *in)
 {
-
+//int i;
 	double ret = 0.0;
 
 	ret = (get_J_left(in) + get_J_right(in)) / 2.0;
@@ -751,7 +793,7 @@ double get_J_left(struct device *in)
 
 	double ret = 0.0;
 	ret = in->Jpleft + in->Jnleft;
-
+//printf("%le %le\n",in->Jpleft,in->Jnleft);
 	return ret * Q;
 }
 
@@ -760,6 +802,7 @@ double get_J_right(struct device *in)
 
 	double ret = 0.0;
 	ret = in->Jnright + in->Jpright;
-
+//printf("%e %e\n",in->Jn[0][0],in->Jn[0][in->ymeshpoints-2]);
+//getchar();
 	return ret * Q;
 }

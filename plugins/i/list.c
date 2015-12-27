@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,9 +19,12 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+/** @file list.c
+	@brief Algorithms to make lists
+*/
 #define _FILE_OFFSET_BITS 64
 #define _LARGEFILE_SOURCE
-
+//<clean=all></clean>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -213,10 +215,10 @@ void list_load(struct list *in, char *file_name)
 
 	unused = fscanf(file, "%s", temp);
 	sscanf((temp + 1), "%d", &(length));
-
+//printf("%d\n",length);
 	for (i = 0; i < length; i++) {
 		unused = fscanf(file, "%lf %lf %lf", &(a), &(b), &(c));
-
+		//printf("%d %d %lf %lf %lf\n",i,in->length,a,b,c);
 		list_add(in, a, b);
 	}
 

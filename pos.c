@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ double min_pos_error = 1e-4;
 
 void pos_dump(struct device *in)
 {
-	if (get_dump_status(dump_iodump) == TRUE) {
+	if (get_dump_status(dump_first_guess) == TRUE) {
 		char out_dir[1000];
 		join_path(2, out_dir, in->outputpath, "equilibrium");
 		struct buffer buf;
@@ -41,21 +41,21 @@ void pos_dump(struct device *in)
 		int band = 0;
 		int i = 0;
 		FILE *out;
-		out = fopena(in->outputpath, "equ.dat", "w");
+		out = fopena(in->outputpath, "first_guess.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e %e\n", in->ymesh[i], in->Fn[i],
 				in->Fp[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "equ_Fi.dat", "w");
+		out = fopena(in->outputpath, "first_guess_Fi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->Fi[i]);
 		}
 		fclose(out);
 
 		buffer_malloc(&buf);
-		sprintf(name, "%s%s", "equ_Ec", ".dat");
+		sprintf(name, "%s%s", "first_guess_Ec", ".dat");
 		buf.y_mul = 1.0;
 		buf.x_mul = 1e9;
 		strcpy(buf.title, "LUMO energy - position");
@@ -72,7 +72,7 @@ void pos_dump(struct device *in)
 		buffer_free(&buf);
 
 		buffer_malloc(&buf);
-		sprintf(name, "%s%s", "equ_Ev", ".dat");
+		sprintf(name, "%s%s", "first_guess_Ev", ".dat");
 		buf.y_mul = 1.0;
 		buf.x_mul = 1e9;
 		strcpy(buf.title, "HOMO energy - position");
@@ -88,32 +88,32 @@ void pos_dump(struct device *in)
 		buffer_dump_path(out_dir, name, &buf);
 		buffer_free(&buf);
 
-		out = fopena(in->outputpath, "equ_n.dat", "w");
+		out = fopena(in->outputpath, "first_guess_n.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->n[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "equ_p.dat", "w");
+		out = fopena(in->outputpath, "first_guess_p.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->p[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "equ_phi.dat", "w");
+		out = fopena(in->outputpath, "first_guess_phi.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e\n", in->ymesh[i], in->phi[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "equ_np.dat", "w");
+		out = fopena(in->outputpath, "first_guess_np.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e %e %e\n", in->ymesh[i], in->n[i],
 				in->p[i]);
 		}
 		fclose(out);
 
-		out = fopena(in->outputpath, "equ_np_trap.dat", "w");
+		out = fopena(in->outputpath, "first_guess_np_trap.dat", "w");
 		for (i = 0; i < in->ymeshpoints; i++) {
 			fprintf(out, "%e ", in->ymesh[i]);
 			for (band = 0; band < in->srh_bands; band++) {
@@ -299,7 +299,15 @@ int solve_pos(struct device *in)
 			double dphi =
 			    dphil * phil + dphic * phic + dphir * phir;
 
-			dphic_d += -Q * (dphidn - dphidp);
+			dphic_d += -Q * (dphidn - dphidp);	// just put in the _d to get it working again.
+
+			//if (adv==TRUE)
+			//{
+			//      for (band=0;band<in->srh_bands;band++)
+			//      {
+			//              dphic_d+=(-q*(in->dnt[i][band]-in->dpt[i][band]));
+			//      }
+			//}
 
 			if (i != 0) {
 				Ti[pos] = i;
@@ -329,9 +337,7 @@ int solve_pos(struct device *in)
 				&& (i == in->ymeshpoints - 1)) {
 				b[i] = -0.0;
 			} else {
-				b[i] =
-				    -(dphi -
-				      Q * (in->n[i] - in->p[i] - in->Nad[i]));
+				b[i] = -(dphi - Q * (in->n[i] - in->p[i] - in->Nad[i]));	//
 				if (adv == TRUE) {
 					for (band = 0; band < in->srh_bands;
 					     band++) {
@@ -342,6 +348,7 @@ int solve_pos(struct device *in)
 					}
 				}
 			}
+			//in->n[i]=in->Nc[i]*exp(((in->Fi[i]-in->Ec[i])*q)/(kb*in->Tl[i]));
 
 		}
 
@@ -356,7 +363,7 @@ int solve_pos(struct device *in)
 				&& (i == in->ymeshpoints - 1)) {
 			} else {
 				double update;
-
+				//printf("%d\n",get_clamp_state());
 				double clamp_temp = 300.0;
 				update =
 				    b[i] / (1.0 +
@@ -364,9 +371,11 @@ int solve_pos(struct device *in)
 						 (clamp_temp * kb / Q)));
 
 				in->phi[i] += update;
-
+				//printf("%le %le\n",i,b[i]);
 			}
 		}
+
+		//getchar();
 
 		for (i = 0; i < in->ymeshpoints; i++) {
 			in->Ec[i] = -in->phi[i] - in->Xi[i];
@@ -415,6 +424,8 @@ int solve_pos(struct device *in)
 			}
 
 			for (band = 0; band < in->srh_bands; band++) {
+				//printf("%lf %lf\n",in->xpt[i][band],in->Fpt[i][band]);
+				//getchar();
 
 				in->Fnt[i][band] =
 				    -in->phi[i] - in->Xi[i] +
@@ -456,9 +467,11 @@ int solve_pos(struct device *in)
 		if (error < 1) {
 			adv = TRUE;
 		}
+		//#ifdef print_newtonerror
 
 		if (get_dump_status(dump_print_pos_error) == TRUE)
 			printf("%d Pos error = %e %d\n", ittr, error, adv);
+		//#endif
 
 #ifdef dump_converge
 
@@ -467,6 +480,12 @@ int solve_pos(struct device *in)
 		   fclose(in->converge); */
 #endif
 
+//double N=2.0*pow(((2.0*pi*kb*in->Tl[0]*in->me[0]*m0)/(hp*hp)),1.5);
+//double test=N*exp((-3.000000e-03*Q)/(kb*in->Tl[0]));
+//printf("Check now %e %e\n",get_n_den(-3.000000e-03,in->Tl[0],in->me[0],in->dostype[0],dos_all),test);
+//getchar();
+
+//getchar();
 		ittr++;
 
 		if (adv == TRUE) {
@@ -482,6 +501,7 @@ int solve_pos(struct device *in)
 		}
 
 	} while (quit == FALSE);
+	//getchar();
 
 	pos_dump(in);
 
@@ -497,8 +517,8 @@ int solve_pos(struct device *in)
 	for (i = 0; i < in->ymeshpoints; i++) {
 		in->nf_save[i] = in->n[i];
 		in->pf_save[i] = in->p[i];
-		in->nt_save[i] = 0.0;
-		in->pt_save[i] = 0.0;
+		in->nt_save[i] = 0.0;	//in->nt[i];
+		in->pt_save[i] = 0.0;	//in->pt[i];
 	}
 
 	free(Ti);

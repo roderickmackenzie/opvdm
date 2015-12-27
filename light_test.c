@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ int light_test_air_abs_interface(struct light *in, int lam)
 		char one[100];
 		sprintf(one, "Solve light optical slice at %lf nm\n",
 			in->l[lam] * 1e9);
-
+		//printf("%s\n",one);
 		waveprint(one, in->l[lam] * 1e9);
 	}
 	int i;
@@ -83,9 +83,16 @@ int light_test_air_abs_interface(struct light *in, int lam)
 	double kappa1 = in->alpha[lam][j + 1] * (in->l[lam] / (pi * 4.0));
 	double complex n1 = in->n[lam][j + 1] + kappa1 * I;
 
+//for (i=0;i<in->points;i++)
+//{
+//      printf("%le %le %le\n",creal(in->r[lam][i]),cimag(in->r[lam][i]),carg(in->r[lam][i]));
+//}
+
 	complex double r = (n0 - n1) / (n0 + n1);
 	complex double t = (2.0 * n0) / (n0 + n1);
 
+//printf("%le %le %le\n",creal(r),cimag(r),carg(r));
+//getchar();
 	int ittr = 0;
 	int pos = 0;
 	double l = in->l[lam];
@@ -113,7 +120,8 @@ int light_test_air_abs_interface(struct light *in, int lam)
 			Ep = cexp(beta0 * x * I);
 			En = r * cexp(beta0 * (dj) * I) * cexp(-beta0 *
 							       (x - dj) * I);
-
+//*cexp(beta1*(delta*1.0)*I);
+//-r*cexp(-beta0*(x-2.0*dj)*I);
 		} else {
 			Ep = t * cexp(beta0 * dj * I) * cexp(beta1 * (x - dj) *
 							     I);
@@ -127,6 +135,7 @@ int light_test_air_abs_interface(struct light *in, int lam)
 
 	}
 
+//getchar();
 #endif
 	return 0;
 }
@@ -138,7 +147,7 @@ int light_test_air_metal(struct light *in, int lam)
 		char one[100];
 		sprintf(one, "Solve light optical slice at %lf nm\n",
 			in->l[lam] * 1e9);
-
+		//printf("%s\n",one);
 		waveprint(one, in->l[lam] * 1e9);
 	}
 	int i;
@@ -147,6 +156,7 @@ int light_test_air_metal(struct light *in, int lam)
 	double complex Epc = 0.0 + 0.0 * I;
 	double complex Epr = 0.0 + 0.0 * I;
 
+//double complex Enl=0.0+0.0*I;
 	double complex Enc = 0.0 + 0.0 * I;
 	double complex Enr = 0.0 + 0.0 * I;
 
@@ -155,14 +165,19 @@ int light_test_air_metal(struct light *in, int lam)
 	double complex t0 = 0.0 + 0.0 * I;
 	double complex t1 = 0.0 + 0.0 * I;
 
+//double yl=0.0;
+//double yc=0.0;
+//double yr=0.0;
 	double dyl = 0.0;
-
+//double dyr=0.0;
+//double dyc=0.0;
 	double xl = 0.0;
 	double xc = 0.0;
+//double xr=0.0;
 
 	int ittr = 0;
 	int pos = 0;
-
+//double error=1000;
 	double l = in->l[lam];
 	double nc;
 	double alpha;
@@ -185,6 +200,7 @@ int light_test_air_metal(struct light *in, int lam)
 
 	}
 
+//getchar();
 #endif
 	return 0;
 }

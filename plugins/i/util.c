@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,6 +18,7 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,19 +36,6 @@
 #include "../../dos_types.h"
 #include "../../gui_hooks.h"
 #include "../../server.h"
-
-int file_exists(char *in)
-{
-	FILE *f = fopen(in, "r");
-
-	if (f == NULL) {
-		return FALSE;
-	}
-
-	fclose(f);
-	return TRUE;
-
-}
 
 void join_path(int args, ...)
 {
@@ -72,7 +59,7 @@ void join_path(int args, ...)
 		strcpy(temp, va_arg(arguments, char *));
 		strcat(ret, temp);
 	}
-	va_end(arguments);
+	va_end(arguments);	// Cleans up the list
 
 	return;
 }
@@ -108,6 +95,7 @@ void set_ewe_lock_file(char *lockname, char *data)
 	strcpy(lock_data, data);
 }
 
+//exit_with_error
 int ewe(const char *format, ...)
 {
 	FILE *out;
@@ -124,7 +112,7 @@ int ewe(const char *format, ...)
 	gui_send_data(temp2);
 
 #ifdef windows
-	sleep(1);
+	sleep(1);		//give the gui time to read the message under windows
 #endif
 
 	va_end(args);
@@ -132,7 +120,7 @@ int ewe(const char *format, ...)
 	server_send_finished_to_gui(&globalserver);
 
 #ifdef windows
-	sleep(1);
+	sleep(1);		//give the gui time to read the message under windows
 #endif
 
 	out = fopen("server_stop.dat", "w");
@@ -223,50 +211,14 @@ int english_to_bin(char *in)
 		return 0;
 	} else if (strcmp(in, "exp") == 0) {
 		return 1;
-	} else if (strcmp(in, "tpv_set_light") == 0) {
-		return tpv_set_light;
-	} else if (strcmp(in, "tpv_set_voltage") == 0) {
-		return tpv_set_voltage;
-	} else if (strcmp(in, "tpv_mode_laser") == 0) {
-		return tpv_mode_laser;
-	} else if (strcmp(in, "tpv_mode_sun") == 0) {
-		return tpv_mode_sun;
-	} else if (strcmp(in, "jv") == 0) {
-		return sim_mode_jv;
-	} else if (strcmp(in, "qe") == 0) {
-		return sim_mode_qe;
-	} else if (strcmp(in, "tpv") == 0) {
-		return sim_mode_tpv;
-	} else if (strcmp(in, "ce") == 0) {
-		return sim_mode_ce;
-	} else if (strcmp(in, "tpc") == 0) {
-		return sim_mode_tpc;
-	} else if (strcmp(in, "tof") == 0) {
-		return sim_mode_tof;
-	} else if (strcmp(in, "otrace") == 0) {
-		return sim_mode_otrace;
-	} else if (strcmp(in, "celiv") == 0) {
-		return sim_mode_celiv;
-	} else if (strcmp(in, "stark") == 0) {
-		return sim_mode_stark;
-	} else if (strcmp(in, "pulse") == 0) {
-		return sim_mode_pulse;
-	} else if (strcmp(in, "imps") == 0) {
-		return sim_mode_imps;
-	} else if (strcmp(in, "pulse_voc") == 0) {
-		return sim_mode_pulse_voc;
-	} else if (strcmp(in, "jv_simple") == 0) {
-		return sim_mode_jv_simple;
-	} else if (strcmp(in, "sun_voc") == 0) {
-		return sim_mode_sun_voc;
 	} else if (strcmp(in, "exponential") == 0) {
 		return dos_exp;
 	} else if (strcmp(in, "complex") == 0) {
 		return dos_an;
-	} else if (strcmp(in, "optics") == 0) {
-		return sim_mode_optics;
-	} else if (strcmp(in, "stark_spectrum") == 0) {
-		return sim_mode_stark_spectrum;
+	} else if (strcmp(in, "open_circuit") == 0) {
+		return pulse_open_circuit;
+	} else if (strcmp(in, "load") == 0) {
+		return pulse_load;
 	}
 
 	ewe("I don't understand the command %s\n", in);
@@ -325,14 +277,39 @@ int cmpstr_min(char *in1, char *in2)
 	return 0;
 }
 
+int strextract_name(char *out, char *in)
+{
+	int i;
+	for (i = 0; i < strlen(in); i++) {
+		if (in[i] == '@') {
+			out[i] = 0;
+			return strlen(out);
+		}
+		out[i] = in[i];
+
+	}
+	strcpy(out, "");
+	return -1;
+}
+
 int strcmp_end(char *str, char *end)
 {
 
 	if (strlen(str) < strlen(end))
 		return 1;
 	int pos = strlen(str) - strlen(end);
-
 	return strcmp((char *)(str + pos), end);
+}
+
+char *strextract_domain(char *in)
+{
+	int i = 0;
+	for (i = 0; i < strlen(in) - 1; i++) {
+		if (in[i] == '@') {
+			return (char *)(&in[i + 1]);
+		}
+	}
+	return (char *)-1;
 }
 
 int extract_str_number(char *in, char *cut)
@@ -341,6 +318,25 @@ int extract_str_number(char *in, char *cut)
 	int len = strlen(cut);
 	sscanf((in + len), "%d", &out);
 	return out;
+}
+
+int strextract_int(char *in)
+{
+	char temp[200];
+	int i = 0;
+	double ret = 0.0;
+	int count = 0;
+	for (i = 0; i < strlen(in); i++) {
+		if ((in[i] > 47) && (in[i] < 58)) {
+			temp[count] = in[i];
+			count++;
+		}
+
+	}
+	temp[count] = 0;
+
+	sscanf(temp, "%ld", &ret);
+	return ret;
 }
 
 void waveprint(char *in, double wavelength)
@@ -439,10 +435,10 @@ char *get_arg_plusone(char *in[], int count, char *find)
 	int i;
 	static char no[] = "";
 	for (i = 0; i < count; i++) {
-
+//printf("%s %s\n",in[i],find);
 		if (strcmp(in[i], find) == 0) {
 			if ((i + 1) < count) {
-
+				//printf("%s\n",in[i+1]);
 				return in[i + 1];
 			} else {
 				return no;
@@ -568,7 +564,7 @@ void edit_file(char *in_name, char *front, int line_to_edit, double value)
 
 void mass_copy_file(char **output, char *input, int n)
 {
-
+//printf ("%s %s",input,output);
 	char buf[8192];
 	int i;
 	struct stat results;
@@ -597,7 +593,7 @@ void mass_copy_file(char **output, char *input, int n)
 		if (result == 0) {
 			break;
 		}
-
+		//printf("mas copy %s %s %d\n",input,buf,result,strlen(buf));
 		for (i = 0; i < n; i++) {
 			write(out_fd[i], buf, result * sizeof(char));
 		}
@@ -611,7 +607,7 @@ void mass_copy_file(char **output, char *input, int n)
 
 void copy_file(char *output, char *input)
 {
-
+//printf ("%s %s",input,output);
 	char buf[8192];
 	struct stat results;
 	int in_fd = open(input, O_RDONLY);
@@ -629,6 +625,8 @@ void copy_file(char *output, char *input)
 
 	while (1) {
 		ssize_t result = read(in_fd, buf, 8192 * sizeof(char));
+
+		//printf("%d\n",result);
 
 		if (result == 0) {
 			break;
@@ -760,6 +758,9 @@ void remove_dir(char *dir_name)
 	DIR *theFolder;
 	char filepath[256];
 
+//if (get_dump_status(dump_newton)==TRUE)
+//{
+
 	theFolder = opendir(dir_name);
 	if (theFolder != NULL) {
 		while ((next_file = readdir(theFolder)) != NULL) {
@@ -776,7 +777,7 @@ void remove_dir(char *dir_name)
 					remove(filepath);
 #endif
 				} else {
-
+					//printf("Deleteing file =%s\n",filepath);
 					remove(filepath);
 				}
 			}
@@ -784,5 +785,6 @@ void remove_dir(char *dir_name)
 
 		closedir(theFolder);
 	}
+//}
 
 }

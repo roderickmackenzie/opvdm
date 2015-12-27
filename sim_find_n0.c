@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -43,10 +43,12 @@ void find_n0(struct device *in)
 	double oldv = in->Vapplied;
 	in->Vapplied = 0;
 	in->Psun = 0;
+	char temp[200];
 	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
 
-	if (get_dump_status(dump_newton) == TRUE) {
-		dump_1d_slice(in, "equilibrium", "");
+	if (get_dump_status(dump_equilibrium) == TRUE) {
+		join_path(2, temp, in->outputpath, "equilibrium");
+		dump_1d_slice(in, temp);
 	}
 
 	for (i = 0; i < in->ymeshpoints; i++) {

@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ void update_arrays(struct device *in)
 		    get_p_den(in->xp[i] - in->tp[i], in->Th[i], in->imat[i]);
 		in->dpdphi[i] =
 		    -get_dp_den(in->xp[i] - in->tp[i], in->Th[i], in->imat[i]);
+//printf("%d one %d\n",i,in->imat[i]);
 
 		in->wn[i] =
 		    get_n_w(in->x[i] + in->t[i], in->Te[i], in->imat[i]);
@@ -158,7 +159,7 @@ void update_arrays(struct device *in)
 						   in->tpt[i], in->Th[i], band,
 						   in->imat[i]);
 				in->pt_all[i] += in->pt[i][band];
-
+				//printf("%le\n",in->pt[i][band]);
 			}
 		}
 
@@ -178,19 +179,22 @@ void init_mat_arrays(struct device *in)
 		    in->Tll + in->ymesh[i] * (in->Tlr - in->Tll) / in->ylen;
 		in->ex[i] = 0.0;
 		in->Hex[i] = 0.0;
-
+		//if ((i>in->ymeshpoints/2)&&(i<in->ymeshpoints/2+10)) in->Hex[i]=1e9;
 		in->epsilonr[i] = get_dos_epsilonr(in->imat[i]);
-		in->dostype[i] = 0;
+		in->dostype[i] = 0;	//(int)get_mat_param(&(in->mat.l[in->imat[i]]),mat_dostype);
 
+		//printf("ended\n");
 		in->Eg[i] = get_dos_Eg(in->imat[i]);
 		in->B[i] = get_dos_B(in->imat[i]);
-		in->Dex[i] = 0.0;
+		in->Dex[i] = 0.0;	//get_mat_param(&(in->mat.l[in->imat[i]]),mat_Dex);
 
 		in->Xi[i] = get_dos_Xi(in->imat[i]);
 
 		in->Ec[i] = -in->Xi[i];
 
 		in->Ev[i] = -in->Xi[i] - in->Eg[i];
+
+		//printf("%d %e %e\n",i,in->mun[i],in->mup[i]);
 
 		in->Nc[i] = get_Nc_free(in->imat[i]);
 
@@ -199,8 +203,8 @@ void init_mat_arrays(struct device *in)
 		in->mun[i] = get_n_mu(in->imat[i]);
 		in->mup[i] = get_p_mu(in->imat[i]);
 
-		in->kf[i] = 0.0;
-		in->kl[i] = 0.0;
+		in->kf[i] = 0.0;	//get_mat_param(&(in->mat.l[in->imat[i]]),mat_kf);
+		in->kl[i] = 0.0;	//get_mat_param(&(in->mat.l[in->imat[i]]),mat_kl);
 		in->ke[i] = get_n_mu(in->imat[i]);
 		in->kh[i] = get_p_mu(in->imat[i]);
 

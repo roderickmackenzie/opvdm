@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -69,10 +69,10 @@ void solver_precon(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 				for (ii = 0; ii < nz; ii++) {
 					if (Ti[ii] == Ti[i]) {
 						Tx[ii] /= Tx[Ti[i]];
-
+						//printf("%e % ");
 					}
 				}
-
+				//getchar();
 			}
 		}
 	}
@@ -86,6 +86,8 @@ void solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
 	char name[100];
 	sprintf(name, "matrix%s.dat", index);
 	matrix = fopen(name, "w");
+//fprintf(matrix,"%d\n",nz);
+//fprintf(matrix,"%d\n",col);
 
 	int i;
 	for (i = 0; i < nz; i++) {
@@ -124,12 +126,13 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 		solver_dump_matrix(col, nz, Ti, Tj, Tx, b, name);
 		solver_dump_every_matrix++;
 	}
-
+//getchar();
+//int i;
 	double stats[2];
 	umfpack_tic(stats);
 	void *Symbolic, *Numeric;
 	int status;
-
+//printf("here1\n");
 	if ((last_col != col) || (last_nz != nz)) {
 		x = realloc(x, col * sizeof(double));
 		Ap = realloc(Ap, (col + 1) * sizeof(int));
@@ -142,7 +145,11 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 	double Control[UMFPACK_CONTROL], Info[UMFPACK_INFO];
 
 	umfpack_di_defaults(Control);
-
+//Control[UMFPACK_BLOCK_SIZE]=1000;
+//Control [UMFPACK_STRATEGY]=UMFPACK_STRATEGY_SYMMETRIC;//UMFPACK_STRATEGY_UNSYMMETRIC;
+//Control [UMFPACK_ORDERING]=UMFPACK_ORDERING_BEST;//UMFPACK_ORDERING_AMD;
+//printf("%lf\n",Control[UMFPACK_BLOCK_SIZE]);
+//Control [UMFPACK_PIVOT_TOLERANCE]=0.001;
 	status =
 	    umfpack_di_triplet_to_col(col, col, nz, Ti, Tj, Tx, Ap, Ai, Ax,
 				      NULL);
@@ -151,25 +158,30 @@ int solver(int col, int nz, int *Ti, int *Tj, double *Tx, double *b)
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
-
+// symbolic analysis
+//printf("here2 %d\n",col);
 	status =
 	    umfpack_di_symbolic(col, col, Ap, Ai, Ax, &Symbolic, Control, Info);
+//printf("here3\n");
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
-
+// LU factorization
 	umfpack_di_numeric(Ap, Ai, Ax, Symbolic, &Numeric, Control, Info);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);
 		return EXIT_FAILURE;
 	}
+// solve system
 
 	umfpack_di_free_symbolic(&Symbolic);
 
 	umfpack_di_solve(UMFPACK_A, Ap, Ai, Ax, x, b, Numeric, Control, Info);
+
+//printf("%lf\n",Info [UMFPACK_ORDERING_USED]);
 
 	if (status != UMFPACK_OK) {
 		error_report(status, __FILE__, __func__, __LINE__);

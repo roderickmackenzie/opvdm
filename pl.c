@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -70,8 +70,11 @@ void exp_cal_emission(int number, struct device *in)
 	int pl_enabled = 0;
 
 	double Vexternal = get_equiv_V(in);
+//char zip_file_name[400];
 
 	buffer_init(&buf);
+//sprintf(zip_file_name,"%s/snapshots.zip",in->outputpath);
+//buffer_zip_set_name(&buf,zip_file_name);
 
 	struct istruct fe_to_fh;
 	struct istruct fe_to_te;
@@ -86,11 +89,15 @@ void exp_cal_emission(int number, struct device *in)
 		}
 	}
 
+//inter_init_mesh(&photons,40,0.0,2.254);
+
 	inter_init(&fe_to_fh);
 	inter_init(&fe_to_te);
 	inter_init(&te_to_fh);
 	inter_init(&fh_to_th);
 	inter_init(&th_to_fe);
+
+//double Re_e=0.0;
 
 	for (i = 0; i < in->ymeshpoints; i++) {
 		mat = in->imat[i];
@@ -107,29 +114,22 @@ void exp_cal_emission(int number, struct device *in)
 				     in->Rfree[i] * pl_fe_fh);
 
 			for (band = 0; band < in->srh_bands; band++) {
-
+				//electrons
 				dEe_e = -dos_get_band_energy_n(band, mat);
-				Re_e =
-				    (in->nt_r1[i][band] -
-				     in->nt_r2[i][band]) * pl_fe_te;
+				Re_e = (in->nt_r1[i][band] - in->nt_r2[i][band]) * pl_fe_te;	//electron capture - electron emission for an electron trap
 				inter_append(&fe_to_te, dEe_e, Re_e);
 
 				dEe_h = get_dos_Eg(mat) - dEe_e;
-				Re_h =
-				    (in->nt_r3[i][band] -
-				     in->nt_r4[i][band]) * pl_te_fh;
+				Re_h = (in->nt_r3[i][band] - in->nt_r4[i][band]) * pl_te_fh;	//hole capture-hole emission for an electron trap
 				inter_append(&te_to_fh, dEe_h, Re_h);
 
+				//holes
 				dEh_e = get_dos_Eg(mat) - dEh_h;
-				Rh_e =
-				    (in->pt_r3[i][band] -
-				     in->pt_r4[i][band]) * pl_th_fe;
+				Rh_e = (in->pt_r3[i][band] - in->pt_r4[i][band]) * pl_th_fe;	//electron capture - electron emission for a hole trap
 				inter_append(&th_to_fe, dEh_e, Rh_e);
 
 				dEh_h = -dos_get_band_energy_p(band, mat);
-				Rh_h =
-				    (in->pt_r1[i][band] -
-				     in->pt_r2[i][band]) * pl_ft_th;
+				Rh_h = (in->pt_r1[i][band] - in->pt_r2[i][band]) * pl_ft_th;	//hole capture - hole emission for a hole trap
 				inter_append(&fh_to_th, dEh_h, Rh_h);
 
 			}
@@ -146,6 +146,8 @@ void exp_cal_emission(int number, struct device *in)
 	sprintf(temp, "%d", number);
 	join_path(3, out_dir, in->outputpath, "snapshots", temp);
 
+//inter_dump(&fe_to_fh);
+//inter_sort(&fe_to_fh);
 	inter_sort(&fe_to_te);
 	inter_sort(&te_to_fh);
 	inter_sort(&th_to_fe);

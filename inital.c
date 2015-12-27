@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,6 +19,7 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+//<clean=none></clean>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -68,6 +68,7 @@ void my_guess(struct device *in)
 {
 	int i;
 
+//getchar();
 	double Ef = 0.0;
 	double phi_ramp = 0.0;
 	double Eg = in->Eg[0];
@@ -80,15 +81,32 @@ void my_guess(struct device *in)
 	if (in->interfaceleft == TRUE) {
 		top_l = in->phibleft - Eg;
 	} else {
-		top_l = get_top_from_p(charge_left, in->Te[0], in->imat[0]);
+		if (in->lr_pcontact == LEFT) {
+			top_l =
+			    get_top_from_p(charge_left, in->Te[0], in->imat[0]);
+		} else {
+			top_l =
+			    -(in->Eg[0] +
+			      get_top_from_n(charge_left, in->Te[0],
+					     in->imat[0]));
+		}
 	}
 
 	if (in->interfaceright == TRUE) {
 		top_r = -in->phibright;
 	} else {
-		top_r =
-		    get_top_from_n(charge_right, in->Te[in->ymeshpoints - 1],
-				   in->imat[in->ymeshpoints - 1]);
+		if (in->lr_pcontact == LEFT) {
+			top_r =
+			    get_top_from_n(charge_right,
+					   in->Te[in->ymeshpoints - 1],
+					   in->imat[in->ymeshpoints - 1]);
+		} else {
+			top_r =
+			    -(Eg +
+			      get_top_from_p(charge_right,
+					     in->Te[in->ymeshpoints - 1],
+					     in->imat[in->ymeshpoints - 1]));
+		}
 	}
 
 	if (get_dump_status(dump_iodump) == TRUE) {
@@ -187,6 +205,8 @@ void my_guess(struct device *in)
 		in->n[i] = in->Nc[i] * exp(((t) * Q) / (kb * in->Te[i]));
 		in->p[i] = in->Nv[i] * exp(((tp) * Q) / (kb * in->Th[i]));
 
+//printf("%e %e\n",t,tp);
+//getchar();
 		in->mun[i] = get_n_mu(in->imat[i]);
 		in->mup[i] = get_p_mu(in->imat[i]);
 
@@ -223,7 +243,7 @@ void my_guess(struct device *in)
 	in->Vr = delta_phi;
 	in->Vbi = delta_phi;
 	init_dump(in);
-
+//getchar();
 	if (in->stoppoint == 1)
 		exit(0);
 }

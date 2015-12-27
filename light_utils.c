@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -45,6 +44,8 @@ void light_solve_optical_problem(struct light *in)
 {
 	int i;
 
+//if (get_dump_status(dump_iodump)==TRUE) printf("light_solve_optical_problem\n");
+
 	double Psun = in->Psun * pow(10.0, -in->ND);
 	light_set_sun_power(in, Psun, in->laser_eff);
 	if ((in->laser_eff == 0) && (in->Psun == 0)) {
@@ -64,6 +65,8 @@ void light_solve_optical_problem(struct light *in)
 	}
 
 	light_cal_photon_density(in);
+
+	//light_dump(in);
 
 	for (i = 0; i < in->lpoints; i++) {
 		light_dump_1d(in, i, "");
@@ -102,15 +105,19 @@ double light_cal_photon_density(struct light *in)
 			}
 			double E = ((hp * cl) / in->l[i]) / Q - in->Eg;
 
+			//getchar();
 			if (E > 0.0) {
 				in->H[i][ii] = E * Q * in->photons_asb[i][ii];
 			} else {
 				in->H[i][ii] = 0.0;
 			}
 
+			//printf("%d %d %le %le %le\n",i,ii,E,in->H[i][ii],in->photons_asb[i][ii]);
 			photons_tot += in->photons[i][ii] * in->dl;
 			tot += in->photons_asb[i][ii] * in->dl;
 			H_tot += in->H[i][ii] * in->dl;
+			//printf("%le %le\n",E,in->l[i]);
+			//getchar();*/
 
 		}
 
@@ -205,54 +212,56 @@ void light_load_materials(struct light *in)
 {
 	int i = 0;
 	char fit_file[1000];
-	char physdir[200];
+	char materialsdir[200];
 	char file_path[400];
 
 	DIR *theFolder;
 	char pwd[1000];
 	char temp[1000];
-	getcwd(pwd, 1000);
+	if (getcwd(pwd, 1000) == NULL) {
+		ewe("Error getting directory path\n");
+	}
 	struct inp_file inp;
 
-	join_path(2, temp, pwd, "phys");
+	join_path(2, temp, pwd, "materials");
 	int found = FALSE;
 	theFolder = opendir(temp);
 	if (theFolder != NULL) {
 		closedir(theFolder);
-		strcpy(physdir, temp);
+		strcpy(materialsdir, temp);
 		found = TRUE;
 	}
 
 	if (found == FALSE) {
 		inp_init(&inp);
-		if (inp_load(&inp, "physdir.inp") != 0) {
-			ewe("File physdir.inp not found in %s", pwd);
+		if (inp_load(&inp, "materialsdir.inp") != 0) {
+			ewe("File materialsdir.inp not found in %s", pwd);
 		}
 
 		inp_check(&inp, 1.0);
 
-		strcpy(temp, inp_search(&inp, "#physdir"));
+		strcpy(temp, inp_search(&inp, "#materialsdir"));
 		inp_free(&inp);
 
 		theFolder = opendir(temp);
 		if (theFolder != NULL) {
 			closedir(theFolder);
-			strcpy(physdir, temp);
+			strcpy(materialsdir, temp);
 			found = TRUE;
 		}
 	}
 
 	if (found == FALSE) {
 #ifndef windows
-		strcpy(temp, "/usr/share/opvdm/phys");
+		strcpy(temp, "/usr/share/opvdm/materials");
 #else
-		strcpy(temp, "c:\\opvdm\\phys");
+		strcpy(temp, "c:\\opvdm\\materials");
 #endif
 
 		theFolder = opendir(temp);
 		if (theFolder != NULL) {
 			closedir(theFolder);
-			strcpy(physdir, temp);
+			strcpy(materialsdir, temp);
 			found = TRUE;
 		}
 	}
@@ -261,7 +270,7 @@ void light_load_materials(struct light *in)
 		ewe("No optical materials found\n");
 	}
 
-	join_path(2, file_path, physdir, in->suns_spectrum_file);
+	join_path(2, file_path, materialsdir, in->suns_spectrum_file);
 
 	inter_load(&(in->sun_read), file_path);
 	inter_sort(&(in->sun_read));
@@ -288,7 +297,7 @@ void light_load_materials(struct light *in)
 	char type[40];
 	int spectrum = FALSE;
 	for (i = 0; i < in->layers; i++) {
-		join_path(3, fit_file, physdir, in->material_dir_name[i],
+		join_path(3, fit_file, materialsdir, in->material_dir_name[i],
 			  "fit.inp");
 
 		inp_load(&inp, fit_file);
@@ -320,15 +329,22 @@ void light_load_materials(struct light *in)
 
 		inp_free(&inp);
 
-		join_path(3, file_path, physdir, in->material_dir_name[i],
-			  "alpha.mat");
+		join_path(3, file_path, materialsdir, in->material_dir_name[i],
+			  "alpha.omat");
 		inter_load(&(in->mat[i]), file_path);
 		inter_sort(&(in->mat[i]));
 
-		join_path(3, file_path, physdir, in->material_dir_name[i],
-			  "n.mat");
+		join_path(3, file_path, materialsdir, in->material_dir_name[i],
+			  "n.omat");
 		inter_load(&(in->mat_n[i]), file_path);
 		inter_sort(&(in->mat_n[i]));
+
+		//struct istruct den;
+		//inter_init_mesh(&den,1000,2e-7,7e-7);
+		//inter_to_new_mesh(&(in->mat[i]),&den);
+		//join_path(3, out_file,materialsdir,in->material_dir_name[i],"inter_n.dat");
+		//inter_save(&den,out_file);
+		//inter_free(&den);
 
 		inter_mul(&(in->mat[i]), alpha_mul);
 		inter_add_x(&(in->mat[i]), wavelength_shift_alpha);
@@ -337,7 +353,7 @@ void light_load_materials(struct light *in)
 		inter_add_x(&(in->mat_n[i]), wavelength_shift_n);
 
 		if (patch == TRUE) {
-			join_path(3, patch_file, physdir,
+			join_path(3, patch_file, materialsdir,
 				  in->material_dir_name[i], "patch.inp");
 
 			FILE *patch_in = fopen(patch_file, "r");
@@ -403,7 +419,7 @@ void light_load_materials(struct light *in)
 							   a) / (sqrt(2.0) *
 								 b)), 2.0));
 						in->mat_n[i].data[ii] += add;
-
+						//printf("add=%le\n",add);
 					}
 				} else if (strcmp(type, "gaus_math") == 0) {
 					printf("gaus math\n");
@@ -418,7 +434,7 @@ void light_load_materials(struct light *in)
 							   a) / (sqrt(2.0) *
 								 b)), 2.0));
 						in->mat_n[i].data[ii] += add;
-
+						//printf("add=%le %le\n",add,c);
 					}
 				}
 			} while (!feof(patch_in));
@@ -432,7 +448,7 @@ void light_load_materials(struct light *in)
 
 			if (inter == TRUE) {
 
-				join_path(3, patch_file, physdir,
+				join_path(3, patch_file, materialsdir,
 					  in->material_dir_name[i],
 					  "inter.inp");
 
@@ -454,6 +470,7 @@ void light_load_materials(struct light *in)
 					    fscanf(patch_in, "%le %le", &from,
 						   &to);
 
+					//for n
 					int x0 =
 					    inter_search_pos(&(in->mat_n[i]),
 							     from);
@@ -469,7 +486,7 @@ void light_load_materials(struct light *in)
 						in->mat_n[i].data[ii] = pos;
 						pos += step;
 					}
-
+					//for alpha
 					x0 = inter_search_pos(&(in->mat[i]),
 							      from);
 					x1 = inter_search_pos(&(in->mat[i]),
@@ -493,11 +510,11 @@ void light_load_materials(struct light *in)
 				fclose(patch_in);
 			}
 
-			join_path(3, out_file, physdir,
+			join_path(3, out_file, materialsdir,
 				  in->material_dir_name[i], "n_out.dat");
 			inter_save(&(in->mat_n[i]), out_file);
 
-			join_path(3, out_file, physdir,
+			join_path(3, out_file, materialsdir,
 				  in->material_dir_name[i], "alpha_out.dat");
 			inter_save(&(in->mat[i]), out_file);
 		}
@@ -505,7 +522,7 @@ void light_load_materials(struct light *in)
 		if (spectrum == TRUE) {
 			inter_free(&(in->mat_n[i]));
 
-			join_path(3, patch_file, physdir,
+			join_path(3, patch_file, materialsdir,
 				  in->material_dir_name[i], "n_spectrum.inp");
 
 			FILE *f_in = fopen(patch_file, "r");
@@ -532,7 +549,7 @@ void light_load_materials(struct light *in)
 			}
 			fclose(f_in);
 
-			join_path(3, out_file, physdir,
+			join_path(3, out_file, materialsdir,
 				  in->material_dir_name[i], "n_out.dat");
 			inter_save(&(in->mat_n[i]), out_file);
 
@@ -635,6 +652,10 @@ void light_calculate_complex_n(struct light *in)
 			in->r[i][ii] = (n0 - n1) / (n0 + n1);
 			in->t[i][ii] = (2.0 * n0) / (n0 + n1);
 
+			//printf("%le %le\n",cabs(in->r[i][ii]),1.0-cabs(in->r[i][ii]));
+			//printf("%le %le\n",cabs(in->t[i][ii]),1.0-cabs(in->t[i][ii]));
+			//getchar();
+
 		}
 		memset(in->En[i], 0.0, in->points * sizeof(double));
 		memset(in->Ep[i], 0.0, in->points * sizeof(double));
@@ -659,7 +680,7 @@ void light_init_mesh(struct light *in)
 	printf("Load optics config %s\n", in->config_file);
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->input_path, "optics.inp");
-	inp_check(&inp, 1.84);
+	inp_check(&inp, 1.85);
 
 	inp_search_string(&inp, in->suns_spectrum_file, "#sun");
 
@@ -745,25 +766,28 @@ void light_init_mesh(struct light *in)
 
 	int layer = 0;
 	double layer_end = in->thick[layer];
-
+	//printf("%le\n",layer_end);
 	for (i = 0; i < in->points; i++) {
 		in->x[i] = pos;
 		in->layer_end[i] = layer_end - pos;
 		in->layer[i] = layer;
 		if (in->device_start_layer >= layer)
 			in->device_start_i = i;
-
+		//printf("%d %d %d %d\n",in->device_start_i,in->points,in->device_start_layer,layer);
 		pos += in->dx;
 
 		if (pos > layer_end) {
-
+			//printf("%le\n",in->thick[layer],la);
+			//do
+			//{
 			if (layer < (in->layers - 1)) {
 				layer++;
+				//}while(in->thick[layer]==0.0);
 
 				layer_end = layer_end + in->thick[layer];
 			}
 		}
-
+		//printf("%le %d %d %le\n",in->x[i],i,layer,in->thick[layer]);
 	}
 	in->device_start_i++;
 
@@ -823,6 +847,12 @@ void light_init_mesh(struct light *in)
 
 	inp_search_double(&inp, &(in->Eg), "#Eg");
 
+	inp_search_double(&inp, &(in->electron_eff), "#electron_eff");
+	in->electron_eff = fabs(in->electron_eff);
+
+	inp_search_double(&inp, &(in->hole_eff), "#hole_eff");
+	in->hole_eff = fabs(in->hole_eff);
+
 	inp_search_double(&inp, &(ver), "#ver");
 
 	inp_free(&inp);
@@ -833,9 +863,9 @@ void light_init_mesh(struct light *in)
 	in->N += in->points;
 
 	in->N += in->points - 1;
-	in->N += in->points;
+	in->N += in->points;	//t
 	in->N += in->points - 1;
-
+//in->N+=1;
 	in->M = in->points + in->points;
 	in->Ti = malloc(in->N * sizeof(int));
 	in->Tj = malloc(in->N * sizeof(int));
@@ -851,9 +881,9 @@ void light_set_sun_power(struct light *in, double power, double laser_eff)
 	int i;
 
 	double E = 0.0;
-
+//double tot0=0.0;
 	for (i = 0; i < in->lpoints; i++) {
-		in->sun[i] = in->sun_norm[i] * power * 1000.0;
+		in->sun[i] = in->sun_norm[i] * power * 1000.0;	//The 1000 is because it is 1000 W/m2
 
 		E = hp * cl / in->l[i];
 		in->sun_photons[i] = in->sun[i] / E;
@@ -895,11 +925,13 @@ void light_set_unity_power(struct light *in)
 {
 	int i;
 
-	for (i = 0; i < in->lpoints; i++) {
+//double E=0.0;
 
+	for (i = 0; i < in->lpoints; i++) {
+//      E=hp*cl/in->l[i];
 		in->sun[i] = 0.0;
 		in->sun_photons[i] = 0.0;
-		in->sun_E[i] = 1.0;
+		in->sun_E[i] = 1.0;	//pow(2.0*(1e20*E)/(epsilon0*cl*in->n[i][0]),0.5);
 	}
 
 }

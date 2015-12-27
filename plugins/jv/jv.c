@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -138,11 +137,13 @@ void sim_jv(struct device *in)
 
 		Pden = fabs(J * Vexternal);
 
+		//printf("Plotted\n");
 		plot_now(in, "jv.plot");
 		dump_dynamic_add_data(&store, in, get_equiv_V(in));
 
 		if (first == FALSE) {
 
+			//check if we have crossed 0V
 			if ((Vlast <= 0) && (Vexternal >= 0.0)) {
 				in->Jsc =
 				    Jlast + (J - Jlast) * (0 - Vlast) / (V -
@@ -199,7 +200,7 @@ void sim_jv(struct device *in)
 
 		V += Vstep;
 		Vstep *= config.jv_step_mul;
-
+		//dialog_set_progress ((in->Vstart+V)/(in->Vstop-in->Vstart));
 		if ((Vstep >= 0) && (V > Vstop)) {
 			in->stop = TRUE;
 			printf("--------------1\n");
@@ -224,6 +225,7 @@ void sim_jv(struct device *in)
 		stop_start(in);
 
 	} while (1);
+//printf("exit\n");
 
 	in->FF = fabs(in->Pmax / (in->Jsc * in->Voc));
 
@@ -297,7 +299,7 @@ void sim_jv(struct device *in)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
-	buffer_dump_path(in->outputpath, "jvexternal.dat", &buf);
+	buffer_dump_path(in->outputpath, "jv.dat", &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);
@@ -313,7 +315,7 @@ void sim_jv(struct device *in)
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
 	buffer_add_xy_data(&buf, jvexternal.x, jvexternal.data, jvexternal.len);
-	buffer_dump_path(in->outputpath, "ivexternal.dat", &buf);
+	buffer_dump_path(in->outputpath, "iv.dat", &buf);
 	buffer_free(&buf);
 
 	buffer_malloc(&buf);

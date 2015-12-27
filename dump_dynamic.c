@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -493,12 +492,12 @@ void dump_dynamic_save(char *outputpath, struct dynamic_store *store)
 		fclose(out);
 
 		inter_make_cumulative(&(store->nfree_to_ptrap));
-
+		//inter_div_double(&nfree_to_ptrap,in->stark_den);
 		sprintf(outpath, "%s%s", out_dir, "dynamic_Rn_cumulative.dat");
 		inter_save(&(store->nfree_to_ptrap), outpath);
 
 		inter_make_cumulative(&(store->pfree_to_ntrap));
-
+		//inter_div_double(&pfree_to_ntrap,in->stark_den);
 		sprintf(outpath, "%s%s", out_dir, "dynamic_Rp_cumulative.dat");
 		inter_save(&(store->pfree_to_ntrap), outpath);
 
@@ -698,6 +697,7 @@ void dump_dynamic_save(char *outputpath, struct dynamic_store *store)
 		buffer_dump_path(out_dir, "dynamic_p.dat", &buf);
 		buffer_free(&buf);
 
+		//inter_sub_double(&dynamic_np,dynamic_np.data[0]);
 		sprintf(outpath, "%s%s", out_dir, "dynamic_np.dat");
 		inter_save(&(store->dynamic_np), outpath);
 

@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,15 +19,20 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+/** @file vec.h
+	@brief Header file for vec.c
+*/
 #ifndef vech
 #define vech
-
+//<clean=none></clean>
+///Structure to hold vector
 struct vec {
 	double x;
 	double y;
 	double z;
 };
 
+//Vector routines
 void set_vec(struct vec *my_vec, double x, double y, double z);
 void add_to_vec(struct vec *my_vec, double x, double y, double z);
 void cpy_vec(struct vec *my_vec1, struct vec *my_vec2);

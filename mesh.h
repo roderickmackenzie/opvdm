@@ -19,37 +19,11 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef frame_h
-#define frame_h
-struct map {
-	double **data;
-	int xpoints;
-	int ypoints;
-	double xstart;
-	double ystart;
-	double xstop;
-	double ystop;
-	double xdelta;
-	double ydelta;
-	double *x;
-	double *y;
-	double *x_fake;
-	double *y_fake;
-	double cog_x;
-	double cog_y;
-	int count;
-};
+#ifndef mesh_h
+#define mesh_h
 
-void frame_reset(struct map *in);
-void frame_free(struct map *in);
-void frame_init(struct map *in, int xpoints, int ypoints, double xstart,
-		double xstop, double ystart, double ystop);
-void frame_data_set(struct map *in, double x, double y, double data);
-void frame_data_add(struct map *in, double x, double y, double data);
-void frame_data_set_if_bigger(struct map *in, double x, double y, double data);
-void frame_dump(char *file, struct map *in);
-void frame_scale_delog_scale(struct map *in);
-void frame_dump_outline(char *file, struct map *in);
-void frame_cog_cal(struct map *in);
-void frame_fill(struct map *in);
+void mesh_save(struct device *in);
+void mesh_load(struct device *in);
+void mesh_free(struct device *in);
+void mesh_remesh(struct device *in);
 #endif

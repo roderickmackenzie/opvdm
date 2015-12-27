@@ -2,9 +2,9 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -81,15 +81,31 @@ int main(int argc, char *argv[])
 	cell.onlypos = FALSE;
 
 	char pwd[1000];
-	getcwd(pwd, 1000);
+	if (getcwd(pwd, 1000) == NULL) {
+		ewe("IO error\n");
+	}
 
 	remove("snapshots.zip");
 	remove("light_dump.zip");
 
 	hard_limit_init();
 
+//char path[PATH_MAX];
+//char dest[PATH_MAX];
+//pid_t pid = getpid();
+//sprintf(path, "/proc/%d/exe", pid);
+
+//if (readlink(path, dest, PATH_MAX) == -1)
+//{
+//      printf("error\n");
+//      exit(1);
+//}
+//  char *base = strrchr(dest, '/');
+//*base='/';
+//*(base+1)=0;
 	set_plot_script_dir(pwd);
 
+//set_plot_script_dir(char * in)
 	if (scanarg(argv, argc, "--help") == TRUE) {
 		printf("opvdm_core - Organic Photovoltaic Device Model\n");
 		printf(copyright);
@@ -241,7 +257,7 @@ int main(int argc, char *argv[])
 		gui_start();
 		struct light two;
 		light_init(&two, &cell, pwd);
-
+		//light_set_dx(&cell.mylight,cell.ymesh[1]-cell.ymesh[0]);
 		light_load_config(&two);
 		two.disable_transfer_to_electrical_mesh = TRUE;
 		set_dump_status(dump_lock, FALSE);
@@ -251,7 +267,7 @@ int main(int argc, char *argv[])
 		inp_init(&inp);
 		inp_load_from_path(&inp, pwd, "light.inp");
 		inp_search_double(&inp, &(Psun), "#Psun");
-		Psun = 1.0;
+		Psun = 1.0;	//fabs(Psun);
 		inp_free(&inp);
 
 		light_solve_and_update(&cell, &two, Psun, 0.0);

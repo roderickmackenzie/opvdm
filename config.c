@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +30,7 @@
 #include "util.h"
 #include "hard_limit.h"
 #include "epitaxy.h"
+#include "mesh.h"
 
 static int unused __attribute__ ((unused));
 
@@ -68,9 +68,6 @@ void load_config(struct device *in)
 {
 	int i;
 	char temp[100];
-	char name[1000];
-	char token0[200];
-	char token1[200];
 
 	char device_epitaxy[100];
 
@@ -79,9 +76,7 @@ void load_config(struct device *in)
 	inp_load_from_path(&inp, in->inputpath, "sim.inp");
 	inp_check(&inp, 1.2);
 
-	inp_search_string(&inp, name, "#simmode");
-
-	in->simmode = english_to_bin(name);
+	inp_search_string(&inp, in->simmode, "#simmode");
 
 	inp_search_int(&inp, &(in->stoppoint), "#stoppoint");
 	inp_search_string(&inp, device_epitaxy, "#epitaxy");
@@ -92,65 +87,17 @@ void load_config(struct device *in)
 
 	inp_free(&inp);
 
+/////////////////////////////////////////
+
 	char device_file_path[1000];
 
 	join_path(2, device_file_path, in->inputpath, "epitaxy.inp");
 
 	epitaxy_load(&(in->my_epitaxy), device_file_path);
 
-	inp_init(&inp);
-	inp_load_from_path(&inp, in->inputpath, "mesh.inp");
+	mesh_load(in);
 
-	inp_check(&inp, 1.0);
-
-	inp_reset_read(&inp);
-
-	inp_get_string(&inp);
-
-	sscanf(inp_get_string(&inp), "%d", &(in->ymeshlayers));
-
-	in->meshdata = malloc(in->ymeshlayers * sizeof(struct mesh));
-
-	in->ymeshpoints = 0;
-
-	for (i = 0; i < in->ymeshlayers; i++) {
-		sscanf(inp_get_string(&inp), "%s", token0);
-		sscanf(inp_get_string(&inp), "%lf", &(in->meshdata[i].len));
-
-		sscanf(inp_get_string(&inp), "%s", token1);
-		sscanf(inp_get_string(&inp), "%lf", &(in->meshdata[i].number));
-
-		in->meshdata[i].len = fabs(in->meshdata[i].len);
-		hard_limit(token0, &(in->meshdata[i].len));
-		in->meshdata[i].den =
-		    in->meshdata[i].len / in->meshdata[i].number;
-		in->ymeshpoints += in->meshdata[i].number;
-	}
-
-	inp_free(&inp);
-
-	in->imat = malloc(in->ymeshpoints * sizeof(int));
-
-	in->ymesh = malloc(in->ymeshpoints * sizeof(double));
-
-	int pos = 0;
-	int ii;
-	double dpos = 0.0;
-	for (i = 0; i < in->ymeshlayers; i++) {
-
-		for (ii = 0; ii < in->meshdata[i].number; ii++) {
-			dpos += in->meshdata[i].den / 2.0;
-			in->ymesh[pos] = dpos;
-			in->imat[pos] =
-			    epitaxy_get_electrical_material_layer(&
-								  (in->
-								   my_epitaxy),
-								  dpos);
-
-			dpos += in->meshdata[i].den / 2.0;
-			pos++;
-		}
-	}
+///////////////////////////////
 
 	in->ylen = 0.0;
 	double mesh_len = 0.0;
@@ -162,13 +109,14 @@ void load_config(struct device *in)
 	}
 
 	if (fabs(in->ylen - mesh_len) > 1e-14) {
-		ewe("Mesh length (%le) and device length (%le) do not match\n",
-		    mesh_len, in->ylen);
+		mesh_remesh(in);
+		printf
+		    ("Warning: Length of epitaxy and computational mesh did not match, so I remesshed the device.\n");
 	}
 
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->inputpath, "device.inp");
-	inp_check(&inp, 1.18);
+	inp_check(&inp, 1.19);
 	inp_search_string(&inp, temp, "#lr_bias");
 	in->lr_bias = english_to_bin(temp);
 
@@ -193,9 +141,11 @@ void load_config(struct device *in)
 
 	inp_search_double(&inp, &(in->lcharge), "#lcharge");
 	in->lcharge = fabs(in->lcharge);
+//if (in->lcharge<1e4) in->lcharge=1e4;
 
 	inp_search_double(&inp, &(in->rcharge), "#rcharge");
 	in->rcharge = fabs(in->rcharge);
+//if (in->rcharge<1e4) in->rcharge=1e4;
 
 	inp_search_double(&inp, &(in->other_layers), "#otherlayers");
 
@@ -215,12 +165,6 @@ void load_config(struct device *in)
 
 	inp_search_double(&inp, &(in->vr_h), "#vr_h");
 	in->vr_h = fabs(in->vr_h);
-
-	inp_search_double(&inp, &(in->electron_eff), "#electron_eff");
-	in->electron_eff = fabs(in->electron_eff);
-
-	inp_search_double(&inp, &(in->hole_eff), "#hole_eff");
-	in->hole_eff = fabs(in->hole_eff);
 
 	inp_free(&inp);
 
