@@ -1,30 +1,31 @@
-Opvdm is a drift diffusion model specifically designed to model organic photovoltaic (OPV) devices.
-I wrote the model during the very exciting and enjoyable time I spent working at Imperial College
-for Jenny Nelson. The model has been used to generate a number of publications. It can simulate the
-following experiments often used to characterize OPV devices:
+What is opvdm?
+~~~~~~~~~~~~~~
 
-    *JV curves (Light/Dark)
-    *Charge extraction data (Light/Dark)
-    *Steady state recombination data (Light/Dark)
+Opvdm is a free organic solar cells model. It is specifically designed to simulate bulk-heterojuncton organic solar cells, such as those based on the P3HT:PCBM material system. The model contains both an electrical and an optical solver, enabling both current/voltage characteristics to be simulated as well as the optical modal profile within the device. The model and it's easy to use graphical interface is available for both Linux and Windows.
+The model can simulate:
 
-It contains the following physical models:
+    *Dark JV curves
+    *Light JV curves
+    *Dark CELIV transients
+    *Light CELIV transients
+    *Voltage transients of an arbitrary shape
+    *Full optical model taking into account reflection at interfaces and absorption.
+    *Calculation of reflection profile
+    *Ability to simulate OLEDs
 
-    *Drift diffusion of electrons and holes
-    *Shockley-Read-Hall recombination.
-    *Ohmic contacts
-    *Simulation of external circuit elements.
+The physical model solves both electron and hole drift-diffusion, and carrier continuity equations in position space to describe the movement of charge within the device. The model also solves Poisson's equation to calculate the internal electrostatic potential. Recombination and carrier trapping are described within the model using a Shockley-Read-Hall (SRH) formalism, the distribution of trap sates can be arbitrarily defined. A fuller description of the model can be found in the at www.opvdm.com, in the associated publications and in the manual.
+Example simulations
 
-The model can simulate an ideal solar cell as well as being able to
-simulate externalcircuit elements, such as capacitors and resistors.
+The model makes it easy to study the influence of material parameters such as mobility, energetic disorder, doping and recombination cross-sections on device performance. All internal device parameters such as current density, charge density, distribution of trapped carriers in position and energy space are accessible either through the graphical interface or directly through output files. 
 
-Running opvdm
-~~~~~~~~~~~~~
-
-I currently provide a precompiled rpm for Fedora Linux, a tar ball of the code and an srpm. You are welcome to compile the code it for other platforms if you wish. I don't plan on releasing a windows version but if someone compiles one for me I would host it. The electrical model (opvdm_core) is quite mature and has been used to publish a few papers, but to get it to work exactly how you want it to, you will have edit configuration files by hand. There is some documentation in the wiki, but I am still working on it - please help me finish it off! The graphical interface (opvdm) which sits on top of (opvdm_core) is a python script and is competently new/untested. At the moment, it can only access a hand full of the functions of opvdm_core, but is good enough to get an idea of what the model can do without having to edit text files.
 
 Help using opvdm
 ~~~~~~~~~~~~~~~~
 I'm very happy to provide help in using OPVDM, or if you wold prefer I am equally happy to collaborate and model your data for you. See the contact page.
+
+History of opvdm
+~~~~~~~~~~~~~~~
+I wrote the original version of opvdm during the very exciting time I spent working at Imperial College for Jenny Nelson - see the publication list.  Since that time, I have improved and rewritten large parts of the model to make the code base more sane/accessible/useful to others.
 
 More information
 ~~~~~~~~~~~~~~~~
