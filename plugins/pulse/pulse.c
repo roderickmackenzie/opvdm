@@ -2,14 +2,13 @@
 //    model for organic solar cells. 
 //    Copyright (C) 2012 Roderick C. I. MacKenzie
 //
-//	roderick.mackenzie@nottingham.ac.uk
-//	www.roderickmackenzie.eu
-//	Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
+//      roderick.mackenzie@nottingham.ac.uk
+//      www.roderickmackenzie.eu
+//      Room B86 Coates, University Park, Nottingham, NG7 2RD, UK
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; either version 2 of the License, or
-//    (at your option) any later version.
+//    the Free Software Foundation; version 2 of the License
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,37 +36,53 @@ static int unused __attribute__ ((unused));
 
 struct pulse pulse_config;
 
+int pulse_find_config(char *ret, char *dir_name, char *search_name)
+{
+	int i = 0;
+	int found = FALSE;
+	char filepath[256];
+	char sim_name[256];
+	struct inp_file inp;
+	struct inp_list a;
+	inp_listdir(&a);
+
+	for (i = 0; i < a.len; i++) {
+		if ((strcmp(a.names[i], ".") != 0)
+		    && (strcmp(a.names[i], "..") != 0)) {
+			if ((cmpstr_min(a.names[i], "pulse") == 0)
+			    && (strcmp_end(a.names[i], ".inp") == 0)) {
+				inp_init(&inp);
+				inp_load_from_path(&inp, dir_name, a.names[i]);
+				inp_search_string(&inp, sim_name,
+						  "#sim_menu_name");
+				inp_free(&inp);
+
+				if (strcmp(sim_name, search_name) == 0) {
+					strcpy(ret, a.names[i]);
+					found = TRUE;
+					break;
+				}
+
+			}
+		}
+	}
+
+	inp_list_free(&a);
+
+	if (found == TRUE) {
+		return 0;
+	} else {
+		strcpy(ret, "");
+		return -1;
+	}
+
+	return -1;
+}
+
 void sim_pulse(struct device *in)
 {
 	struct buffer buf;
 	buffer_init(&buf);
-	pulse_load_config(&pulse_config, in);
-
-	in->go_time = FALSE;
-
-	in->externalv = pulse_config.pulse_Vexternal;
-	printf("Running pulse. %e\n", in->externalv);
-	int ittr = 0;
-
-	int step = 0;
-
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
-
-	sim_externalv(in, pulse_config.pulse_Vexternal);
-	in->Vapplied = pulse_config.pulse_Vexternal;
-	double V = in->Vapplied;
-	double V0 = pulse_config.pulse_Vexternal;
-	printf("%le %le\n", V, V0);
-	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
-
-	in->time = 0.0;
-
-	time_init(in);
-	time_load_mesh(in);
-
-	device_timestep(in);
-
-	in->go_time = TRUE;
 
 	struct dynamic_store store;
 	dump_dynamic_init(&store, in);
@@ -84,21 +99,71 @@ void sim_pulse(struct device *in)
 	struct istruct lost_charge;
 	inter_init(&lost_charge);
 
+	char config_file_name[200];
+	char search_name[200];
+
+	if (pulse_find_config(config_file_name, in->inputpath, in->simmode) !=
+	    0) {
+		ewe("no pulse config file found %s %s\n", in->inputpath,
+		    in->simmode);
+	}
+
+	pulse_load_config(&pulse_config, in, config_file_name);
+	int number = strextract_int(config_file_name);
+	in->go_time = FALSE;
+
+	in->time = 0.0;
+
+	time_init(in);
+	time_load_mesh(in, number);
+
+//struct istruct pulseout;
+//inter_init(&pulseout);
+
+	int ittr = 0;
+
+	int step = 0;
+
+	light_solve_and_update(in, &(in->mylight), time_get_sun(),
+			       time_get_laser());
+
+	double V = 0.0;
+	double V0 = 0.0;
+
+	if (pulse_config.pulse_sim_mode == pulse_load) {
+		sim_externalv(in, time_get_voltage());
+		newton_pulse(in, time_get_voltage(), FALSE);
+	} else if (pulse_config.pulse_sim_mode == pulse_open_circuit) {
+		in->Vapplied = in->Vbi;
+		pulse_newton_sim_voc(in);
+		pulse_newton_sim_voc_fast(in, FALSE);
+	} else {
+		ewe("pulse mode not known\n");
+	}
+
+	device_timestep(in);
+
+	in->go_time = TRUE;
+
 	double extracted_through_contacts = 0.0;
-	double Psun = in->Psun;
 	double laser_width = 0.0;
 	double laser_power = 0.0;
-
+	double i0 = 0;
 	carrier_count_reset(in);
 	reset_np_save(in);
 	do {
-
 		light_solve_and_update(in, &(in->mylight), time_get_sun(),
-				       time_get_laser());
-		V = time_get_voltage();
+				       time_get_laser() + time_get_fs_laser());
 		dump_dynamic_add_data(&store, in, in->time);
 
-		double i0 = newton_pulse(in, V, TRUE);
+		if (pulse_config.pulse_sim_mode == pulse_load) {
+			i0 = newton_pulse(in, time_get_voltage(), TRUE);
+		} else if (pulse_config.pulse_sim_mode == pulse_open_circuit) {
+			V = in->Vapplied;
+			pulse_newton_sim_voc_fast(in, TRUE);
+		} else {
+			ewe("pulse mode not known\n");
+		}
 
 		if (get_dump_status(dump_print_text) == TRUE) {
 			printf("pulse time=%e step=%d %.1e ", in->time, step,
@@ -127,6 +192,7 @@ void sim_pulse(struct device *in)
 
 		if (time_run() == FALSE)
 			break;
+		//getchar();
 
 	} while (1);
 	char outpath[1000];
@@ -204,6 +270,9 @@ void sim_pulse(struct device *in)
 	buffer_dump_path(in->outputpath, "pulse_G.dat", &buf);
 	buffer_free(&buf);
 
+//sprintf(outpath,"%s%s",in->outputpath,"pulse_lost_charge.dat");
+//inter_save(&lost_charge,outpath);
+
 	in->go_time = FALSE;
 
 	inter_free(&out_G);
@@ -212,17 +281,24 @@ void sim_pulse(struct device *in)
 	time_memory_free();
 }
 
-void pulse_load_config(struct pulse *in, struct device *dev)
+void pulse_load_config(struct pulse *in, struct device *dev,
+		       char *config_file_name)
 {
+
+	char name[200];
 	struct inp_file inp;
 	inp_init(&inp);
-	inp_load_from_path(&inp, dev->inputpath, "pulse.inp");
-	inp_check(&inp, 1.24);
+	inp_load_from_path(&inp, dev->inputpath, config_file_name);
+	inp_check(&inp, 1.25);
 
-	inp_search_double(&inp, &(in->pulse_Vexternal), "#pulse_Vexternal");
 	inp_search_double(&inp, &(in->Rshort_pulse), "#Rshort_pulse");
 	inp_search_double(&inp, &(in->pulse_laser_power), "#pulse_laser_power");
 	inp_search_double(&inp, &(in->pulse_shift), "#pulse_shift");
+	inp_search_string(&inp, name, "#pulse_sim_mode");
+	inp_search_double(&inp, &(in->pulse_L), "#pulse_L");
+	inp_search_double(&inp, &(in->pulse_Rload), "#Rload");
+
+	in->pulse_sim_mode = english_to_bin(name);
 
 	inp_free(&inp);
 
