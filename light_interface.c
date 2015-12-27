@@ -28,11 +28,7 @@
 #include <util.h>
 #include <unistd.h>
 
-#ifndef windows
 #include <dlfcn.h>
-#else
-#include <windows.h>
-#endif
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -115,13 +111,8 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	inp_free(&inp);
 
 	char lib_name[100];
-#ifdef windows
-	sprintf(lib_name, "%s.dll", in->mode);
-#else
 	sprintf(lib_name, "%s.so", in->mode);
-#endif
 
-#ifndef windows
 	get_light_lib_path(lib_dir);
 
 	sprintf(lib_path, "./light/%s", lib_name);
@@ -129,22 +120,6 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	if (access(lib_path, F_OK) == -1) {
 		join_path(2, lib_path, lib_dir, lib_name);
 	}
-#else
-	char pwd[1000];
-	getcwd(pwd, 1000);
-
-	join_path(3, lib_path, pwd, "light", lib_name);
-
-	FILE *fp = fopen(lib_path, "r");
-	if (fp) {
-		fclose(fp);
-	} else {
-		get_light_lib_path(lib_dir);
-		join_path(2, lib_path, lib_dir, lib_name);
-	}
-#endif
-
-#ifndef windows
 
 	char *error;
 
@@ -192,48 +167,6 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 		fprintf(stderr, "%s\n", error);
 		exit(0);
 	}
-#else
-
-	in->lib_handle = LoadLibrary(lib_path);
-	if (in->lib_handle == NULL) {
-		ewe("dll not loaded %s\n", lib_path);
-	}
-
-	in->light_ver = (void *)GetProcAddress(in->lib_handle, "light_dll_ver");
-	if (in->light_ver == NULL) {
-		ewe("dll function not found\n");
-	}
-
-	in->fn_init = (void *)GetProcAddress(in->lib_handle, "light_dll_init");
-	if (in->fn_init == NULL) {
-		ewe("dll function not found\n");
-	}
-
-	in->fn_solve_and_update =
-	    (void *)GetProcAddress(in->lib_handle,
-				   "light_dll_solve_and_update");
-	if (in->fn_solve_and_update == NULL) {
-		ewe("dll function not found\n");
-	}
-
-	in->fn_free = (void *)GetProcAddress(in->lib_handle, "light_dll_free");
-	if (in->fn_solve_and_update == NULL) {
-		ewe("dll function not found\n");
-	}
-
-	in->fn_solve_lam_slice =
-	    (void *)GetProcAddress(in->lib_handle, "light_dll_solve_lam_slice");
-	if (in->fn_solve_and_update == NULL) {
-		ewe("dll function not found\n");
-	}
-
-	in->fn_fixup =
-	    (void *)GetProcAddress(in->lib_handle, "light_dll_fixup");
-	if (in->fn_fixup == NULL) {
-		ewe("dll function not found\n");
-	}
-
-#endif
 
 	(*in->fn_fixup) ("waveprint", &waveprint);
 	(*in->fn_fixup) ("get_dump_status", &get_dump_status);
@@ -300,9 +233,5 @@ int light_solve_lam_slice(struct light *in, int lam)
 void light_free(struct light *in)
 {
 	light_free_memory(in);
-#ifdef windows
-	FreeLibrary(in->lib_handle);
-#else
 	dlclose(in->lib_handle);
-#endif
 }

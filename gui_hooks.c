@@ -30,10 +30,6 @@
 #include <dbus/dbus.h>
 #endif
 
-#ifdef windows
-#include <windows.h>
-#endif
-
 int gui_send_data(char *tx_data_in)
 {
 	char tx_data[1024];
@@ -64,27 +60,6 @@ int gui_send_data(char *tx_data_in)
 	//dbus_connection_close(connection);
 #endif
 
-#ifdef windows
-
-	HANDLE pipe =
-	    CreateFile("\\\\.\\pipe\\opvdm_pipe", GENERIC_WRITE,
-		       FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING,
-		       FILE_ATTRIBUTE_NORMAL, NULL);
-
-	if (pipe == INVALID_HANDLE_VALUE) {
-		printf("Failed to connect to pipe.");
-		return 1;
-	}
-	//int result;
-	DWORD numBytesWritten = 0;
-	//result = 
-	WriteFile(pipe, (const wchar_t *)tx_data,
-		  strlen(tx_data) * sizeof(char), &numBytesWritten, NULL);
-
-	// Close our pipe handle
-	CloseHandle(pipe);
-
-#endif
 	return 0;
 }
 

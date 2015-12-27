@@ -49,11 +49,7 @@ void light_dump(struct light *in)
 		struct stat st = { 0 };
 
 		if (stat(out_dir, &st) == -1) {
-#ifdef windows
-			mkdir(out_dir);
-#else
 			mkdir(out_dir, 0700);
-#endif
 		}
 
 		out = fopena(out_dir, "light_2d_Ep.dat", "w");
@@ -273,11 +269,7 @@ void light_dump_1d(struct light *in, int i, char *ext)
 		struct stat st = { 0 };
 
 		if (stat(out_dir, &st) == -1) {
-#ifdef windows
-			mkdir(out_dir);
-#else
 			mkdir(out_dir, 0700);
-#endif
 		}
 
 		FILE *out;

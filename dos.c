@@ -23,9 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#ifndef windows
 #include <zlib.h>
-#endif
 #include "code_ctrl.h"
 #include "server.h"
 #include "sim.h"
@@ -203,11 +201,7 @@ void load_dos_file(struct dos *mydos, char *file)
 		printf("Loading %s\n", file);
 
 #ifdef dos_bin
-#ifndef windows
 	gzFile in;
-#else
-	FILE *in;
-#endif
 #else
 	FILE *in;
 #endif
@@ -243,19 +237,11 @@ void load_dos_file(struct dos *mydos, char *file)
 	//printf("here '%ld'\n",len);
 	//getchar();
 
-#ifndef windows
 	in = gzopen(file, "rb");
 	if (in == Z_NULL) {
 		printf("DOS file not found\n");
 		exit(0);
 	}
-#else
-	in = fopen(file, "rb");
-	if (in == NULL) {
-		printf("DOS file not found\n");
-		exit(0);
-	}
-#endif
 
 	//fseek(in, 0, SEEK_END);
 	//len=ftell(in);
@@ -271,13 +257,8 @@ void load_dos_file(struct dos *mydos, char *file)
 	double *buf = (double *)malloc(sizeof(double) * buf_len);
 
 	int buf_pos = 0;
-#ifndef windows
 	gzread(in, (char *)buf, len);
 	gzclose(in);
-#else
-	fread((char *)buf, len, 1, in);
-	fclose(in);
-#endif
 
 #else
 	in = fopen(file, "r");

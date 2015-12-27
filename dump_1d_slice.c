@@ -46,11 +46,7 @@ void dump_1d_slice(struct device *in, char *out_dir)
 	struct stat st = { 0 };
 
 	if (stat(out_dir, &st) == -1) {
-#ifdef windows
-		mkdir(out_dir);
-#else
 		mkdir(out_dir, 0700);
-#endif
 	}
 
 	cal_J_drift_diffusion(in);

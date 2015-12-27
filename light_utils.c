@@ -252,11 +252,7 @@ void light_load_materials(struct light *in)
 	}
 
 	if (found == FALSE) {
-#ifndef windows
 		strcpy(temp, "/usr/share/opvdm/materials");
-#else
-		strcpy(temp, "c:\\opvdm\\materials");
-#endif
 
 		theFolder = opendir(temp);
 		if (theFolder != NULL) {

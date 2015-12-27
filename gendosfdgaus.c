@@ -27,9 +27,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifndef windows
 #include <zlib.h>
-#endif
 
 #include "code_ctrl.h"
 #include "sim.h"
@@ -884,17 +882,10 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	if (buf_len != buf_pos) {
 		ewe("Expected dos size is different from generated\n");
 	}
-#ifndef windows
 	gzFile file;
 	file = gzopen(outfile, "w9b");
 	gzwrite(file, (char *)buf, buf_len * sizeof(double));
 	gzclose(file);
-#else
-	FILE *file;
-	file = fopen(outfile, "wb");
-	fwrite((char *)buf, buf_len * sizeof(double), 1, file);
-	fclose(file);
-#endif
 	FILE *yes;
 	yes = fopen(outfile, "ab");
 	int temp1 = buf_len * sizeof(double);

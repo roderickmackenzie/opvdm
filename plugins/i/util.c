@@ -50,11 +50,7 @@ void join_path(int args, ...)
 	strcpy(ret, "");
 	for (i = 1; i < max; i++) {
 		if ((i != 1) && (strcmp(temp, "") != 0)) {
-#ifdef windows
-			strcat(ret, "\\");
-#else
 			strcat(ret, "/");
-#endif
 		}
 		strcpy(temp, va_arg(arguments, char *));
 		strcat(ret, temp);
@@ -111,17 +107,9 @@ int ewe(const char *format, ...)
 
 	gui_send_data(temp2);
 
-#ifdef windows
-	sleep(1);		//give the gui time to read the message under windows
-#endif
-
 	va_end(args);
 
 	server_send_finished_to_gui(&globalserver);
-
-#ifdef windows
-	sleep(1);		//give the gui time to read the message under windows
-#endif
 
 	out = fopen("server_stop.dat", "w");
 	fprintf(out, "solver\n");
@@ -382,16 +370,9 @@ void randomprint(char *in)
 
 void textcolor(int color)
 {
-#ifdef windows
-	HANDLE hConsole;
-	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	SetConsoleTextAttribute(hConsole, color);
-#else
 	char command[13];
 	sprintf(command, "\e[%dm", color);
 	printf("%s", command);
-#endif
 }
 
 FILE *fopena(char *path, char *name, const char *mode)
@@ -700,15 +681,9 @@ char *get_file_name_from_path(char *in)
 {
 	int i = 0;
 	for (i = strlen(in) - 1; i > 0; i--) {
-#ifdef windows
-		if (in[i] == '\\') {
-			return (in + i + 1);
-		}
-#else
 		if (in[i] == '/') {
 			return (in + i + 1);
 		}
-#endif
 	}
 	return in;
 }
@@ -720,17 +695,10 @@ char *get_dir_name_from_path(char *in)
 
 	int i = 0;
 	for (i = strlen(in); i > 0; i--) {
-#ifdef windows
-		if (in[i] == '\\') {
-			ret[i] = 0;
-			return ret;
-		}
-#else
 		if (in[i] == '/') {
 			ret[i] = 0;
 			return ret;
 		}
-#endif
 	}
 
 	strcpy(ret, "");
@@ -771,11 +739,7 @@ void remove_dir(char *dir_name)
 				if (isdir(filepath) == 0) {
 					remove_dir(filepath);
 					printf("Deleting dir =%s\n", filepath);
-#ifdef windows
-					RemoveDirectory(filepath);
-#else
 					remove(filepath);
-#endif
 				} else {
 					//printf("Deleteing file =%s\n",filepath);
 					remove(filepath);

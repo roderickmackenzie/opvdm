@@ -23,15 +23,7 @@
 #define h_light_interface
 #include "device.h"
 
-#ifdef windows
-#ifdef BUILDING_EXAMPLE_DLL
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT __declspec(dllimport)
-#endif
-#else
 #define EXPORT
-#endif
 
 EXPORT void light_dll_init();
 EXPORT void light_dll_free(struct light *in);

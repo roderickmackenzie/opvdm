@@ -127,11 +127,7 @@ void dump_dynamic_save(char *outputpath, struct dynamic_store *store)
 		struct stat st = { 0 };
 
 		if (stat(out_dir, &st) == -1) {
-#ifdef windows
-			mkdir(out_dir);
-#else
 			mkdir(out_dir, 0700);
-#endif
 		}
 
 		char outpath[200];

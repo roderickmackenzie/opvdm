@@ -56,14 +56,6 @@ void plot_open(struct device *in)
 	}
 }
 
-#ifdef windows
-void timersub(struct timeval *a, struct timeval *b, struct timeval *r)
-{
-	r->tv_sec = a->tv_sec - b->tv_sec;
-	r->tv_usec = a->tv_usec - b->tv_usec;
-}
-#endif
-
 void plot_now(struct device *in, char *name)
 {
 	struct timeval mytime;

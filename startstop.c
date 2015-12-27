@@ -14,16 +14,13 @@ static int unused __attribute__ ((unused));
 
 void stop_start(struct device *in)
 {
-#ifndef windows
 	struct timespec delay;
-#endif
 
 	if (in->stop_start == TRUE) {
 
 		if (in->start_stop_time == 0.0) {
 			getchar();
 		} else {
-#ifndef windows
 			double sec = (int)in->start_stop_time;
 			double ns = (in->start_stop_time - (double)sec) * 1e9;
 			delay.tv_sec = (long int)sec;
@@ -33,9 +30,6 @@ void stop_start(struct device *in)
 			if (nanosleep(&delay, NULL) < 0) {
 				ewe("Nano sleep failed \n");
 			}
-#else
-			getchar();
-#endif
 		}
 
 	}

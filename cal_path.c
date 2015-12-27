@@ -34,31 +34,7 @@
 #include "cal_path.h"
 #include "util.h"
 
-#ifdef windows
-#include <windows.h>
-#endif
-
 void get_light_lib_path(char *out)
 {
-#ifdef windows
-	DWORD dwType = REG_SZ;
-	HKEY hKey = 0;
-	char value[1024];
-	DWORD value_length = 1024;
-	const char *subkey = "SOFTWARE\\opvdm";
-	if (RegOpenKey(HKEY_CURRENT_USER, subkey, &hKey) == ERROR_SUCCESS) {
-		RegQueryValueEx(hKey, "installpath", NULL, &dwType,
-				(LPBYTE) & value, &value_length);
-		RegCloseKey(hKey);
-		join_path(2, out, value, "light");
-		printf("Key in registry: %s\n", out);
-	} else {
-		strcpy(out, "c:\\opvdm\\light");
-		printf("No key found in registry: %s\n", out);
-
-	}
-
-#else
 	strcpy(out, "/usr/lib64/opvdm/light/");
-#endif
 }

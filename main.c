@@ -24,11 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#ifdef windows
-#define _USE_MATH_DEFINES
-#else
 #include <pwd.h>
-#endif
 
 #include <math.h>
 #include <time.h>
@@ -139,11 +135,9 @@ int main(int argc, char *argv[])
 		exit(0);
 	}
 
-#ifndef windows
 	if (geteuid() == 0) {
 		ewe("Don't run me as root!\n");
 	}
-#endif
 
 	set_dump_status(dump_stop_plot, FALSE);
 	set_dump_status(dump_print_text, TRUE);

@@ -21,24 +21,12 @@
 
 #ifndef h_util
 #define h_util
-#ifdef windows
-#include <windows.h>
-#define fg_reset	15
-#define fg_red		12
-#define fg_green	10
-#define fg_yellow	14
-#define fg_blue		9
-#define fg_purple	13
-
-#else
 #define fg_reset	0
 #define fg_red		31
 #define fg_green	32
 #define fg_yellow	33
 #define fg_blue		34
 #define fg_purple	35
-
-#endif
 
 void set_ewe_lock_file(char *lockname, char *data);
 void print_hex(unsigned char *data);
