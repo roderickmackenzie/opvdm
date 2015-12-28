@@ -51,7 +51,7 @@ class plot_window():
 		print plot_labels
 		if len(plot_labels)==0:
 			for i in range(0,len(input_files)):
-				plot_labels.append(os.path.basename(input_files[i]))
+				plot_labels.append(os.path.basename(input_files[i]).replace("_","\_"))
 
 		#print plot_labels
 		for i in range(0,len(plot_labels)):

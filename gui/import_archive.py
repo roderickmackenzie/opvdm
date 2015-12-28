@@ -110,7 +110,7 @@ def import_archive(src_archive,dest_archive,only_over_write):
 
 	src_dir=os.path.dirname(src_archive)
 	dest_dir=os.path.dirname(dest_archive)
-	files=[ "sim.inp", "device.inp", "stark.inp" ,"shg.inp"   ,"jv.inp" ,"celiv.inp" , "optics.inp", "math.inp",  "dump.inp" , "light.inp", "tpv.inp", "otrace.inp", "server.inp", "pulse_voc.inp","light_exp.inp" ]
+	files=[ "sim.inp", "device.inp", "stark.inp" ,"shg.inp"   ,"jv.inp" , "optics.inp", "math.inp",  "dump.inp" , "light.inp", "server.inp", "light_exp.inp" ]
 
 	for my_file in files:
 		print "Importing",my_file,"to",dest_archive

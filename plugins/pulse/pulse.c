@@ -123,7 +123,7 @@ void sim_pulse(struct device *in)
 	int ittr = 0;
 
 	int step = 0;
-
+	in->Psun = time_get_sun();
 	light_solve_and_update(in, &(in->mylight), time_get_sun(),
 			       time_get_laser());
 
@@ -152,6 +152,7 @@ void sim_pulse(struct device *in)
 	carrier_count_reset(in);
 	reset_np_save(in);
 	do {
+		in->Psun = time_get_sun();
 		light_solve_and_update(in, &(in->mylight), time_get_sun(),
 				       time_get_laser() + time_get_fs_laser());
 		dump_dynamic_add_data(&store, in, in->time);

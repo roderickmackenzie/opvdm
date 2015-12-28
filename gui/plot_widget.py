@@ -298,7 +298,7 @@ class plot_widget(gtk.VBox):
 								print "TICKS=",(max(s)-min(s))/4.0
 								self.ax[plot_number].yaxis.set_ticks(arange(min(s), max(s), (max(s)-min(s))/4.0 ))
 
-						#print self.labels,i,self.labels[i]
+						print "roderick",self.labels,i,self.labels[i]
 						if self.labels[i]!="":
 							#print "Rod=",self.labels[i]
 							#print self.plot_token.key_units

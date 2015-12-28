@@ -200,40 +200,58 @@ char *inp_get_string(struct inp_file *in)
 
 int inp_read_buffer(char **buf, long *len, char *full_file_name)
 {
-	char zip_path[1000];
-	char *file_path = get_dir_name_from_path(full_file_name);
-	char *file_name = get_file_name_from_path(full_file_name);
+	FILE *f = fopen(full_file_name, "rb");
+	if (f != NULL) {
+		int err = 0;
+		fseek(f, 0, SEEK_END);
+		*len = ftell(f);
+		fseek(f, 0, SEEK_SET);
 
-	join_path(2, zip_path, file_path, "sim.opvdm");
-	//printf("1>%s 2>%s 3>%s 4>%s\n",full_file_name,file_path,file_name,zip_path);
-	int err = 0;
-	struct zip *z = zip_open(zip_path, 0, &err);
-
-	if (z != NULL) {
-		//Search for the file of given name
-		struct zip_stat st;
-		zip_stat_init(&st);
-		int ret = zip_stat(z, file_name, 0, &st);
-
-		if (ret == 0) {
-			//printf ("Read zip file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-
-			//Alloc memory for its uncompressed contents
-			*len = st.size * sizeof(char);
-			*buf = (char *)malloc(*len);
-
-			//Read the compressed file
-			struct zip_file *f = zip_fopen(z, file_name, 0);
-			zip_fread(f, *buf, st.size);
-			zip_fclose(f);
-
-		} else {
-			ewe("File %s not found\n", file_name);
+		*buf = malloc(((*len) + 2) * sizeof(char));
+		memset(*buf, 0, ((*len) + 2) * sizeof(char));
+		if (fread(*buf, *len, 1, f) == 0) {
+			err = -1;
 		}
-		zip_close(z);
-		return 0;
+		fclose(f);
+		return err;
+
 	} else {
-		return -1;
+		char zip_path[1000];
+		char *file_path = get_dir_name_from_path(full_file_name);
+		char *file_name = get_file_name_from_path(full_file_name);
+
+		join_path(2, zip_path, file_path, "sim.opvdm");
+		//printf("1>%s 2>%s 3>%s 4>%s\n",full_file_name,file_path,file_name,zip_path);
+		int err = 0;
+		struct zip *z = zip_open(zip_path, 0, &err);
+
+		if (z != NULL) {
+			//Search for the file of given name
+			struct zip_stat st;
+			zip_stat_init(&st);
+			int ret = zip_stat(z, file_name, 0, &st);
+
+			if (ret == 0) {
+				//printf ("Read zip file!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+
+				//Alloc memory for its uncompressed contents
+				*len = st.size * sizeof(char);
+				*buf = (char *)malloc(*len);
+
+				//Read the compressed file
+				struct zip_file *f = zip_fopen(z, file_name, 0);
+				zip_fread(f, *buf, st.size);
+				zip_fclose(f);
+
+			} else {
+				ewe("File %s not found\n", file_name);
+			}
+			zip_close(z);
+			return 0;
+		} else {
+			return -1;
+		}
+
 	}
 
 }

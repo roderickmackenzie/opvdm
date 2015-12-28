@@ -185,11 +185,21 @@ class opvdm_open(gtk.Dialog):
 	def on_selection_changed(self, widget):
 		selected=self.icon_view.get_selected_items()
 		if len(selected)!=0:
-			path=selected[0]
-			state=plot_state()
-			get_plot_file_info(state,os.path.join(self.dir,self.store[path[0]][0]))
-			summary="<big><b>"+self.store[path[0]][0]+"</b></big>\n"+"\ntitle: "+state.title+"\nx axis: "+state.x_label+" ("+latex_to_pygtk_subscript(state.x_units)+")\ny axis: "+state.y_label+" ("+latex_to_pygtk_subscript(state.y_units)+")\n\n<big><b>Double click to open</b></big>"
-			my_help_class.help_set_help(["dat_file.png",summary])
+			icon_pos=selected[0][0]
+			icon_name=self.store[icon_pos][0]
+			icon_type=self.store[icon_pos][COL_IS_DIRECTORY]
+			full_path=os.path.join(self.dir,icon_name)
+			if icon_type=="dat":
+				state=plot_state()
+				get_plot_file_info(state,full_path)
+				summary="<big><b>"+self.store[icon_pos][0]+"</b></big>\n"+"\ntitle: "+state.title+"\nx axis: "+state.x_label+" ("+latex_to_pygtk_subscript(state.x_units)+")\ny axis: "+state.y_label+" ("+latex_to_pygtk_subscript(state.y_units)+")\n\n<big><b>Double click to open</b></big>"
+				my_help_class.help_set_help(["dat_file.png",summary])
+
+			if icon_name.endswith("equilibrium"):
+				state=plot_state()
+				get_plot_file_info(state,full_path)
+				summary="<big><b>equilibrium</b></big>\n"+"\nThis contains the simulation output at 0V in the dark."
+				my_help_class.help_set_help(["dir_file.png",summary])
 
 
 	def change_path(self):
