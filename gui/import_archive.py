@@ -40,7 +40,7 @@ from inp import inp_merge
 from util_zip import write_lines_to_archive
 import tempfile
 from util_zip import zip_lsdir
-
+from inp import inp_issequential_file
 
 def copy_check_ver(dest_archive,src_archive,file_name,only_over_write,clever):
 	if dest_archive==src_archive:
@@ -110,31 +110,45 @@ def import_archive(src_archive,dest_archive,only_over_write):
 
 	src_dir=os.path.dirname(src_archive)
 	dest_dir=os.path.dirname(dest_archive)
-	files=[ "sim.inp", "device.inp", "stark.inp" ,"shg.inp"   ,"jv.inp" ,"celiv.inp" , "optics.inp", "math.inp",  "dump.inp" , "light.inp", "tpv.inp", "otrace.inp", "server.inp", "pulse_voc.inp","pulse.inp","light_exp.inp" ]
+	files=[ "sim.inp", "device.inp", "stark.inp" ,"shg.inp"   ,"jv.inp" ,"celiv.inp" , "optics.inp", "math.inp",  "dump.inp" , "light.inp", "tpv.inp", "otrace.inp", "server.inp", "pulse_voc.inp","light_exp.inp" ]
 
 	for my_file in files:
 		print "Importing",my_file,"to",dest_archive
 		copy_check_ver(dest_archive,src_archive,my_file,only_over_write,True)
 
-	files=[]
+	files=["info.inp"]
 
 	print src_archive
 	ls=zip_lsdir(src_archive)
 	for i in range(0,len(ls)):
-		if ls[i].startswith("dos"):
-			if ls[i].endswith("inp"):
-				files.append(ls[i])
-				print "adding",ls[i]
+		if inp_issequential_file(ls[i],"dos"):
+			files.append(ls[i])
 
-		if ls[i].startswith("pl"):
-			if ls[i].endswith("inp"):
-				files.append(ls[i])
+		if inp_issequential_file(ls[i],"pl"):
+			files.append(ls[i])
+
+		if inp_issequential_file(ls[i],"time_mesh_config"):
+			files.append(ls[i])
+
+		if inp_issequential_file(ls[i],"pulse"):
+			files.append(ls[i])
 
 	for my_file in files:
 		print "Importing",my_file,"to",dest_archive
 		copy_check_ver(dest_archive,src_archive,my_file,False,True)
 
-	files=[ "epitaxy.inp", "fit.inp", "constraints.inp","duplicate.inp", "thermal.inp","lumo0.inp","homo0.inp","time_mesh_config.inp","mesh.inp" ]
+	files=[ "epitaxy.inp", "fit.inp", "constraints.inp","duplicate.inp", "thermal.inp","time_mesh_config.inp","mesh.inp" ]
+
+	ls=zip_lsdir(src_archive)
+	for i in range(0,len(ls)):
+		if inp_issequential_file(ls[i],"time_mesh"):
+			files.append(ls[i])
+
+		if inp_issequential_file(ls[i],"homo"):
+			files.append(ls[i])
+
+		if inp_issequential_file(ls[i],"lumo"):
+			files.append(ls[i])
 
 	for my_file in files:
 		print "Importing",my_file

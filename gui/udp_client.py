@@ -32,7 +32,7 @@ from listen_for_files_on_network import listen_for_files_on_network
 from listen_for_files_on_network import encode_for_tcp
 import atexit
 from time import sleep
-from util import join_path
+from cal_path import join_path
 from uuid import getnode as get_mac
 from threading import Thread
 

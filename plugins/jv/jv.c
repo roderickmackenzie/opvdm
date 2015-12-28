@@ -270,7 +270,7 @@ void sim_jv(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1.0;
 	buf.x_mul = 1.0;
-	strcpy(buf.title, "Charge density - Appleid voltage");
+	strcpy(buf.title, "Charge density - Applied voltage");
 	strcpy(buf.type, "xy");
 	strcpy(buf.x_label, "Applied Voltage");
 	strcpy(buf.y_label, "Charge density");
@@ -289,7 +289,7 @@ void sim_jv(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1.0;
 	buf.x_mul = 1.0;
-	strcpy(buf.title, "Current density - Appleid voltage");
+	strcpy(buf.title, "Current density - Applied voltage");
 	strcpy(buf.type, "xy");
 	strcpy(buf.x_label, "Applied Voltage");
 	strcpy(buf.y_label, "Current density");
@@ -305,7 +305,7 @@ void sim_jv(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1.0;
 	buf.x_mul = 1.0;
-	strcpy(buf.title, "Current - Appleid voltage");
+	strcpy(buf.title, "Current - Applied voltage");
 	strcpy(buf.type, "xy");
 	strcpy(buf.x_label, "Applied Voltage");
 	strcpy(buf.y_label, "Current");

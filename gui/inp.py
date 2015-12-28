@@ -34,6 +34,14 @@ from util_zip import read_lines_from_archive
 from util_zip import archive_isfile
 from util_zip import zip_lsdir
 
+def inp_issequential_file(data,search):
+	if data.startswith(search) and data.endswith("inp"):
+		cut=data[len(search):-4]
+		print cut
+		return cut.isdigit()
+	else:
+		return False
+
 def inp_lsdir():
 	return zip_lsdir("sim.opvdm")
 

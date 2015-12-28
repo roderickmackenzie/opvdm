@@ -34,6 +34,23 @@ device_lib_path=None
 bin_path=None
 lib_path=None
 
+
+def remove_cwdfrompath(path):
+	tmp=path
+	if tmp.startswith(os.getcwd()):
+		tmp=tmp[len(os.getcwd())+1:]
+	return tmp
+
+def join_path(one,two):
+	output_file=os.path.join(one,two)
+
+	if two[0]=='/':
+		if one!="" :
+			output_file=os.path.join(one,two[1:])
+
+	return output_file
+
+
 def cal_share_path():
 	global share_path
 	if running_on_linux()==True:

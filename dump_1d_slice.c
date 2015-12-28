@@ -533,7 +533,7 @@ void dump_1d_slice(struct device *in, char *out_dir)
 	sprintf(name, "%s", "mu_n_ft.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
-	strcpy(buf.title, "Electron mobility free/all- position");
+	strcpy(buf.title, "Average electron mobility free mu0*nf/nall");
 	strcpy(buf.type, "xy");
 	strcpy(buf.x_label, "Position");
 	strcpy(buf.y_label, "Mobility");
@@ -548,7 +548,7 @@ void dump_1d_slice(struct device *in, char *out_dir)
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
-			in->mun[i] * in->n[i] / in->nt_all[i]);
+			in->mun[i] * in->n[i] / (in->nt_all[i] + in->n[i]));
 		buffer_add_string(&buf, temp);
 	}
 	buffer_dump_path(out_dir, name, &buf);
@@ -558,7 +558,7 @@ void dump_1d_slice(struct device *in, char *out_dir)
 	sprintf(name, "%s", "mu_p_ft.dat");
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e9;
-	strcpy(buf.title, "Hole mobility free/all- position");
+	strcpy(buf.title, "Average electron mobility free mu0*nf/nall");
 	strcpy(buf.type, "xy");
 	strcpy(buf.x_label, "Position");
 	strcpy(buf.y_label, "Mobility");
@@ -573,7 +573,7 @@ void dump_1d_slice(struct device *in, char *out_dir)
 	buffer_add_info(&buf);
 	for (i = 0; i < in->ymeshpoints; i++) {
 		sprintf(temp, "%e %e\n", in->ymesh[i],
-			in->mup[i] * in->p[i] / in->pt_all[i]);
+			in->mup[i] * in->p[i] / (in->pt_all[i] + in->p[i]));
 		buffer_add_string(&buf, temp);
 	}
 	buffer_dump_path(out_dir, name, &buf);

@@ -26,8 +26,12 @@ import zipfile
 from util_zip import archive_add_file
 from progress import progress_class
 from gui_util import process_events
+from cal_path import remove_cwdfrompath
 
-def export_archive(target):
+def export_archive(target,everything):
+	if target.endswith(".opvdm")==False:
+		target=target+".opvdm"
+
 	file_list=[]
 
 	progress_window=progress_class()
@@ -35,18 +39,22 @@ def export_archive(target):
 	progress_window.show()
 	progress_window.start()
 	process_events()
-
-	for path, dirs, files in os.walk(os.getcwd()):	
+	   
+	if everything==True:
+		for path, dirs, files in os.walk(os.getcwd()):	
+			for file_name in files:
+				if file_name.endswith(".inp") or file_name.endswith(".dat") or file_name.endswith(".omat"):  
+					file_list.append(os.path.join(path,file_name))
+	else:
+		files=os.listdir(os.getcwd())
 		for file_name in files:
-			if file_name.endswith(".inp") or file_name.endswith(".dat") or file_name.endswith(".omat"):  
-				file_list.append(os.path.join(path,file_name))
-
+			if file_name.endswith(".inp"):  
+				file_list.append(os.path.join(os.getcwd(),file_name))
 
 	zf = zipfile.ZipFile(target, 'a')
 
 	for i in range(0,len(file_list)):
 		cur_file=file_list[i]
-		#print "exporting",file_list[i]
 
 		lines=[]
 		if os.path.isfile(cur_file):
@@ -55,7 +63,7 @@ def export_archive(target):
 			f.close()
 
 
-			zf.writestr(cur_file[len(os.getcwd()):], lines)
+			zf.writestr(remove_cwdfrompath(cur_file), lines)
 			progress_window.set_fraction(float(i)/float(len(file_list)))
 			progress_window.set_text("Adding"+cur_file[len(os.getcwd()):])
 			process_events()

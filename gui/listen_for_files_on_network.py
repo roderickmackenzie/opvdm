@@ -30,7 +30,7 @@ import threading
 from inp import inp_get_token_value
 from time import sleep
 import SocketServer
-from util import join_path
+from cal_path import join_path
 
 respond_ip=""
 respond_port=0

@@ -31,6 +31,7 @@ import glob
 from cal_path import get_device_lib_path
 from util_zip import read_lines_from_archive
 from inp import inp_search_token_value_multiline
+from util_zip import zip_lsdir
 
 (
   COLUMN_FILENAME,
@@ -77,10 +78,11 @@ class device_lib_class(gtk.Dialog):
 
 		files=glob.glob(os.path.join(get_device_lib_path(),"*.opvdm")) 
 		for i in range(0,len(files)):
-
+			print "working on",files[i],zip_lsdir(files[i])
 			iter = model.append()
 			lines=[]
 			if read_lines_from_archive(lines,files[i],"info.inp")==True:
+				print lines
 				model.set (iter,
 					COLUMN_FILENAME, os.path.basename(files[i]),
 					COLUMN_TYPE, " ".join(inp_search_token_value_multiline(lines,"#info_device_type")),

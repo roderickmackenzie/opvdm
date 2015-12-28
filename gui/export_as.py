@@ -189,9 +189,6 @@ def export_as(output):
 		if (ext==".csv"):
 			os.system("mv doc.tex "+output)
 
-
-	elif (ext==".opvdm"):
-		export_archive(output)
 		#cmd = 'tar -czvf '+output+' ./*.inp ./sim.opvdm ./*.dat '
 		#os.system(cmd)
 

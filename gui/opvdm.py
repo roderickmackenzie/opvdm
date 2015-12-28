@@ -94,6 +94,7 @@ from epitaxy import epitaxy_load
 from global_objects import global_object_register
 
 from device_lib import device_lib_class
+from export_archive import export_archive
 
 if running_on_linux()==True:
 	import dbus
@@ -496,37 +497,48 @@ class opvdm_main_window(gobject.GObject):
 		dialog.set_default_response(gtk.RESPONSE_OK)
 
 		filter = gtk.FileFilter()
-		filter.set_name(".opvdm")
+		filter.set_name("opvdm archive input+output files")
 		filter.add_pattern("*.opvdm")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name(".pdf")
+		filter.set_name("opvdm archive input files")
+		filter.add_pattern("*.opvdm")
+		dialog.add_filter(filter)
+
+		filter = gtk.FileFilter()
+		filter.set_name("pdf file")
 		filter.add_pattern("*.pdf")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name(".jpg")
+		filter.set_name("jpg image")
 		filter.add_pattern("*.jpg")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name(".tex")
+		filter.set_name("tex file")
 		filter.add_pattern("*.tex")
 		dialog.add_filter(filter)
 
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
 			file_name=dialog.get_filename()
-			mode=self.sim_mode.get_active_text()
 			filter=dialog.get_filter()
 			dialog.destroy()
+			print "rod",filter.get_name()
 
-			if os.path.splitext(file_name)[1]:
-				export_as(file_name)
-			else:
-				export_as(file_name+filter.get_name())
-			
+			if filter.get_name()=="opvdm archive input+output files":
+				export_archive(file_name,True)
+			elif filter.get_name()=="opvdm archive input files":
+				export_archive(file_name,False)
+			elif filter.get_name()=="pdf file" or "jpg image" or "tex file":
+				if os.path.splitext(file_name)[1]=="":
+					export_as(file_name)
+				else:
+					export_as(file_name+filter.get_name())
+
+		
 		elif response == gtk.RESPONSE_CANCEL:
 			print 'Closed, no files selected'
 			dialog.destroy()

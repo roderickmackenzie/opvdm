@@ -44,14 +44,7 @@ def gui_print_path(text,path,length):
 
 	return ret
 
-def join_path(one,two):
-	output_file=os.path.join(one,two)
 
-	if two[0]=='/':
-		if one!="" :
-			output_file=os.path.join(one,two[1:])
-
-	return output_file
 	
 def read_data_2d(x_scale,y_scale,z,file_name):
 	found,lines=zip_get_data_file(file_name)
