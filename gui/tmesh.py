@@ -42,6 +42,10 @@ from inp import inp_write_lines_to_file
 import webbrowser
 from util import time_with_units
 from inp import inp_search_token_value
+from cal_path import get_image_file_path
+
+import i18n
+_ = i18n.language.gettext
 
 (
 SEG_LENGTH,
@@ -147,7 +151,7 @@ class tab_time_mesh(gtk.VBox):
 		self.save_data()
 
 	def callback_start_time(self, widget, treeview):
-		new_time=dlg_get_text( "Enter the start time of the simulation", str(self.start_time))
+		new_time=dlg_get_text( _("Enter the start time of the simulation"), str(self.start_time))
 
 		if new_time!=None:
 			self.start_time=float(new_time)
@@ -159,7 +163,7 @@ class tab_time_mesh(gtk.VBox):
 
 
 	def callback_laser(self, widget, treeview):
-		new_time=dlg_get_text( "Enter the time at which the laser pulse will fire (-1) to turn it off", str(self.fs_laser_time))
+		new_time=dlg_get_text( _("Enter the time at which the laser pulse will fire (-1) to turn it off"), str(self.fs_laser_time))
 
 		if new_time!=None:
 			self.fs_laser_time=float(new_time)
@@ -251,13 +255,13 @@ class tab_time_mesh(gtk.VBox):
 		layer=0
 		color =['r','g','b','y','o','r','g','b','y','o']
 
-		self.ax1.set_ylabel('Voltage (Volts)')
+		self.ax1.set_ylabel(_("Voltage (Volts)"))
 
 		voltage, = self.ax1.plot(time,self.voltage, 'ro-', linewidth=3 ,alpha=1.0)
-		self.ax1.set_xlabel('Time ('+unit+')')
+		self.ax1.set_xlabel(_("Time (")+unit+')')
 
 		self.ax2 = self.ax1.twinx()
-		self.ax2.set_ylabel('Magnitude (au)')
+		self.ax2.set_ylabel(_("Magnitude (au)"))
 		#ax2.set_ylabel('Energy (eV)')
 
 		sun, = self.ax2.plot(time,self.sun, 'go-', linewidth=3 ,alpha=1.0)
@@ -277,9 +281,9 @@ class tab_time_mesh(gtk.VBox):
 				self.ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
 		if fs_laser_enabled==True:
-			self.fig.legend((voltage, sun, laser,fs_laser), ('Voltage', 'Sun', 'CW laser', 'fs laser'), 'upper right')
+			self.fig.legend((voltage, sun, laser,fs_laser), (_("Voltage"), _("Sun"), _("CW laser"), _("fs laser")), 'upper right')
 		else:
-			self.fig.legend((voltage, sun, laser), ('Voltage', 'Sun', 'CW laser'), 'upper right')
+			self.fig.legend((voltage, sun, laser), (_("Voltage"), _("Sun"), _("CW laser")), 'upper right')
 
 
 
@@ -287,7 +291,7 @@ class tab_time_mesh(gtk.VBox):
 		self.fig.savefig(file_name)
 
 	def callback_save(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Save as..",
+		dialog = gtk.FileChooserDialog(_("Save as.."),
                                None,
                                gtk.FILE_CHOOSER_ACTION_SAVE,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -310,7 +314,7 @@ class tab_time_mesh(gtk.VBox):
 				self.save_image(file_name+filter.get_name())
 			
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no files selected'
+		    print _("Closed, no files selected")
 		dialog.destroy()
 
 	def callback_help(self, widget, data=None):
@@ -330,7 +334,7 @@ class tab_time_mesh(gtk.VBox):
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_length, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn("Length", renderer, text=SEG_LENGTH)
+		column = gtk.TreeViewColumn(_("Length"), renderer, text=SEG_LENGTH)
 		column.set_sort_column_id(SEG_LENGTH)
 		treeview.append_column(column)
 
@@ -343,14 +347,14 @@ class tab_time_mesh(gtk.VBox):
 
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_voltage_start, model)
-		column = gtk.TreeViewColumn("Start Voltage", renderer, text=SEG_VOLTAGE_START)
+		column = gtk.TreeViewColumn(_("Start Voltage"), renderer, text=SEG_VOLTAGE_START)
 		renderer.set_property('editable', True)
 		column.set_sort_column_id(SEG_VOLTAGE_START)
 		treeview.append_column(column)
 
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_voltage_stop, model)
-		column = gtk.TreeViewColumn("Stop Voltage", renderer, text=SEG_VOLTAGE_STOP)
+		column = gtk.TreeViewColumn(_("Stop Voltage"), renderer, text=SEG_VOLTAGE_STOP)
 		renderer.set_property('editable', True)
 		column.set_sort_column_id(SEG_VOLTAGE_STOP)
 		treeview.append_column(column)
@@ -358,21 +362,21 @@ class tab_time_mesh(gtk.VBox):
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_mul, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn("Multiply", renderer, text=SEG_MUL)
+		column = gtk.TreeViewColumn(_("Multiply"), renderer, text=SEG_MUL)
 		column.set_sort_column_id(SEG_MUL)
 		treeview.append_column(column)
 
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_sun, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn("Sun", renderer, text=SEG_SUN)
+		column = gtk.TreeViewColumn(_("Sun"), renderer, text=SEG_SUN)
 		column.set_sort_column_id(SEG_SUN)
 		treeview.append_column(column)
 
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_laser, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn("CW laser", renderer, text=SEG_LASER)
+		column = gtk.TreeViewColumn(_("CW laser"), renderer, text=SEG_LASER)
 		column.set_sort_column_id(SEG_LASER)
 		treeview.append_column(column)
 
@@ -468,7 +472,7 @@ class tab_time_mesh(gtk.VBox):
 
 		#print self.voltage
 
-		self.statusbar.push(0, str(len(self.time))+" mesh points")
+		self.statusbar.push(0, str(len(self.time))+_(" mesh points"))
 
 
 	def save_mesh(self):
@@ -519,41 +523,41 @@ class tab_time_mesh(gtk.VBox):
 		tool_bar_pos=0
 
 		save = gtk.ToolButton(gtk.STOCK_SAVE)
-		tooltips.set_tip(save, "Save image")
+		tooltips.set_tip(save, _("Save image"))
 		save.connect("clicked", self.callback_save)
 		toolbar.insert(save, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 
 		add_section = gtk.ToolButton(gtk.STOCK_ADD)
-		tooltips.set_tip(add_section, "Add section")
+		tooltips.set_tip(add_section, _("Add section"))
 		add_section.connect("clicked", self.callback_add_section,treeview)
 		toolbar.insert(add_section, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 
 		add_section = gtk.ToolButton(gtk.STOCK_CLEAR)
-		tooltips.set_tip(add_section, "Add section")
+		tooltips.set_tip(add_section, _("Delete section"))
 		add_section.connect("clicked", self.callback_remove_item,treeview)
 		toolbar.insert(add_section, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 
 		move_down = gtk.ToolButton(gtk.STOCK_GO_DOWN)
-		tooltips.set_tip(move_down, "Move down")
+		tooltips.set_tip(move_down, _("Move down"))
 		move_down.connect("clicked", self.callback_move_down,treeview)
 		toolbar.insert(move_down, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","laser.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"laser.png"))
 		laser = gtk.ToolButton(image)
-		tooltips.set_tip(laser, "Laser start time")
+		tooltips.set_tip(laser, _("Laser start time"))
 		laser.connect("clicked", self.callback_laser,treeview)
 		toolbar.insert(laser, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","start.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"start.png"))
 		start = gtk.ToolButton(image)
-		tooltips.set_tip(start, "Simulation start time")
+		tooltips.set_tip(start, _("Simulation start time"))
 		start.connect("clicked", self.callback_start_time,treeview)
 		toolbar.insert(start, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1

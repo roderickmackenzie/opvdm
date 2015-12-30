@@ -1,0 +1,1254 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-30 22:54+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: gui/opvdm_notebook.py:99 gui/opvdm_notebook.py:105
+#: gui/opvdm_notebook.py:114 gui/opvdm_notebook.py:115
+#: gui/opvdm_notebook.py:117 pub/gpl_github/gui/opvdm_notebook.py:99
+#: pub/gpl_github/gui/opvdm_notebook.py:105
+#: pub/gpl_github/gui/opvdm_notebook.py:114
+#: pub/gpl_github/gui/opvdm_notebook.py:115
+#: pub/gpl_github/gui/opvdm_notebook.py:117
+msgid "/View/"
+msgstr ""
+
+#: gui/opvdm_notebook.py:128 pub/gpl_github/gui/opvdm_notebook.py:128
+msgid "Information"
+msgstr ""
+
+#: gui/opvdm_notebook.py:150 pub/gpl_github/gui/opvdm_notebook.py:150
+msgid "Device structure"
+msgstr ""
+
+#: gui/opvdm_notebook.py:178 pub/gpl_github/gui/opvdm_notebook.py:178
+msgid "Loading "
+msgstr ""
+
+#: gui/opvdm_notebook.py:258 pub/gpl_github/gui/opvdm_notebook.py:258
+msgid "No gui_config.inp file found\n"
+msgstr ""
+
+#: gui/opvdm_notebook.py:265 pub/gpl_github/gui/opvdm_notebook.py:265
+msgid "Terminal"
+msgstr ""
+
+#: gui/opvdm_notebook.py:281 pub/gpl_github/gui/opvdm_notebook.py:281
+msgid "Welcome"
+msgstr ""
+
+#: gui/tb_item_sun.py:60 pub/gpl_github/gui/tb_item_sun.py:60
+msgid "Light intensity (Suns):"
+msgstr ""
+
+#: gui/experiment_tab.py:102
+msgid "time mesh"
+msgstr ""
+
+#: gui/experiment_tab.py:109
+msgid "Circuit"
+msgstr ""
+
+#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43
+msgid "Electron mobility"
+msgstr ""
+
+#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44
+msgid "Hole mobility"
+msgstr ""
+
+#: gui/token_lib.py:45 pub/gpl_github/gui/token_lib.py:45
+msgid "Electron trap density"
+msgstr ""
+
+#: gui/token_lib.py:46 pub/gpl_github/gui/token_lib.py:46
+msgid "Hole trap density"
+msgstr ""
+
+#: gui/token_lib.py:47 pub/gpl_github/gui/token_lib.py:47
+msgid "Electron tail slope"
+msgstr ""
+
+#: gui/token_lib.py:48 pub/gpl_github/gui/token_lib.py:48
+msgid "Hole tail slope"
+msgstr ""
+
+#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49
+msgid "Relative permittivity"
+msgstr ""
+
+#: gui/token_lib.py:50 pub/gpl_github/gui/token_lib.py:50
+msgid "Free electron to Trapped electron"
+msgstr ""
+
+#: gui/token_lib.py:51 pub/gpl_github/gui/token_lib.py:51
+msgid "Trapped electron to Free hole"
+msgstr ""
+
+#: gui/token_lib.py:52 pub/gpl_github/gui/token_lib.py:52
+msgid "Trapped hole to Free electron"
+msgstr ""
+
+#: gui/token_lib.py:53 pub/gpl_github/gui/token_lib.py:53
+msgid "Free hole to Trapped hole"
+msgstr ""
+
+#: gui/token_lib.py:54 pub/gpl_github/gui/token_lib.py:54
+msgid "Shunt resistance"
+msgstr ""
+
+#: gui/token_lib.py:55 pub/gpl_github/gui/token_lib.py:55
+msgid "Series resistance"
+msgstr ""
+
+#: gui/token_lib.py:56 pub/gpl_github/gui/token_lib.py:56
+msgid "Charge on left contact"
+msgstr ""
+
+#: gui/token_lib.py:57 pub/gpl_github/gui/token_lib.py:57
+msgid "Charge on right contact"
+msgstr ""
+
+#: gui/token_lib.py:58 pub/gpl_github/gui/token_lib.py:58
+msgid "Start voltage"
+msgstr ""
+
+#: gui/token_lib.py:59 pub/gpl_github/gui/token_lib.py:59
+msgid "Stop voltage"
+msgstr ""
+
+#: gui/token_lib.py:60 pub/gpl_github/gui/token_lib.py:60
+msgid "Voltage step"
+msgstr ""
+
+#: gui/token_lib.py:61 pub/gpl_github/gui/token_lib.py:61
+msgid "I0"
+msgstr ""
+
+#: gui/token_lib.py:62 pub/gpl_github/gui/token_lib.py:62
+msgid "ideality factor"
+msgstr ""
+
+#: gui/token_lib.py:65 pub/gpl_github/gui/token_lib.py:65
+msgid "#saturation_n0"
+msgstr ""
+
+#: gui/token_lib.py:66 pub/gpl_github/gui/token_lib.py:66
+msgid "#saturation_rate"
+msgstr ""
+
+#: gui/token_lib.py:67 pub/gpl_github/gui/token_lib.py:67
+msgid "#imps_saturate"
+msgstr ""
+
+#: gui/token_lib.py:70 pub/gpl_github/gui/token_lib.py:70
+msgid "Photon density"
+msgstr ""
+
+#: gui/token_lib.py:71 pub/gpl_github/gui/token_lib.py:71
+msgid "Absorption of material"
+msgstr ""
+
+#: gui/token_lib.py:72 pub/gpl_github/gui/token_lib.py:72
+msgid "Doping"
+msgstr ""
+
+#: gui/token_lib.py:73 pub/gpl_github/gui/token_lib.py:73
+msgid "#simmode"
+msgstr ""
+
+#: gui/token_lib.py:74 pub/gpl_github/gui/token_lib.py:74
+msgid "Effective density of free electron states"
+msgstr ""
+
+#: gui/token_lib.py:75 pub/gpl_github/gui/token_lib.py:75
+msgid "Effective density of free hole states"
+msgstr ""
+
+#: gui/token_lib.py:76 pub/gpl_github/gui/token_lib.py:76
+msgid "Max electrical itterations"
+msgstr ""
+
+#: gui/token_lib.py:77 pub/gpl_github/gui/token_lib.py:77
+msgid "Electrical clamp"
+msgstr ""
+
+#: gui/token_lib.py:78 pub/gpl_github/gui/token_lib.py:78
+msgid "Poisson clamping"
+msgstr ""
+
+#: gui/token_lib.py:79 pub/gpl_github/gui/token_lib.py:79
+msgid "Minimum electrical error"
+msgstr ""
+
+#: gui/token_lib.py:80 pub/gpl_github/gui/token_lib.py:80
+msgid "Sun's spectra"
+msgstr ""
+
+#: gui/token_lib.py:81 pub/gpl_github/gui/token_lib.py:81
+msgid "Mesh points (x)"
+msgstr ""
+
+#: gui/token_lib.py:82 pub/gpl_github/gui/token_lib.py:82
+msgid "Mesh points (lambda)"
+msgstr ""
+
+#: gui/token_lib.py:83 pub/gpl_github/gui/token_lib.py:83
+msgid "Lambda start"
+msgstr ""
+
+#: gui/token_lib.py:84 pub/gpl_github/gui/token_lib.py:84
+msgid "Lambda stop"
+msgstr ""
+
+#: gui/token_lib.py:85 pub/gpl_github/gui/token_lib.py:85
+msgid "Laser wavelength"
+msgstr ""
+
+#: gui/token_lib.py:86 pub/gpl_github/gui/token_lib.py:86
+msgid "Spot size x"
+msgstr ""
+
+#: gui/token_lib.py:87 pub/gpl_github/gui/token_lib.py:87
+msgid "Spot size y"
+msgstr ""
+
+#: gui/token_lib.py:88 pub/gpl_github/gui/token_lib.py:88
+msgid "Energy in pulse"
+msgstr ""
+
+#: gui/token_lib.py:89 pub/gpl_github/gui/token_lib.py:89
+msgid "#gather"
+msgstr ""
+
+#: gui/token_lib.py:90 pub/gpl_github/gui/token_lib.py:90
+msgid "#Length of pulse"
+msgstr ""
+
+#: gui/token_lib.py:91 pub/gpl_github/gui/token_lib.py:91
+msgid "Electron generation efficiency"
+msgstr ""
+
+#: gui/token_lib.py:92 pub/gpl_github/gui/token_lib.py:92
+msgid "Hole generation efficiency"
+msgstr ""
+
+#: gui/token_lib.py:93 pub/gpl_github/gui/token_lib.py:93
+msgid "#function"
+msgstr ""
+
+#: gui/token_lib.py:94 gui/token_lib.py:102 pub/gpl_github/gui/token_lib.py:94
+#: pub/gpl_github/gui/token_lib.py:102
+msgid "left/right"
+msgstr ""
+
+#: gui/token_lib.py:94 pub/gpl_github/gui/token_lib.py:94
+msgid "P contact on left or right"
+msgstr ""
+
+#: gui/token_lib.py:94 gui/token_lib.py:102 pub/gpl_github/gui/token_lib.py:94
+#: pub/gpl_github/gui/token_lib.py:102
+msgid "left"
+msgstr ""
+
+#: gui/token_lib.py:94 gui/token_lib.py:102 pub/gpl_github/gui/token_lib.py:94
+#: pub/gpl_github/gui/token_lib.py:102
+msgid "right"
+msgstr ""
+
+#: gui/token_lib.py:95 pub/gpl_github/gui/token_lib.py:95
+msgid "start voltage"
+msgstr ""
+
+#: gui/token_lib.py:96 pub/gpl_github/gui/token_lib.py:96
+msgid "Max voltage"
+msgstr ""
+
+#: gui/token_lib.py:97 pub/gpl_github/gui/token_lib.py:97
+msgid "Eg"
+msgstr ""
+
+#: gui/token_lib.py:98 pub/gpl_github/gui/token_lib.py:98
+msgid "Xi"
+msgstr ""
+
+#: gui/token_lib.py:99 pub/gpl_github/gui/token_lib.py:99
+msgid "Time of pause"
+msgstr ""
+
+#: gui/token_lib.py:100 pub/gpl_github/gui/token_lib.py:100
+msgid "Pause between iterations"
+msgstr ""
+
+#: gui/token_lib.py:101 gui/token_lib.py:311 gui/token_lib.py:312
+#: gui/token_lib.py:314 gui/token_lib.py:315 gui/token_lib.py:316
+#: gui/token_lib.py:317 gui/token_lib.py:318 gui/token_lib.py:319
+#: gui/token_lib.py:322 gui/token_lib.py:324 gui/token_lib.py:325
+#: gui/token_lib.py:326 gui/token_lib.py:327 gui/token_lib.py:328
+#: gui/token_lib.py:329 gui/token_lib.py:333
+#: pub/gpl_github/gui/token_lib.py:101 pub/gpl_github/gui/token_lib.py:311
+#: pub/gpl_github/gui/token_lib.py:312 pub/gpl_github/gui/token_lib.py:314
+#: pub/gpl_github/gui/token_lib.py:315 pub/gpl_github/gui/token_lib.py:316
+#: pub/gpl_github/gui/token_lib.py:317 pub/gpl_github/gui/token_lib.py:318
+#: pub/gpl_github/gui/token_lib.py:319 pub/gpl_github/gui/token_lib.py:322
+#: pub/gpl_github/gui/token_lib.py:324 pub/gpl_github/gui/token_lib.py:325
+#: pub/gpl_github/gui/token_lib.py:326 pub/gpl_github/gui/token_lib.py:327
+#: pub/gpl_github/gui/token_lib.py:328 pub/gpl_github/gui/token_lib.py:329
+#: pub/gpl_github/gui/token_lib.py:333
+msgid "True/False"
+msgstr ""
+
+#: gui/token_lib.py:101 pub/gpl_github/gui/token_lib.py:101
+msgid "Invert output"
+msgstr ""
+
+#: gui/token_lib.py:102 pub/gpl_github/gui/token_lib.py:102
+msgid "Bias left or right"
+msgstr ""
+
+#: gui/token_lib.py:103 pub/gpl_github/gui/token_lib.py:103
+msgid "Other layers"
+msgstr ""
+
+#: gui/token_lib.py:105 pub/gpl_github/gui/token_lib.py:105
+msgid "Use capacitor"
+msgstr ""
+
+#: gui/token_lib.py:106 pub/gpl_github/gui/token_lib.py:106
+msgid "startime"
+msgstr ""
+
+#: gui/token_lib.py:107 pub/gpl_github/gui/token_lib.py:107
+msgid "ea_factor"
+msgstr ""
+
+#: gui/token_lib.py:108 pub/gpl_github/gui/token_lib.py:108
+msgid "Np"
+msgstr ""
+
+#: gui/token_lib.py:109 pub/gpl_github/gui/token_lib.py:109
+msgid "den"
+msgstr ""
+
+#: gui/token_lib.py:110 pub/gpl_github/gui/token_lib.py:110
+msgid "externalv"
+msgstr ""
+
+#: gui/token_lib.py:111 pub/gpl_github/gui/token_lib.py:111
+msgid "dt_neg_time"
+msgstr ""
+
+#: gui/token_lib.py:112 gui/token_lib.py:119
+#: pub/gpl_github/gui/token_lib.py:112 pub/gpl_github/gui/token_lib.py:119
+msgid "dt"
+msgstr ""
+
+#: gui/token_lib.py:113 pub/gpl_github/gui/token_lib.py:113
+msgid "dt_mull"
+msgstr ""
+
+#: gui/token_lib.py:114 pub/gpl_github/gui/token_lib.py:114
+msgid "stop"
+msgstr ""
+
+#: gui/token_lib.py:115 pub/gpl_github/gui/token_lib.py:115
+msgid "stark"
+msgstr ""
+
+#: gui/token_lib.py:116 pub/gpl_github/gui/token_lib.py:116
+msgid "lasereff"
+msgstr ""
+
+#: gui/token_lib.py:117 pub/gpl_github/gui/token_lib.py:117
+msgid "wavelength"
+msgstr ""
+
+#: gui/token_lib.py:118 pub/gpl_github/gui/token_lib.py:118
+msgid "sim_contacts"
+msgstr ""
+
+#: gui/token_lib.py:120 pub/gpl_github/gui/token_lib.py:120
+#, python-brace-format
+msgid "time_{0}"
+msgstr ""
+
+#: gui/token_lib.py:121 pub/gpl_github/gui/token_lib.py:121
+#, python-brace-format
+msgid "time_{1}"
+msgstr ""
+
+#: gui/token_lib.py:122 pub/gpl_github/gui/token_lib.py:122
+#, python-brace-format
+msgid "time_{2}"
+msgstr ""
+
+#: gui/token_lib.py:123 gui/token_lib.py:124
+#: pub/gpl_github/gui/token_lib.py:123 pub/gpl_github/gui/token_lib.py:124
+#, python-brace-format
+msgid "R_{short}"
+msgstr ""
+
+#: gui/token_lib.py:125 pub/gpl_github/gui/token_lib.py:125
+msgid "Backgroud light bias"
+msgstr ""
+
+#: gui/token_lib.py:126 pub/gpl_github/gui/token_lib.py:126
+msgid "Modulation depth"
+msgstr ""
+
+#: gui/token_lib.py:127 pub/gpl_github/gui/token_lib.py:127
+msgid "Modulation frequency"
+msgstr ""
+
+#: gui/token_lib.py:128 pub/gpl_github/gui/token_lib.py:128
+msgid "Laser Efficiency"
+msgstr ""
+
+#: gui/token_lib.py:129 pub/gpl_github/gui/token_lib.py:129
+msgid "Light bias"
+msgstr ""
+
+#: gui/token_lib.py:130 pub/gpl_github/gui/token_lib.py:130
+msgid "High light multiplyer"
+msgstr ""
+
+#: gui/token_lib.py:131 pub/gpl_github/gui/token_lib.py:131
+msgid "Photon efficiency"
+msgstr ""
+
+#: gui/token_lib.py:132 pub/gpl_github/gui/token_lib.py:132
+msgid "JV voltage step multiplyer"
+msgstr ""
+
+#: gui/token_lib.py:133 pub/gpl_github/gui/token_lib.py:133
+msgid "Maximum current density"
+msgstr ""
+
+#: gui/token_lib.py:135 pub/gpl_github/gui/token_lib.py:135
+#, python-brace-format
+msgid "V_{oc}"
+msgstr ""
+
+#: gui/token_lib.py:137 pub/gpl_github/gui/token_lib.py:137
+msgid "Re(i)"
+msgstr ""
+
+#: gui/token_lib.py:138 pub/gpl_github/gui/token_lib.py:138
+msgid "Im(i)"
+msgstr ""
+
+#: gui/token_lib.py:139 pub/gpl_github/gui/token_lib.py:139
+msgid "Re(J)"
+msgstr ""
+
+#: gui/token_lib.py:140 pub/gpl_github/gui/token_lib.py:140
+msgid "Im(J)"
+msgstr ""
+
+#: gui/token_lib.py:141 pub/gpl_github/gui/token_lib.py:141
+msgid "Frequency"
+msgstr ""
+
+#: gui/token_lib.py:142 gui/token_lib.py:143 gui/token_lib.py:144
+#: pub/gpl_github/gui/token_lib.py:142 pub/gpl_github/gui/token_lib.py:143
+#: pub/gpl_github/gui/token_lib.py:144
+msgid "Phase shift"
+msgstr ""
+
+#: gui/token_lib.py:145 pub/gpl_github/gui/token_lib.py:145
+msgid "points"
+msgstr ""
+
+#: gui/token_lib.py:146 pub/gpl_github/gui/token_lib.py:146
+msgid "Wavelengths to simulate"
+msgstr ""
+
+#: gui/token_lib.py:147 pub/gpl_github/gui/token_lib.py:147
+msgid "External voltage"
+msgstr ""
+
+#: gui/token_lib.py:149 pub/gpl_github/gui/token_lib.py:149
+msgid "External C"
+msgstr ""
+
+#: gui/token_lib.py:150 pub/gpl_github/gui/token_lib.py:150
+msgid "External R"
+msgstr ""
+
+#: gui/token_lib.py:152 pub/gpl_github/gui/token_lib.py:152
+msgid "Resistance of scope"
+msgstr ""
+
+#: gui/token_lib.py:153 pub/gpl_github/gui/token_lib.py:153
+msgid "Number of traps"
+msgstr ""
+
+#: gui/token_lib.py:155 pub/gpl_github/gui/token_lib.py:155
+msgid "DoS distribution"
+msgstr ""
+
+#: gui/token_lib.py:157 pub/gpl_github/gui/token_lib.py:157
+msgid "Single point"
+msgstr ""
+
+#: gui/token_lib.py:158 pub/gpl_github/gui/token_lib.py:158
+msgid "Start intensity"
+msgstr ""
+
+#: gui/token_lib.py:159 pub/gpl_github/gui/token_lib.py:159
+msgid "Stop intensity"
+msgstr ""
+
+#: gui/token_lib.py:160 pub/gpl_github/gui/token_lib.py:160
+msgid "step multiplier"
+msgstr ""
+
+#: gui/token_lib.py:163 pub/gpl_github/gui/token_lib.py:163
+msgid "Photon Flux"
+msgstr ""
+
+#: gui/token_lib.py:164 pub/gpl_github/gui/token_lib.py:164
+msgid "Absorption"
+msgstr ""
+
+#: gui/token_lib.py:165 pub/gpl_github/gui/token_lib.py:165
+msgid "device width"
+msgstr ""
+
+#: gui/token_lib.py:166 pub/gpl_github/gui/token_lib.py:166
+msgid "device breadth"
+msgstr ""
+
+#: gui/token_lib.py:311 pub/gpl_github/gui/token_lib.py:311
+msgid "Dump from newton solver"
+msgstr ""
+
+#: gui/token_lib.py:311 gui/token_lib.py:312 gui/token_lib.py:314
+#: gui/token_lib.py:315 gui/token_lib.py:316 gui/token_lib.py:317
+#: gui/token_lib.py:318 gui/token_lib.py:319 gui/token_lib.py:322
+#: gui/token_lib.py:324 gui/token_lib.py:325 gui/token_lib.py:326
+#: gui/token_lib.py:327 gui/token_lib.py:328 gui/token_lib.py:329
+#: gui/token_lib.py:333 gui/tab.py:113 pub/gpl_github/gui/token_lib.py:311
+#: pub/gpl_github/gui/token_lib.py:312 pub/gpl_github/gui/token_lib.py:314
+#: pub/gpl_github/gui/token_lib.py:315 pub/gpl_github/gui/token_lib.py:316
+#: pub/gpl_github/gui/token_lib.py:317 pub/gpl_github/gui/token_lib.py:318
+#: pub/gpl_github/gui/token_lib.py:319 pub/gpl_github/gui/token_lib.py:322
+#: pub/gpl_github/gui/token_lib.py:324 pub/gpl_github/gui/token_lib.py:325
+#: pub/gpl_github/gui/token_lib.py:326 pub/gpl_github/gui/token_lib.py:327
+#: pub/gpl_github/gui/token_lib.py:328 pub/gpl_github/gui/token_lib.py:329
+#: pub/gpl_github/gui/token_lib.py:333 pub/gpl_github/gui/tab.py:113
+msgid "true"
+msgstr ""
+
+#: gui/token_lib.py:311 gui/token_lib.py:312 gui/token_lib.py:314
+#: gui/token_lib.py:315 gui/token_lib.py:316 gui/token_lib.py:317
+#: gui/token_lib.py:318 gui/token_lib.py:319 gui/token_lib.py:322
+#: gui/token_lib.py:324 gui/token_lib.py:325 gui/token_lib.py:326
+#: gui/token_lib.py:327 gui/token_lib.py:328 gui/token_lib.py:329
+#: gui/token_lib.py:333 gui/tab.py:113 pub/gpl_github/gui/token_lib.py:311
+#: pub/gpl_github/gui/token_lib.py:312 pub/gpl_github/gui/token_lib.py:314
+#: pub/gpl_github/gui/token_lib.py:315 pub/gpl_github/gui/token_lib.py:316
+#: pub/gpl_github/gui/token_lib.py:317 pub/gpl_github/gui/token_lib.py:318
+#: pub/gpl_github/gui/token_lib.py:319 pub/gpl_github/gui/token_lib.py:322
+#: pub/gpl_github/gui/token_lib.py:324 pub/gpl_github/gui/token_lib.py:325
+#: pub/gpl_github/gui/token_lib.py:326 pub/gpl_github/gui/token_lib.py:327
+#: pub/gpl_github/gui/token_lib.py:328 pub/gpl_github/gui/token_lib.py:329
+#: pub/gpl_github/gui/token_lib.py:333 pub/gpl_github/gui/tab.py:113
+msgid "false"
+msgstr ""
+
+#: gui/token_lib.py:312 pub/gpl_github/gui/token_lib.py:312
+msgid "Plot bands etc.. "
+msgstr ""
+
+#: gui/token_lib.py:314 pub/gpl_github/gui/token_lib.py:314
+msgid "dump slices by time"
+msgstr ""
+
+#: gui/token_lib.py:315 pub/gpl_github/gui/token_lib.py:315
+msgid "Dump 1D slices"
+msgstr ""
+
+#: gui/token_lib.py:316 pub/gpl_github/gui/token_lib.py:316
+msgid "Dump slices"
+msgstr ""
+
+#: gui/token_lib.py:317 pub/gpl_github/gui/token_lib.py:317
+msgid "Dump dynamic"
+msgstr ""
+
+#: gui/token_lib.py:318 pub/gpl_github/gui/token_lib.py:318
+msgid "Dump zip files"
+msgstr ""
+
+#: gui/token_lib.py:319 pub/gpl_github/gui/token_lib.py:319
+msgid "Write out band structure"
+msgstr ""
+
+#: gui/token_lib.py:322 pub/gpl_github/gui/token_lib.py:322
+msgid "Dump optical information"
+msgstr ""
+
+#: gui/token_lib.py:324 pub/gpl_github/gui/token_lib.py:324
+msgid "Print newton error"
+msgstr ""
+
+#: gui/token_lib.py:325 pub/gpl_github/gui/token_lib.py:325
+msgid "Print solver convergence"
+msgstr ""
+
+#: gui/token_lib.py:326 pub/gpl_github/gui/token_lib.py:326
+msgid "Write newton solver convergence to disk"
+msgstr ""
+
+#: gui/token_lib.py:327 pub/gpl_github/gui/token_lib.py:327
+msgid "Print poisson solver convergence"
+msgstr ""
+
+#: gui/token_lib.py:328 pub/gpl_github/gui/token_lib.py:328
+msgid "Dump PL spectra"
+msgstr ""
+
+#: gui/token_lib.py:329 pub/gpl_github/gui/token_lib.py:329
+msgid "Normalize output x-time to one"
+msgstr ""
+
+#: gui/experiment.py:75 gui/opvdm.py:636 pub/gpl_github/gui/experiment.py:75
+#: pub/gpl_github/gui/opvdm.py:636
+msgid "/Advanced"
+msgstr ""
+
+#: gui/experiment.py:92 pub/gpl_github/gui/experiment.py:92
+msgid "New experiment name:"
+msgstr ""
+
+#: gui/experiment.py:92 pub/gpl_github/gui/experiment.py:92
+msgid "experiment "
+msgstr ""
+
+#: gui/experiment.py:111 pub/gpl_github/gui/experiment.py:111
+msgid "Clone the current experiment to a new experiment called:"
+msgstr ""
+
+#: gui/experiment.py:133 pub/gpl_github/gui/experiment.py:133
+msgid "Rename the experiment to be called:"
+msgstr ""
+
+#: gui/experiment.py:146 pub/gpl_github/gui/experiment.py:146
+msgid "Should I remove the experiment file "
+msgstr ""
+
+#: gui/experiment.py:157 pub/gpl_github/gui/experiment.py:157
+msgid "Not deleting"
+msgstr ""
+
+#: gui/experiment.py:170 pub/gpl_github/gui/experiment.py:170
+msgid "tabs open"
+msgstr ""
+
+#: gui/experiment.py:236 pub/gpl_github/gui/experiment.py:236
+msgid "Time domain experiment window - opvdm"
+msgstr ""
+
+#: gui/experiment.py:249 gui/opvdm.py:767 pub/gpl_github/gui/experiment.py:249
+#: pub/gpl_github/gui/opvdm.py:767
+msgid "/_File"
+msgstr ""
+
+#: gui/experiment.py:250 pub/gpl_github/gui/experiment.py:250
+msgid "/File/Close"
+msgstr ""
+
+#: gui/experiment.py:251 pub/gpl_github/gui/experiment.py:251
+msgid "/Experiments/_New"
+msgstr ""
+
+#: gui/experiment.py:252 pub/gpl_github/gui/experiment.py:252
+msgid "/Experiments/_Delete experiment"
+msgstr ""
+
+#: gui/experiment.py:253 pub/gpl_github/gui/experiment.py:253
+msgid "/Experiments/_Rename experiment"
+msgstr ""
+
+#: gui/experiment.py:254 pub/gpl_github/gui/experiment.py:254
+msgid "/Experiments/_Clone experiment"
+msgstr ""
+
+#: gui/experiment.py:255 gui/opvdm.py:782 pub/gpl_github/gui/experiment.py:255
+#: pub/gpl_github/gui/opvdm.py:782
+msgid "/_Help"
+msgstr ""
+
+#: gui/experiment.py:256 pub/gpl_github/gui/experiment.py:256
+msgid "/_Help/Help"
+msgstr ""
+
+#: gui/experiment.py:257 gui/opvdm.py:786 pub/gpl_github/gui/experiment.py:257
+#: pub/gpl_github/gui/opvdm.py:786
+msgid "/_Help/About"
+msgstr ""
+
+#: gui/experiment.py:274 pub/gpl_github/gui/experiment.py:274
+msgid "New experiment"
+msgstr ""
+
+#: gui/experiment.py:281 pub/gpl_github/gui/experiment.py:281
+msgid "Delete experiment"
+msgstr ""
+
+#: gui/experiment.py:287 pub/gpl_github/gui/experiment.py:287
+msgid "Clone experiment"
+msgstr ""
+
+#: gui/experiment.py:294 pub/gpl_github/gui/experiment.py:294
+msgid "Rename experiment"
+msgstr ""
+
+#: gui/opvdm_open.py:48 pub/gpl_github/gui/opvdm_open.py:48
+msgid "Open file - opvdm"
+msgstr ""
+
+#: gui/opvdm_open.py:199 pub/gpl_github/gui/opvdm_open.py:199
+msgid ""
+"\n"
+"title: "
+msgstr ""
+
+#: gui/opvdm_open.py:199 pub/gpl_github/gui/opvdm_open.py:199
+msgid ""
+"\n"
+"x axis: "
+msgstr ""
+
+#: gui/opvdm_open.py:199 pub/gpl_github/gui/opvdm_open.py:199
+msgid ""
+")\n"
+"y axis: "
+msgstr ""
+
+#: gui/opvdm_open.py:199 pub/gpl_github/gui/opvdm_open.py:199
+msgid ""
+")\n"
+"\n"
+"<big><b>Double click to open</b></big>"
+msgstr ""
+
+#: gui/opvdm_open.py:205 pub/gpl_github/gui/opvdm_open.py:205
+msgid ""
+"\n"
+"This contains the simulation output at 0V in the dark."
+msgstr ""
+
+#: gui/inp_description.py:35 pub/gpl_github/gui/inp_description.py:35
+msgid "Device"
+msgstr ""
+
+#: gui/inp_description.py:36 pub/gpl_github/gui/inp_description.py:36
+msgid "JV"
+msgstr ""
+
+#: gui/inp_description.py:37 pub/gpl_github/gui/inp_description.py:37
+msgid "JV Simple"
+msgstr ""
+
+#: gui/inp_description.py:38 pub/gpl_github/gui/inp_description.py:38
+msgid "Dump"
+msgstr ""
+
+#: gui/inp_description.py:39 pub/gpl_github/gui/inp_description.py:39
+msgid "CELIV"
+msgstr ""
+
+#: gui/inp_description.py:40 pub/gpl_github/gui/inp_description.py:40
+msgid "Math"
+msgstr ""
+
+#: gui/inp_description.py:41 pub/gpl_github/gui/inp_description.py:41
+msgid "ToF"
+msgstr ""
+
+#: gui/inp_description.py:42 pub/gpl_github/gui/inp_description.py:42
+msgid "Stark"
+msgstr ""
+
+#: gui/inp_description.py:43 pub/gpl_github/gui/inp_description.py:43
+msgid "Pulse"
+msgstr ""
+
+#: gui/inp_description.py:44 pub/gpl_github/gui/inp_description.py:44
+msgid "Pulse Voc"
+msgstr ""
+
+#: gui/inp_description.py:45 pub/gpl_github/gui/inp_description.py:45
+msgid "IMPS"
+msgstr ""
+
+#: gui/inp_description.py:46 pub/gpl_github/gui/inp_description.py:46
+msgid "Light Exp"
+msgstr ""
+
+#: gui/inp_description.py:47 pub/gpl_github/gui/inp_description.py:47
+msgid "Thermal"
+msgstr ""
+
+#: gui/inp_description.py:48 pub/gpl_github/gui/inp_description.py:48
+msgid "Sun Voc"
+msgstr ""
+
+#: gui/inp_description.py:49 pub/gpl_github/gui/inp_description.py:49
+msgid "TPC"
+msgstr ""
+
+#: gui/inp_description.py:50 pub/gpl_github/gui/inp_description.py:50
+msgid "Fit"
+msgstr ""
+
+#: gui/inp_description.py:51 pub/gpl_github/gui/inp_description.py:51
+msgid "Bands"
+msgstr ""
+
+#: gui/inp_description.py:52 pub/gpl_github/gui/inp_description.py:52
+msgid "Density of States"
+msgstr ""
+
+#: gui/inp_description.py:53 pub/gpl_github/gui/inp_description.py:53
+msgid "Luminescence"
+msgstr ""
+
+#: gui/layer_widget.py:139 gui/tmesh.py:317 gui/opvdm.py:292 gui/opvdm.py:323
+#: gui/opvdm.py:337 gui/opvdm.py:494 gui/opvdm.py:555
+#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/opvdm.py:292
+#: pub/gpl_github/gui/opvdm.py:323 pub/gpl_github/gui/opvdm.py:337
+#: pub/gpl_github/gui/opvdm.py:494 pub/gpl_github/gui/opvdm.py:555
+msgid "Closed, no files selected"
+msgstr ""
+
+#: gui/layer_widget.py:172 pub/gpl_github/gui/layer_widget.py:172
+msgid "Add layer"
+msgstr ""
+
+#: gui/layer_widget.py:175 pub/gpl_github/gui/layer_widget.py:175
+msgid "Delete layer"
+msgstr ""
+
+#: gui/layer_widget.py:193 pub/gpl_github/gui/layer_widget.py:193
+msgid "Add device layer"
+msgstr ""
+
+#: gui/layer_widget.py:200 pub/gpl_github/gui/layer_widget.py:200
+msgid "Delete device layer"
+msgstr ""
+
+#: gui/layer_widget.py:206 pub/gpl_github/gui/layer_widget.py:206
+msgid "Move device layer"
+msgstr ""
+
+#: gui/layer_widget.py:214 pub/gpl_github/gui/layer_widget.py:214
+msgid "Edit the electrical mesh"
+msgstr ""
+
+#: gui/layer_widget.py:222 pub/gpl_github/gui/layer_widget.py:222
+msgid "Optical simulation"
+msgstr ""
+
+#: gui/layer_widget.py:232 pub/gpl_github/gui/layer_widget.py:232
+msgid "Look at the materials database"
+msgstr ""
+
+#: gui/layer_widget.py:279 pub/gpl_github/gui/layer_widget.py:279
+msgid "Material for "
+msgstr ""
+
+#: gui/layer_widget.py:280 pub/gpl_github/gui/layer_widget.py:280
+msgid "Layer width "
+msgstr ""
+
+#: gui/layer_widget.py:317 pub/gpl_github/gui/layer_widget.py:317
+msgid "Layer name"
+msgstr ""
+
+#: gui/layer_widget.py:325 pub/gpl_github/gui/layer_widget.py:325
+msgid "Thicknes"
+msgstr ""
+
+#: gui/layer_widget.py:329 pub/gpl_github/gui/layer_widget.py:329
+msgid "Optical material"
+msgstr ""
+
+#: gui/layer_widget.py:346 pub/gpl_github/gui/layer_widget.py:346
+msgid "Active layer"
+msgstr ""
+
+#: gui/layer_widget.py:370 gui/layer_widget.py:378
+#: pub/gpl_github/gui/layer_widget.py:370
+#: pub/gpl_github/gui/layer_widget.py:378
+msgid "DoS Layer"
+msgstr ""
+
+#: gui/layer_widget.py:420 pub/gpl_github/gui/layer_widget.py:420
+msgid "layer name"
+msgstr ""
+
+#: gui/layer_widget.py:470 pub/gpl_github/gui/layer_widget.py:470
+msgid ""
+"<big><b>The optical simulation window</b></big>\n"
+"Use this window to perform optical simulations.  Click on the play button to "
+"run a simulation."
+msgstr ""
+
+#: gui/layer_widget.py:470 pub/gpl_github/gui/layer_widget.py:470
+msgid ""
+"Click on the play button to run an optical simulation.  The results will be "
+"displayed in the tabs to the right."
+msgstr ""
+
+#: gui/tb_item_sim_mode.py:76 pub/gpl_github/gui/tb_item_sim_mode.py:76
+msgid "Simulation mode:"
+msgstr ""
+
+#: gui/tmesh.py:154
+msgid "Enter the start time of the simulation"
+msgstr ""
+
+#: gui/tmesh.py:166
+msgid "Enter the time at which the laser pulse will fire (-1) to turn it off"
+msgstr ""
+
+#: gui/tmesh.py:258
+msgid "Voltage (Volts)"
+msgstr ""
+
+#: gui/tmesh.py:261
+msgid "Time ("
+msgstr ""
+
+#: gui/tmesh.py:264
+msgid "Magnitude (au)"
+msgstr ""
+
+#: gui/tmesh.py:284 gui/tmesh.py:286
+msgid "Voltage"
+msgstr ""
+
+#: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:372
+msgid "Sun"
+msgstr ""
+
+#: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:379
+msgid "CW laser"
+msgstr ""
+
+#: gui/tmesh.py:284
+msgid "fs laser"
+msgstr ""
+
+#: gui/tmesh.py:294
+msgid "Save as.."
+msgstr ""
+
+#: gui/tmesh.py:337
+msgid "Length"
+msgstr ""
+
+#: gui/tmesh.py:350
+msgid "Start Voltage"
+msgstr ""
+
+#: gui/tmesh.py:357
+msgid "Stop Voltage"
+msgstr ""
+
+#: gui/tmesh.py:365
+msgid "Multiply"
+msgstr ""
+
+#: gui/tmesh.py:475
+msgid " mesh points"
+msgstr ""
+
+#: gui/tmesh.py:526
+msgid "Save image"
+msgstr ""
+
+#: gui/tmesh.py:532
+msgid "Add section"
+msgstr ""
+
+#: gui/tmesh.py:538
+msgid "Delete section"
+msgstr ""
+
+#: gui/tmesh.py:544
+msgid "Move down"
+msgstr ""
+
+#: gui/tmesh.py:552
+msgid "Laser start time"
+msgstr ""
+
+#: gui/tmesh.py:560
+msgid "Simulation start time"
+msgstr ""
+
+#: gui/opvdm.py:109 pub/gpl_github/gui/opvdm.py:109
+msgid "Don't run me as root!!"
+msgstr ""
+
+#: gui/opvdm.py:175 pub/gpl_github/gui/opvdm.py:175
+msgid "Quit"
+msgstr ""
+
+#: gui/opvdm.py:258 pub/gpl_github/gui/opvdm.py:258
+msgid ""
+"<big><b>The scan window</b></big>\n"
+" Very often it is useful to be able to systematically very a device "
+"parameter such as mobility or density of trap states.  This window allows "
+"you to do just that."
+msgstr ""
+
+#: gui/opvdm.py:258 pub/gpl_github/gui/opvdm.py:258
+msgid "Use the plus icon to add a new scan line to the list."
+msgstr ""
+
+#: gui/opvdm.py:274 pub/gpl_github/gui/opvdm.py:274
+msgid ""
+"<big>Select a file to plot</big>\n"
+"Single clicking shows you the content of the file"
+msgstr ""
+
+#: gui/opvdm.py:306 pub/gpl_github/gui/opvdm.py:306
+msgid "Import an old opvdm simulation"
+msgstr ""
+
+#: gui/opvdm.py:335 pub/gpl_github/gui/opvdm.py:335
+msgid "file opened"
+msgstr ""
+
+#: gui/opvdm.py:344 pub/gpl_github/gui/opvdm.py:344
+msgid "Make new opvdm simulation"
+msgstr ""
+
+#: gui/opvdm.py:353 pub/gpl_github/gui/opvdm.py:353
+msgid "All files"
+msgstr ""
+
+#: gui/opvdm.py:368 pub/gpl_github/gui/opvdm.py:368
+msgid "Closed, no dir selected"
+msgstr ""
+
+#: gui/opvdm.py:394 pub/gpl_github/gui/opvdm.py:394
+msgid ""
+"<big><b>Now run the simulation</b></big>\n"
+" Click on the play icon to start a simulation."
+msgstr ""
+
+#: gui/opvdm.py:396 gui/opvdm.py:402 gui/opvdm.py:426 gui/opvdm.py:432
+#: gui/opvdm.py:771 pub/gpl_github/gui/opvdm.py:396
+#: pub/gpl_github/gui/opvdm.py:402 pub/gpl_github/gui/opvdm.py:426
+#: pub/gpl_github/gui/opvdm.py:432 pub/gpl_github/gui/opvdm.py:771
+msgid "/File/Import data"
+msgstr ""
+
+#: gui/opvdm.py:399 gui/opvdm.py:429 pub/gpl_github/gui/opvdm.py:399
+#: pub/gpl_github/gui/opvdm.py:429
+msgid "/File/Export data"
+msgstr ""
+
+#: gui/opvdm.py:405 gui/opvdm.py:435 gui/opvdm.py:772
+#: pub/gpl_github/gui/opvdm.py:405 pub/gpl_github/gui/opvdm.py:435
+#: pub/gpl_github/gui/opvdm.py:772
+msgid "/File/Import from library"
+msgstr ""
+
+#: gui/opvdm.py:408 gui/opvdm.py:438 gui/opvdm.py:775
+#: pub/gpl_github/gui/opvdm.py:408 pub/gpl_github/gui/opvdm.py:438
+#: pub/gpl_github/gui/opvdm.py:775
+msgid "/Simulate/Run"
+msgstr ""
+
+#: gui/opvdm.py:411 gui/opvdm.py:441 gui/opvdm.py:776
+#: pub/gpl_github/gui/opvdm.py:411 pub/gpl_github/gui/opvdm.py:441
+#: pub/gpl_github/gui/opvdm.py:776
+msgid "/Simulate/Parameter scan"
+msgstr ""
+
+#: gui/opvdm.py:424 pub/gpl_github/gui/opvdm.py:424
+msgid ""
+"<big><b>Hi!</b></big>\n"
+" I'm the on-line help system :).  If you find any bugs please report them to "
+"roderick.mackenzie@nottingham.ac.uk."
+msgstr ""
+
+#: gui/opvdm.py:424 pub/gpl_github/gui/opvdm.py:424
+msgid "Click on the new icon to make a new simulation directory."
+msgstr ""
+
+#: gui/opvdm.py:475 pub/gpl_github/gui/opvdm.py:475
+msgid "Open an existing opvdm simulation"
+msgstr ""
+
+#: gui/opvdm.py:498 pub/gpl_github/gui/opvdm.py:498
+msgid "Export the simulation as"
+msgstr ""
+
+#: gui/opvdm.py:504 gui/opvdm.py:541 pub/gpl_github/gui/opvdm.py:504
+#: pub/gpl_github/gui/opvdm.py:541
+msgid "opvdm archive input+output files"
+msgstr ""
+
+#: gui/opvdm.py:509 gui/opvdm.py:543 pub/gpl_github/gui/opvdm.py:509
+#: pub/gpl_github/gui/opvdm.py:543
+msgid "opvdm archive input files"
+msgstr ""
+
+#: gui/opvdm.py:514 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:514
+#: pub/gpl_github/gui/opvdm.py:547
+msgid "pdf file"
+msgstr ""
+
+#: gui/opvdm.py:519 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:519
+#: pub/gpl_github/gui/opvdm.py:547
+msgid "jpg image"
+msgstr ""
+
+#: gui/opvdm.py:524 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:524
+#: pub/gpl_github/gui/opvdm.py:547
+msgid "tex file"
+msgstr ""
+
+#: gui/opvdm.py:529 gui/opvdm.py:545 pub/gpl_github/gui/opvdm.py:529
+#: pub/gpl_github/gui/opvdm.py:545
+msgid "optical materials database"
+msgstr ""
+
+#: gui/opvdm.py:584 pub/gpl_github/gui/opvdm.py:584
+msgid ""
+"<big><b>Examine the results in time domain</b></big>\n"
+" After you have run a simulation in time domain, if is often nice to be able "
+"to step through the simulation and look at the results.  This is what this "
+"window does.  Use the slider bar to move through the simulation.  When you "
+"are simulating a JV curve, the slider sill step through voltage points "
+"rather than time points."
+msgstr ""
+
+#: gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
+msgid ""
+"Re-run the simulation with 'dump all slices' set to one to use this tool."
+msgstr ""
+
+#: gui/opvdm.py:599 pub/gpl_github/gui/opvdm.py:599
+msgid ""
+"<big><b>The time mesh editor</b></big>\n"
+" To do time domain simulations one must define how voltage the light vary as "
+"a function of time.  This can be done in this window.  Also use this window "
+"to define the simulation length and time step."
+msgstr ""
+
+#: gui/opvdm.py:637 gui/opvdm.py:777 pub/gpl_github/gui/opvdm.py:637
+#: pub/gpl_github/gui/opvdm.py:777
+msgid "/Simulate/Start cluster server"
+msgstr ""
+
+#: gui/opvdm.py:658 pub/gpl_github/gui/opvdm.py:658
+msgid "Quantum efficiency"
+msgstr ""
+
+#: gui/opvdm.py:733 gui/opvdm.py:1034 pub/gpl_github/gui/opvdm.py:733
+#: pub/gpl_github/gui/opvdm.py:1034
+msgid "Organic Photovoltaic Device Model (www.opvdm.com)"
+msgstr ""
+
+#: gui/opvdm.py:768 pub/gpl_github/gui/opvdm.py:768
+msgid "/File/_New simulation"
+msgstr ""
+
+#: gui/opvdm.py:769 pub/gpl_github/gui/opvdm.py:769
+msgid "/File/_Open simulation"
+msgstr ""
+
+#: gui/opvdm.py:770 pub/gpl_github/gui/opvdm.py:770
+msgid "/File/_Export data"
+msgstr ""
+
+#: gui/opvdm.py:773 pub/gpl_github/gui/opvdm.py:773
+msgid "/File/Quit"
+msgstr ""
+
+#: gui/opvdm.py:774 pub/gpl_github/gui/opvdm.py:774
+msgid "/_Simulate"
+msgstr ""
+
+#: gui/opvdm.py:778 pub/gpl_github/gui/opvdm.py:778
+msgid "/_View"
+msgstr ""
+
+#: gui/opvdm.py:779 pub/gpl_github/gui/opvdm.py:779
+msgid "/_Plots"
+msgstr ""
+
+#: gui/opvdm.py:780 pub/gpl_github/gui/opvdm.py:780
+msgid "/Plots/Plot simulation result"
+msgstr ""
+
+#: gui/opvdm.py:781 pub/gpl_github/gui/opvdm.py:781
+msgid "/_Plots/"
+msgstr ""
+
+#: gui/opvdm.py:783 pub/gpl_github/gui/opvdm.py:783
+msgid "/_Help/Help Index"
+msgstr ""
+
+#: gui/opvdm.py:818 pub/gpl_github/gui/opvdm.py:818
+msgid "Open a simulation"
+msgstr ""
+
+#: gui/opvdm.py:828 pub/gpl_github/gui/opvdm.py:828
+msgid "Make a new simulation"
+msgstr ""
+
+#: gui/opvdm.py:853 pub/gpl_github/gui/opvdm.py:853
+msgid "Run the simulation"
+msgstr ""
+
+#: gui/opvdm.py:862 pub/gpl_github/gui/opvdm.py:862
+msgid "Run parameter scan"
+msgstr ""
+
+#: gui/opvdm.py:872 pub/gpl_github/gui/opvdm.py:872
+msgid "Run a fit command"
+msgstr ""
+
+#: gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
+msgid "Stop the simulation"
+msgstr ""
+
+#: gui/opvdm.py:895 pub/gpl_github/gui/opvdm.py:895
+msgid "Parameter scan"
+msgstr ""
+
+#: gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
+msgid "Find a file to plot"
+msgstr ""
+
+#: gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
+msgid "Examine results in time domain"
+msgstr ""
+
+#: gui/opvdm.py:943 pub/gpl_github/gui/opvdm.py:943
+msgid "Edit the time mesh"
+msgstr ""

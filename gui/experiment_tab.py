@@ -99,14 +99,14 @@ class experiment_tab(gtk.VBox):
 		self.tmesh = tab_time_mesh()
 		self.tmesh.init(self.index)
 
-		self.notebook.append_page(self.tmesh, gtk.Label("time mesh"))
+		self.notebook.append_page(self.tmesh, gtk.Label(_("time mesh")))
 
 		self.pack_start(self.notebook, False, False, 0)
 
 		self.circuit=circuit()
 		self.circuit.init(self.index)
 
-		self.notebook.append_page(self.circuit, gtk.Label("Circuit"))
+		self.notebook.append_page(self.circuit, gtk.Label(_("Circuit")))
 
 		self.show()
 
