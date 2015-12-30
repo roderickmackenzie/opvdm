@@ -1,0 +1,1119 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-12-30 19:49+0000\n"
+"PO-Revision-Date: 2015-12-30 19:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: gui/opvdm_notebook.py:99 gui/opvdm_notebook.py:105
+#: gui/opvdm_notebook.py:114 gui/opvdm_notebook.py:115
+#: gui/opvdm_notebook.py:117
+msgid "/View/"
+msgstr "/Ansicht/"
+
+#: gui/opvdm_notebook.py:128
+msgid "Information"
+msgstr "Information"
+
+#: gui/opvdm_notebook.py:150
+msgid "Device structure"
+msgstr "Bauteilstruktur"
+
+#: gui/opvdm_notebook.py:178
+msgid "Loading "
+msgstr "Loading"
+
+#: gui/opvdm_notebook.py:258
+msgid "No gui_config.inp file found\n"
+msgstr "Kein gui_config.inp gefunden\n"
+
+#: gui/opvdm_notebook.py:265
+msgid "Terminal"
+msgstr "Terminal"
+
+#: gui/opvdm_notebook.py:281
+msgid "Welcome"
+msgstr "Willkommen"
+
+#: gui/tb_item_sun.py:60
+msgid "Light intensity (Suns):"
+msgstr "Lichtintensität (Sonnen):"
+
+#: gui/token_lib.py:43
+msgid "Electron mobility"
+msgstr "Elektronenbeweglichkeit"
+
+#: gui/token_lib.py:44
+msgid "Hole mobility"
+msgstr "Lochbeweglichkeit"
+
+#: gui/token_lib.py:45
+msgid "Electron trap density"
+msgstr "Elektronenzustandsdichte"
+
+#: gui/token_lib.py:46
+msgid "Hole trap density"
+msgstr "Lochzustandsdichte"
+
+#: gui/token_lib.py:47
+msgid "Electron tail slope"
+msgstr "Electron Schwanz Energie"
+
+#: gui/token_lib.py:48
+msgid "Hole tail slope"
+msgstr "Loch Schwanz Energie"
+
+#: gui/token_lib.py:49
+msgid "Relative permittivity"
+msgstr "Dielektrizitätszahl"
+
+#: gui/token_lib.py:50
+msgid "Free electron to Trapped electron"
+msgstr "Freie-Elektronen zu Gefangen Elektronen"
+
+#: gui/token_lib.py:51
+msgid "Trapped electron to Free hole"
+msgstr "Gefangen Elektronen zu Freie-Loch"
+
+#: gui/token_lib.py:52
+msgid "Trapped hole to Free electron"
+msgstr "Gefangen Loch zu Freie Elektronen"
+
+#: gui/token_lib.py:53
+msgid "Free hole to Trapped hole"
+msgstr "Freie Loch zu Gefangen Loch"
+
+#: gui/token_lib.py:54
+msgid "Shunt resistance"
+msgstr "Shunt-Widerstand"
+
+#: gui/token_lib.py:55
+msgid "Series resistance"
+msgstr "Kontaktwiderstand"
+
+#: gui/token_lib.py:56
+msgid "Charge on left contact"
+msgstr "Ladung auf der linken Kontakt"
+
+#: gui/token_lib.py:57
+msgid "Charge on right contact"
+msgstr "Ladung auf der rechten Kontakt"
+
+#: gui/token_lib.py:58
+msgid "Start voltage"
+msgstr "Anfangsspannung"
+
+#: gui/token_lib.py:59
+msgid "Stop voltage"
+msgstr "Stoppspannung"
+
+#: gui/token_lib.py:60
+msgid "Voltage step"
+msgstr "Spannungsschnitt"
+
+#: gui/token_lib.py:61
+msgid "I0"
+msgstr "IO"
+
+#: gui/token_lib.py:62
+msgid "ideality factor"
+msgstr "Idealitätsfaktor"
+
+#: gui/token_lib.py:65
+msgid "#saturation_n0"
+msgstr ""
+
+#: gui/token_lib.py:66
+msgid "#saturation_rate"
+msgstr ""
+
+#: gui/token_lib.py:67
+msgid "#imps_saturate"
+msgstr ""
+
+#: gui/token_lib.py:70
+msgid "Photon density"
+msgstr "Photonendichte"
+
+#: gui/token_lib.py:71
+msgid "Absorption of material"
+msgstr "Absorption von Material"
+
+#: gui/token_lib.py:72
+msgid "Doping"
+msgstr "Dotierung"
+
+#: gui/token_lib.py:73
+msgid "#simmode"
+msgstr "Simulationsmodus"
+
+#: gui/token_lib.py:74
+msgid "Effective density of free electron states"
+msgstr "Effektive Dichte der freien Elektronenzustände"
+
+#: gui/token_lib.py:75
+msgid "Effective density of free hole states"
+msgstr "Effektive Dichte der freien Lochzustände"
+
+#: gui/token_lib.py:76
+msgid "Max electrical itterations"
+msgstr "Maximale elektrische Iterationen"
+
+#: gui/token_lib.py:77
+msgid "Electrical clamp"
+msgstr ""
+
+#: gui/token_lib.py:78
+msgid "Poisson clamping"
+msgstr ""
+
+#: gui/token_lib.py:79
+msgid "Minimum electrical error"
+msgstr "Minimal erlaubt elektrische Fehler"
+
+#: gui/token_lib.py:80
+msgid "Sun's spectra"
+msgstr ""
+
+#: gui/token_lib.py:81
+msgid "Mesh points (x)"
+msgstr ""
+
+#: gui/token_lib.py:82
+msgid "Mesh points (lambda)"
+msgstr ""
+
+#: gui/token_lib.py:83
+msgid "Lambda start"
+msgstr ""
+
+#: gui/token_lib.py:84
+msgid "Lambda stop"
+msgstr ""
+
+#: gui/token_lib.py:85
+msgid "Laser wavelength"
+msgstr ""
+
+#: gui/token_lib.py:86
+msgid "Spot size x"
+msgstr "Laserpunktgröße x"
+
+#: gui/token_lib.py:87
+msgid "Spot size y"
+msgstr "Laserpunktgröße y"
+
+#: gui/token_lib.py:88
+msgid "Energy in pulse"
+msgstr "Energie im Laserpuls"
+
+#: gui/token_lib.py:89
+msgid "#gather"
+msgstr ""
+
+#: gui/token_lib.py:90
+msgid "#Length of pulse"
+msgstr "Länge des Laserpulses"
+
+#: gui/token_lib.py:91
+msgid "Electron generation efficiency"
+msgstr "Elektronenerzeugungseffizienz"
+
+#: gui/token_lib.py:92
+msgid "Hole generation efficiency"
+msgstr "Locherzeugungseffizienz"
+
+#: gui/token_lib.py:93
+msgid "#function"
+msgstr ""
+
+#: gui/token_lib.py:94 gui/token_lib.py:102
+msgid "left/right"
+msgstr ""
+
+#: gui/token_lib.py:94
+msgid "P contact on left or right"
+msgstr "Loch Kontakt auf links oder rechts"
+
+#: gui/token_lib.py:94 gui/token_lib.py:102
+msgid "left"
+msgstr "links"
+
+#: gui/token_lib.py:94 gui/token_lib.py:102
+msgid "right"
+msgstr "rechts"
+
+#: gui/token_lib.py:95
+msgid "start voltage"
+msgstr ""
+
+#: gui/token_lib.py:96
+msgid "Max voltage"
+msgstr ""
+
+#: gui/token_lib.py:97
+msgid "Eg"
+msgstr "Eg"
+
+#: gui/token_lib.py:98
+msgid "Xi"
+msgstr "Xi"
+
+#: gui/token_lib.py:99
+msgid "Time of pause"
+msgstr ""
+
+#: gui/token_lib.py:100
+msgid "Pause between iterations"
+msgstr ""
+
+#: gui/token_lib.py:101 gui/token_lib.py:311 gui/token_lib.py:312
+#: gui/token_lib.py:314 gui/token_lib.py:315 gui/token_lib.py:316
+#: gui/token_lib.py:317 gui/token_lib.py:318 gui/token_lib.py:319
+#: gui/token_lib.py:322 gui/token_lib.py:324 gui/token_lib.py:325
+#: gui/token_lib.py:326 gui/token_lib.py:327 gui/token_lib.py:328
+#: gui/token_lib.py:329 gui/token_lib.py:333
+msgid "True/False"
+msgstr "Ja/Nein"
+
+#: gui/token_lib.py:101
+msgid "Invert output"
+msgstr ""
+
+#: gui/token_lib.py:102
+msgid "Bias left or right"
+msgstr "Anlegen Spannung auf der linken oder rechten Seite."
+
+#: gui/token_lib.py:103
+msgid "Other layers"
+msgstr "andere Schichten"
+
+#: gui/token_lib.py:105
+msgid "Use capacitor"
+msgstr ""
+
+#: gui/token_lib.py:106
+msgid "startime"
+msgstr ""
+
+#: gui/token_lib.py:107
+msgid "ea_factor"
+msgstr ""
+
+#: gui/token_lib.py:108
+msgid "Np"
+msgstr ""
+
+#: gui/token_lib.py:109
+msgid "den"
+msgstr ""
+
+#: gui/token_lib.py:110
+msgid "externalv"
+msgstr ""
+
+#: gui/token_lib.py:111
+msgid "dt_neg_time"
+msgstr ""
+
+#: gui/token_lib.py:112 gui/token_lib.py:119
+msgid "dt"
+msgstr ""
+
+#: gui/token_lib.py:113
+msgid "dt_mull"
+msgstr ""
+
+#: gui/token_lib.py:114
+msgid "stop"
+msgstr ""
+
+#: gui/token_lib.py:115
+msgid "stark"
+msgstr ""
+
+#: gui/token_lib.py:116
+msgid "lasereff"
+msgstr ""
+
+#: gui/token_lib.py:117
+msgid "wavelength"
+msgstr ""
+
+#: gui/token_lib.py:118
+msgid "sim_contacts"
+msgstr ""
+
+#: gui/token_lib.py:120
+#, python-brace-format
+msgid "time_{0}"
+msgstr ""
+
+#: gui/token_lib.py:121
+#, python-brace-format
+msgid "time_{1}"
+msgstr ""
+
+#: gui/token_lib.py:122
+#, python-brace-format
+msgid "time_{2}"
+msgstr ""
+
+#: gui/token_lib.py:123 gui/token_lib.py:124
+#, python-brace-format
+msgid "R_{short}"
+msgstr ""
+
+#: gui/token_lib.py:125
+msgid "Backgroud light bias"
+msgstr ""
+
+#: gui/token_lib.py:126
+msgid "Modulation depth"
+msgstr ""
+
+#: gui/token_lib.py:127
+msgid "Modulation frequency"
+msgstr ""
+
+#: gui/token_lib.py:128
+msgid "Laser Efficiency"
+msgstr ""
+
+#: gui/token_lib.py:129
+msgid "Light bias"
+msgstr ""
+
+#: gui/token_lib.py:130
+msgid "High light multiplyer"
+msgstr ""
+
+#: gui/token_lib.py:131
+msgid "Photon efficiency"
+msgstr ""
+
+#: gui/token_lib.py:132
+msgid "JV voltage step multiplyer"
+msgstr ""
+
+#: gui/token_lib.py:133
+msgid "Maximum current density"
+msgstr ""
+
+#: gui/token_lib.py:135
+#, python-brace-format
+msgid "V_{oc}"
+msgstr ""
+
+#: gui/token_lib.py:137
+msgid "Re(i)"
+msgstr ""
+
+#: gui/token_lib.py:138
+msgid "Im(i)"
+msgstr ""
+
+#: gui/token_lib.py:139
+msgid "Re(J)"
+msgstr ""
+
+#: gui/token_lib.py:140
+msgid "Im(J)"
+msgstr ""
+
+#: gui/token_lib.py:141
+msgid "Frequency"
+msgstr ""
+
+#: gui/token_lib.py:142 gui/token_lib.py:143 gui/token_lib.py:144
+msgid "Phase shift"
+msgstr ""
+
+#: gui/token_lib.py:145
+msgid "points"
+msgstr ""
+
+#: gui/token_lib.py:146
+msgid "Wavelengths to simulate"
+msgstr ""
+
+#: gui/token_lib.py:147
+msgid "External voltage"
+msgstr ""
+
+#: gui/token_lib.py:149
+msgid "External C"
+msgstr ""
+
+#: gui/token_lib.py:150
+msgid "External R"
+msgstr ""
+
+#: gui/token_lib.py:152
+msgid "Resistance of scope"
+msgstr ""
+
+#: gui/token_lib.py:153
+msgid "Number of traps"
+msgstr ""
+
+#: gui/token_lib.py:155
+msgid "DoS distribution"
+msgstr ""
+
+#: gui/token_lib.py:157
+msgid "Single point"
+msgstr ""
+
+#: gui/token_lib.py:158
+msgid "Start intensity"
+msgstr ""
+
+#: gui/token_lib.py:159
+msgid "Stop intensity"
+msgstr ""
+
+#: gui/token_lib.py:160
+msgid "step multiplier"
+msgstr ""
+
+#: gui/token_lib.py:163
+msgid "Photon Flux"
+msgstr "Photonenfluss"
+
+#: gui/token_lib.py:164
+msgid "Absorption"
+msgstr "Absorption"
+
+#: gui/token_lib.py:165
+msgid "device width"
+msgstr "Bauteil breite (x)"
+
+#: gui/token_lib.py:166
+msgid "device breadth"
+msgstr "Bauteil breite (y)"
+
+#: gui/token_lib.py:311
+msgid "Dump from newton solver"
+msgstr "Dump von Newton Löser"
+
+#: gui/token_lib.py:311 gui/token_lib.py:312 gui/token_lib.py:314
+#: gui/token_lib.py:315 gui/token_lib.py:316 gui/token_lib.py:317
+#: gui/token_lib.py:318 gui/token_lib.py:319 gui/token_lib.py:322
+#: gui/token_lib.py:324 gui/token_lib.py:325 gui/token_lib.py:326
+#: gui/token_lib.py:327 gui/token_lib.py:328 gui/token_lib.py:329
+#: gui/token_lib.py:333 gui/tab.py:113
+msgid "true"
+msgstr "ja"
+
+#: gui/token_lib.py:311 gui/token_lib.py:312 gui/token_lib.py:314
+#: gui/token_lib.py:315 gui/token_lib.py:316 gui/token_lib.py:317
+#: gui/token_lib.py:318 gui/token_lib.py:319 gui/token_lib.py:322
+#: gui/token_lib.py:324 gui/token_lib.py:325 gui/token_lib.py:326
+#: gui/token_lib.py:327 gui/token_lib.py:328 gui/token_lib.py:329
+#: gui/token_lib.py:333 gui/tab.py:113
+msgid "false"
+msgstr "nein"
+
+#: gui/token_lib.py:312
+msgid "Plot bands etc.. "
+msgstr "Plot Bands usw."
+
+#: gui/token_lib.py:314
+msgid "dump slices by time"
+msgstr ""
+
+#: gui/token_lib.py:315
+msgid "Dump 1D slices"
+msgstr "Dump 1D Schichten"
+
+#: gui/token_lib.py:316
+msgid "Dump slices"
+msgstr ""
+
+#: gui/token_lib.py:317
+msgid "Dump dynamic"
+msgstr "Dump dynamischen"
+
+#: gui/token_lib.py:318
+msgid "Dump zip files"
+msgstr "Dump Zip-Dateien"
+
+#: gui/token_lib.py:319
+msgid "Write out band structure"
+msgstr "Dump Bandstruktur"
+
+#: gui/token_lib.py:322
+msgid "Dump optical information"
+msgstr "Dump optische Information"
+
+#: gui/token_lib.py:324
+msgid "Print newton error"
+msgstr "Print Newtonfehler"
+
+#: gui/token_lib.py:325
+msgid "Print solver convergence"
+msgstr "Print Löser Konvergenz"
+
+#: gui/token_lib.py:326
+msgid "Write newton solver convergence to disk"
+msgstr "Schreib Newtonlöser Konvergenz auf die Festplatte"
+
+#: gui/token_lib.py:327
+msgid "Print poisson solver convergence"
+msgstr "Print Poisson-Löser Konvergenz"
+
+#: gui/token_lib.py:328
+msgid "Dump PL spectra"
+msgstr "Dump Lumineszenzspektren"
+
+#: gui/token_lib.py:329
+msgid "Normalize output x-time to one"
+msgstr "Normalisieren maximale x-Mal zu eins."
+
+#: gui/experiment.py:75 gui/opvdm.py:636
+msgid "/Advanced"
+msgstr ""
+
+#: gui/experiment.py:92
+msgid "New experiment name:"
+msgstr ""
+
+#: gui/experiment.py:92
+msgid "experiment "
+msgstr ""
+
+#: gui/experiment.py:111
+msgid "Clone the current experiment to a new experiment called:"
+msgstr ""
+
+#: gui/experiment.py:133
+msgid "Rename the experiment to be called:"
+msgstr ""
+
+#: gui/experiment.py:146
+msgid "Should I remove the experiment file "
+msgstr ""
+
+#: gui/experiment.py:157
+msgid "Not deleting"
+msgstr ""
+
+#: gui/experiment.py:170
+msgid "tabs open"
+msgstr ""
+
+#: gui/experiment.py:236
+msgid "Time domain experiment window - opvdm"
+msgstr "Zeitbereich experimentieren Fenster - opvdm"
+
+#: gui/experiment.py:249 gui/opvdm.py:767
+msgid "/_File"
+msgstr "/_Datei"
+
+#: gui/experiment.py:250
+msgid "/File/Close"
+msgstr ""
+
+#: gui/experiment.py:251
+msgid "/Experiments/_New"
+msgstr ""
+
+#: gui/experiment.py:252
+msgid "/Experiments/_Delete experiment"
+msgstr ""
+
+#: gui/experiment.py:253
+msgid "/Experiments/_Rename experiment"
+msgstr ""
+
+#: gui/experiment.py:254
+msgid "/Experiments/_Clone experiment"
+msgstr ""
+
+#: gui/experiment.py:255 gui/opvdm.py:782
+msgid "/_Help"
+msgstr "/_Hilfe"
+
+#: gui/experiment.py:256
+msgid "/_Help/Help"
+msgstr ""
+
+#: gui/experiment.py:257 gui/opvdm.py:786
+msgid "/_Help/About"
+msgstr "/Hilfe/Info"
+
+#: gui/experiment.py:274
+msgid "New experiment"
+msgstr ""
+
+#: gui/experiment.py:281
+msgid "Delete experiment"
+msgstr ""
+
+#: gui/experiment.py:287
+msgid "Clone experiment"
+msgstr ""
+
+#: gui/experiment.py:294
+msgid "Rename experiment"
+msgstr ""
+
+#: gui/opvdm_open.py:48
+msgid "Open file - opvdm"
+msgstr "Öffnen - opvdm"
+
+#: gui/opvdm_open.py:199
+msgid ""
+"\n"
+"title: "
+msgstr ""
+"\n"
+"Titel:"
+
+#: gui/opvdm_open.py:199
+msgid ""
+"\n"
+"x axis: "
+msgstr ""
+"\n"
+"x-Achse: "
+
+#: gui/opvdm_open.py:199
+msgid ""
+")\n"
+"y axis: "
+msgstr ""
+")\n"
+"y-Achse: "
+
+#: gui/opvdm_open.py:199
+msgid ""
+")\n"
+"\n"
+"<big><b>Double click to open</b></big>"
+msgstr ""
+")\n"
+"\n"
+"<big><b>Öffnen durch Doppelklick</b></big>"
+
+#: gui/opvdm_open.py:205
+msgid ""
+"\n"
+"This contains the simulation output at 0V in the dark."
+msgstr ""
+"\n"
+"Diese enthält die Simulationsausgabe bei 0V im Dunkeln."
+
+#: gui/inp_description.py:35
+msgid "Device"
+msgstr "Bauteil"
+
+#: gui/inp_description.py:36
+msgid "JV"
+msgstr "JV"
+
+#: gui/inp_description.py:37
+msgid "JV Simple"
+msgstr "Einfache JV"
+
+#: gui/inp_description.py:38
+msgid "Dump"
+msgstr "Daten-Dump"
+
+#: gui/inp_description.py:39
+msgid "CELIV"
+msgstr "CELIV"
+
+#: gui/inp_description.py:40
+msgid "Math"
+msgstr "Mathe"
+
+#: gui/inp_description.py:41
+msgid "ToF"
+msgstr "ToF"
+
+#: gui/inp_description.py:42
+msgid "Stark"
+msgstr "Stark"
+
+#: gui/inp_description.py:43
+msgid "Pulse"
+msgstr "Pulse"
+
+#: gui/inp_description.py:44
+msgid "Pulse Voc"
+msgstr "Pulse Voc"
+
+#: gui/inp_description.py:45
+msgid "IMPS"
+msgstr "IMPS"
+
+#: gui/inp_description.py:46
+msgid "Light Exp"
+msgstr "Licht Exp"
+
+#: gui/inp_description.py:47
+msgid "Thermal"
+msgstr "Thermal"
+
+#: gui/inp_description.py:48
+msgid "Sun Voc"
+msgstr "Sonne Voc"
+
+#: gui/inp_description.py:49
+msgid "TPC"
+msgstr "TPC"
+
+#: gui/inp_description.py:50
+msgid "Fit"
+msgstr "Fitten"
+
+#: gui/inp_description.py:51
+msgid "Bands"
+msgstr "Bands"
+
+#: gui/inp_description.py:52
+msgid "Density of States"
+msgstr "Zustandsdichte"
+
+#: gui/inp_description.py:53
+msgid "Luminescence"
+msgstr "Lumineszenz"
+
+#: gui/layer_widget.py:139 gui/opvdm.py:292 gui/opvdm.py:323 gui/opvdm.py:337
+#: gui/opvdm.py:494 gui/opvdm.py:555
+msgid "Closed, no files selected"
+msgstr "Keine ausgewählt Dateien"
+
+#: gui/layer_widget.py:172
+msgid "Add layer"
+msgstr "Schicht addieren"
+
+#: gui/layer_widget.py:175
+msgid "Delete layer"
+msgstr "Schicht löschen"
+
+#: gui/layer_widget.py:193
+msgid "Add device layer"
+msgstr "Schicht addieren"
+
+#: gui/layer_widget.py:200
+msgid "Delete device layer"
+msgstr "Schicht löschen"
+
+#: gui/layer_widget.py:206
+msgid "Move device layer"
+msgstr "Schicht schieben"
+
+#: gui/layer_widget.py:214
+msgid "Edit the electrical mesh"
+msgstr "Raum abtastung ändern"
+
+#: gui/layer_widget.py:222
+msgid "Optical simulation"
+msgstr "optische Simulation"
+
+#: gui/layer_widget.py:232
+msgid "Look at the materials database"
+msgstr "Materialien Datenbank angucken"
+
+#: gui/layer_widget.py:279
+msgid "Material for "
+msgstr ""
+
+#: gui/layer_widget.py:280
+msgid "Layer width "
+msgstr "Schicht dichte"
+
+#: gui/layer_widget.py:317
+msgid "Layer name"
+msgstr "Schicht Name"
+
+#: gui/layer_widget.py:325
+msgid "Thicknes"
+msgstr "Dichte"
+
+#: gui/layer_widget.py:329
+msgid "Optical material"
+msgstr "Optische Materialien"
+
+#: gui/layer_widget.py:346
+msgid "Active layer"
+msgstr "Aktive Schicht"
+
+#: gui/layer_widget.py:370 gui/layer_widget.py:378
+msgid "DoS Layer"
+msgstr "DoS Schict"
+
+#: gui/layer_widget.py:420
+msgid "layer name"
+msgstr "Schicht Name"
+
+#: gui/layer_widget.py:470
+msgid ""
+"<big><b>The optical simulation window</b></big>\n"
+"Use this window to perform optical simulations.  Click on the play button to "
+"run a simulation."
+msgstr ""
+
+#: gui/layer_widget.py:470
+msgid ""
+"Click on the play button to run an optical simulation.  The results will be "
+"displayed in the tabs to the right."
+msgstr ""
+
+#: gui/tb_item_sim_mode.py:76
+msgid "Simulation mode:"
+msgstr "Simulationsmodus:"
+
+#: gui/opvdm.py:109
+msgid "Don't run me as root!!"
+msgstr "Nicht als root benutzen!"
+
+#: gui/opvdm.py:175
+msgid "Quit"
+msgstr "Beenden"
+
+#: gui/opvdm.py:258
+msgid ""
+"<big><b>The scan window</b></big>\n"
+" Very often it is useful to be able to systematically very a device "
+"parameter such as mobility or density of trap states.  This window allows "
+"you to do just that."
+msgstr ""
+"<big><b>Das Scan-Fenster</b></big>\n"
+" Very often it is useful to be able to systematically very a device "
+"parameter such as mobility or density of trap states.  This window allows "
+"you to do just that."
+
+#: gui/opvdm.py:258
+msgid "Use the plus icon to add a new scan line to the list."
+msgstr ""
+"Verwenden Sie das Plus-Symbol, um eine neue Scan-Linie zu der Liste "
+"hinzuzufügen."
+
+#: gui/opvdm.py:274
+msgid ""
+"<big>Select a file to plot</big>\n"
+"Single clicking shows you the content of the file"
+msgstr ""
+
+#: gui/opvdm.py:306
+msgid "Import an old opvdm simulation"
+msgstr "Importieren eine alte Simulation"
+
+#: gui/opvdm.py:335
+msgid "file opened"
+msgstr "Datei geöffnet"
+
+#: gui/opvdm.py:344
+msgid "Make new opvdm simulation"
+msgstr "Neue OPVDM Simulation"
+
+#: gui/opvdm.py:353
+msgid "All files"
+msgstr "Alle Dateien"
+
+#: gui/opvdm.py:368
+msgid "Closed, no dir selected"
+msgstr "kein Verzeichnis ausgewählt"
+
+#: gui/opvdm.py:394
+msgid ""
+"<big><b>Now run the simulation</b></big>\n"
+" Click on the play icon to start a simulation."
+msgstr ""
+
+#: gui/opvdm.py:396 gui/opvdm.py:402 gui/opvdm.py:426 gui/opvdm.py:432
+#: gui/opvdm.py:771
+msgid "/File/Import data"
+msgstr "/Datei/Importieren"
+
+#: gui/opvdm.py:399 gui/opvdm.py:429
+msgid "/File/Export data"
+msgstr "/Datei/Speichern"
+
+#: gui/opvdm.py:405 gui/opvdm.py:435 gui/opvdm.py:772
+msgid "/File/Import from library"
+msgstr "/Datei/Importieren"
+
+#: gui/opvdm.py:408 gui/opvdm.py:438 gui/opvdm.py:775
+msgid "/Simulate/Run"
+msgstr "/Simulation/starten"
+
+#: gui/opvdm.py:411 gui/opvdm.py:441 gui/opvdm.py:776
+msgid "/Simulate/Parameter scan"
+msgstr "/Simulation/Parameter scan"
+
+#: gui/opvdm.py:424
+msgid ""
+"<big><b>Hi!</b></big>\n"
+" I'm the on-line help system :).  If you find any bugs please report them to "
+"roderick.mackenzie@nottingham.ac.uk."
+msgstr ""
+
+#: gui/opvdm.py:424
+msgid "Click on the new icon to make a new simulation directory."
+msgstr ""
+
+#: gui/opvdm.py:475
+msgid "Open an existing opvdm simulation"
+msgstr "Simulation Öffnen"
+
+#: gui/opvdm.py:498
+msgid "Export the simulation as"
+msgstr "Datenexport"
+
+#: gui/opvdm.py:504 gui/opvdm.py:541
+msgid "opvdm archive input+output files"
+msgstr ""
+
+#: gui/opvdm.py:509 gui/opvdm.py:543
+msgid "opvdm archive input files"
+msgstr ""
+
+#: gui/opvdm.py:514 gui/opvdm.py:547
+msgid "pdf file"
+msgstr "pdf Dateien"
+
+#: gui/opvdm.py:519 gui/opvdm.py:547
+msgid "jpg image"
+msgstr "jpg Dateien"
+
+#: gui/opvdm.py:524 gui/opvdm.py:547
+msgid "tex file"
+msgstr "tex Dateien"
+
+#: gui/opvdm.py:529 gui/opvdm.py:545
+msgid "optical materials database"
+msgstr "Optische Materialien Datenbank"
+
+#: gui/opvdm.py:584
+msgid ""
+"<big><b>Examine the results in time domain</b></big>\n"
+" After you have run a simulation in time domain, if is often nice to be able "
+"to step through the simulation and look at the results.  This is what this "
+"window does.  Use the slider bar to move through the simulation.  When you "
+"are simulating a JV curve, the slider sill step through voltage points "
+"rather than time points."
+msgstr ""
+
+#: gui/opvdm.py:588
+msgid ""
+"Re-run the simulation with 'dump all slices' set to one to use this tool."
+msgstr ""
+
+#: gui/opvdm.py:599
+msgid ""
+"<big><b>The time mesh editor</b></big>\n"
+" To do time domain simulations one must define how voltage the light vary as "
+"a function of time.  This can be done in this window.  Also use this window "
+"to define the simulation length and time step."
+msgstr ""
+
+#: gui/opvdm.py:637 gui/opvdm.py:777
+msgid "/Simulate/Start cluster server"
+msgstr "/Simulation/Start cluster server"
+
+#: gui/opvdm.py:658
+msgid "Quantum efficiency"
+msgstr "Quanteneffizienz"
+
+#: gui/opvdm.py:733 gui/opvdm.py:1034
+msgid "Organic Photovoltaic Device Model (www.opvdm.com)"
+msgstr "Organic Photovoltaic Device Model (www.opvdm.com)"
+
+#: gui/opvdm.py:768
+msgid "/File/_New simulation"
+msgstr "/Datei/_Neue Simulation"
+
+#: gui/opvdm.py:769
+msgid "/File/_Open simulation"
+msgstr "/Datei/Simulation Öffnen"
+
+#: gui/opvdm.py:770
+msgid "/File/_Export data"
+msgstr "/Datei/Datenexport"
+
+#: gui/opvdm.py:773
+msgid "/File/Quit"
+msgstr "/Datei/Beenden"
+
+#: gui/opvdm.py:774
+msgid "/_Simulate"
+msgstr "/Simulation"
+
+#: gui/opvdm.py:778
+msgid "/_View"
+msgstr "/_Ansicht"
+
+#: gui/opvdm.py:779
+msgid "/_Plots"
+msgstr "/_Plots"
+
+#: gui/opvdm.py:780
+msgid "/Plots/Plot simulation result"
+msgstr ""
+
+#: gui/opvdm.py:781
+msgid "/_Plots/"
+msgstr "/_Plots/"
+
+#: gui/opvdm.py:783
+msgid "/_Help/Help Index"
+msgstr "/_Hilfe/Verzeichnis"
+
+#: gui/opvdm.py:818
+msgid "Open a simulation"
+msgstr "Simulation Öffnen"
+
+#: gui/opvdm.py:828
+msgid "Make a new simulation"
+msgstr "Neue OPVDM Simulation"
+
+#: gui/opvdm.py:853
+msgid "Run the simulation"
+msgstr "Simulation starten"
+
+#: gui/opvdm.py:862
+msgid "Run parameter scan"
+msgstr "Run parameter scan"
+
+#: gui/opvdm.py:872
+msgid "Run a fit command"
+msgstr "Run fit command"
+
+#: gui/opvdm.py:880
+msgid "Stop the simulation"
+msgstr "Simulation abbrechen"
+
+#: gui/opvdm.py:895
+#, fuzzy
+msgid "Parameter scan"
+msgstr "Run parameter scan"
+
+#: gui/opvdm.py:908
+msgid "Find a file to plot"
+msgstr "Find eine Datei zum Plotten."
+
+#: gui/opvdm.py:927
+msgid "Examine results in time domain"
+msgstr "Die Ergebnisse im Zeitbereich angucken"
+
+#: gui/opvdm.py:943
+msgid "Edit the time mesh"
+msgstr "Ändern wie Zeit abgetastet ist"
