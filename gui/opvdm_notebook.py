@@ -43,6 +43,11 @@ from dos_main import dos_main
 from pl_main import pl_main
 
 from cal_path import get_bin_path
+from cal_path import get_image_file_path
+from inp_description import inp_file_to_description
+
+import i18n
+_ = i18n.language.gettext
 
 class opvdm_notebook(gtk.Notebook):
 	progress=progress_class()
@@ -91,35 +96,36 @@ class opvdm_notebook(gtk.Notebook):
 				if child.label_name==name:
 					if child.visible==False:
 						if self.item_factory!=None:
-							widget=self.item_factory.get_widget("/View/"+name)
+							widget=self.item_factory.get_widget(_("/View/")+name)
 							widget.set_active(True)
 						child.show()
 						child.visible=True
 					else:
 						if self.item_factory!=None:
-							widget=self.item_factory.get_widget("/View/"+name)
+							widget=self.item_factory.get_widget(_("/View/")+name)
 							widget.set_active(False)
 						child.hide()
 						child.visible=False
 
 					#print "gui_config.inp", "#"+child.file_name, str(int(child.visible)),2
-					inp_update_token_value("gui_config.inp", "#"+child.file_name, str(int(child.visible)),2)
+					inp_update_token_value("gui_config.inp", "#"+child.file_name, str(int(child.visible)),1)
 
 	def add_to_menu(self,name,visible):
-		a = (( "/View/"+name,  None, self.callback_view_toggle, 0, "<ToggleItem>" ),   )
+		print _("/View/")+name
+		a = (( _("/View/")+name,  None, self.callback_view_toggle, 0, "<ToggleItem>" ),   )
 		self.item_factory.create_items( a, )
-		path="/View/"+name
+		path=_("/View/")+name
 		myitem=self.item_factory.get_item(path)
 		self.menu_items.append(path)
 		myitem.set_active(visible)
 
 	def add_welcome_page(self):
 		self.welcome=welcome_class()
-		self.welcome.init(find_data_file("gui/image.jpg"))
+		self.welcome.init(os.path.join(get_image_file_path(),"image.jpg"))
 		self.welcome.web.connect("got-data", self.welcome.update)
 		self.welcome.get_data()
 		self.welcome.show()
-		self.append_page(self.welcome, gtk.Label("Information"))
+		self.append_page(self.welcome, gtk.Label(_("Information")))
 
 	def load(self):
 		self.clean_menu()
@@ -141,14 +147,15 @@ class opvdm_notebook(gtk.Notebook):
 			self.main_tab=tab_main()
 			self.main_tab.init()
 			self.main_tab.show()
-			self.append_page(self.main_tab, gtk.Label("Device structure"))
+			self.append_page(self.main_tab, gtk.Label(_("Device structure")))
 
 			lines=[]
 			pos=0
 			if inp_load_file(lines,"gui_config.inp")==True:
 				pos=0
 				tab_number=0
-				tabs=(len(lines)-2)/3
+				tabs=(len(lines)-3)/2
+				print "tabs=",tabs
 				while (1):
 					add_to_widget=False
 					ret,pos=inp_get_next_token_array(lines,pos)
@@ -159,13 +166,16 @@ class opvdm_notebook(gtk.Notebook):
 					file_name=ret[0]
 					if file_name[0]=="#":
 						file_name=file_name[1:]
-					name=ret[1]
-					visible=bool(int(ret[2]))
+					name=inp_file_to_description(file_name)
+					if name==False:
+						print "name not found",name
+						break
+					visible=bool(int(ret[1]))
 
 					self.progress.set_fraction(float(tab_number)/float(tabs))
 
 					tab_number=tab_number+1
-					self.progress.set_text("Loading "+name)
+					self.progress.set_text(_("Loading ")+name)
 					process_events()
 					if file_name=="pl0.inp":
 						tab=pl_main()
@@ -217,7 +227,8 @@ class opvdm_notebook(gtk.Notebook):
 
 						button = gtk.Button()
 						close_image = gtk.Image()
-						close_image.set_from_file(find_data_file("gui/close.png"))
+						close_image.set_from_file(os.path.join(get_image_file_path(),"close.png"))
+						print os.path.join(get_image_file_path(),"close.png")
 						close_image.show()
 						button = gtk.Button()
 						button.add(close_image)
@@ -244,14 +255,14 @@ class opvdm_notebook(gtk.Notebook):
 						self.add_to_menu(name,visible)
 
 			else:
-				print "No gui_config.inp file found\n"
+				print _("No gui_config.inp file found\n")
 
 			#for child in self.get_children():
 			#		print type(child)
 
 			if self.terminal_widget!=None:
 				self.terminal_widget.show()
-				self.append_page(self.terminal_widget, gtk.Label("Terminal"))
+				self.append_page(self.terminal_widget, gtk.Label(_("Terminal")))
 
 
 			self.add_welcome_page()
@@ -267,7 +278,7 @@ class opvdm_notebook(gtk.Notebook):
 			return True
 		else:
 			self.add_welcome_page()
-			self.goto_page("Welcome")
+			self.goto_page(_("Welcome"))
 			return False
 
 

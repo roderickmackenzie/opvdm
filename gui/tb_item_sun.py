@@ -28,6 +28,9 @@ import gobject
 from inp import inp_update_token_value
 from inp import inp_get_token_value
 
+import i18n
+_ = i18n.language.gettext
+
 class tb_item_sun(gtk.ToolItem):
 	def call_back_light_changed(self, widget, data=None):
 		light_power=self.light.get_active_text()
@@ -54,7 +57,7 @@ class tb_item_sun(gtk.ToolItem):
 
 		self.light.child.connect('changed', self.call_back_light_changed)
 
-		lable=gtk.Label("Light intensity (Suns):")
+		lable=gtk.Label(_("Light intensity (Suns):"))
 		lable.show
 		hbox = gtk.HBox(False, 2)
 		hbox.pack_start(lable, False, False, 0)

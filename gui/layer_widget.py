@@ -55,6 +55,9 @@ from epitaxy import epitaxy_get_pl_file
 from epitaxy import epitay_get_next_pl
 from epitaxy import epitaxy_get_name
 
+import i18n
+_ = i18n.language.gettext
+
 (
   COLUMN_NAME,
   COLUMN_THICKNES,
@@ -133,7 +136,7 @@ class layer_widget(gtk.VBox):
 			plot_gen([dialog.get_filename()],[],"auto")
 
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no files selected'
+		    print _("Closed, no files selected")
 		dialog.destroy()
 
 	def callback_move_down(self, widget, data=None):
@@ -166,10 +169,10 @@ class layer_widget(gtk.VBox):
 
 		self.__gobject_init__()
 
-		add_button = gtk.Button("Add layer",gtk.STOCK_ADD)
+		add_button = gtk.Button(_("Add layer"),gtk.STOCK_ADD)
 		add_button.show()
 
-		delete_button = gtk.Button("Delete layer",gtk.STOCK_DELETE)
+		delete_button = gtk.Button(_("Delete layer"),gtk.STOCK_DELETE)
 		delete_button.show()
 
 		# create tree view
@@ -187,20 +190,20 @@ class layer_widget(gtk.VBox):
 
 		add = gtk.ToolButton(gtk.STOCK_ADD)
 		add.connect("clicked", self.on_add_item_clicked)
-		tooltips.set_tip(add, "Add device layer")
+		tooltips.set_tip(add, _("Add device layer"))
 		toolbar.insert(add, pos)
 		pos=pos+1
 
 
 		remove = gtk.ToolButton(gtk.STOCK_CLEAR)
 		remove.connect("clicked", self.on_remove_item_clicked)
-		tooltips.set_tip(remove, "Delete device layer")
+		tooltips.set_tip(remove, _("Delete device layer"))
 		toolbar.insert(remove, pos)
 		pos=pos+1
 
 		move = gtk.ToolButton(gtk.STOCK_GO_DOWN)
 		move.connect("clicked", self.callback_move_down)
-		tooltips.set_tip(move, "Move device layer")
+		tooltips.set_tip(move, _("Move device layer"))
 		toolbar.insert(move, pos)
 		pos=pos+1
 
@@ -208,7 +211,7 @@ class layer_widget(gtk.VBox):
 		image = gtk.Image()
    		image.set_from_file(find_data_file("gui/mesh.png"))
 		self.mesh = gtk.ToolButton(image)
-		tooltips.set_tip(self.mesh, "Edit the electrical mesh")
+		tooltips.set_tip(self.mesh, _("Edit the electrical mesh"))
 		self.mesh.connect("clicked", self.callback_edit_mesh)
 		toolbar.insert(self.mesh, pos)
 		pos=pos+1
@@ -216,7 +219,7 @@ class layer_widget(gtk.VBox):
 		image = gtk.Image()
    		image.set_from_file(find_data_file("gui/optics.png"))
 		self.optics_button = gtk.ToolButton(image)
-		tooltips.set_tip(self.optics_button, "Optical simulation")
+		tooltips.set_tip(self.optics_button, _("Optical simulation"))
 		self.optics_button.connect("clicked", self.callback_optics_sim)
 		toolbar.insert(self.optics_button, pos)
 		self.optics_button.show_all()
@@ -226,7 +229,7 @@ class layer_widget(gtk.VBox):
    		#image.set_from_file(find_data_file("gui/dir_file.png"))
 		#self.mesh = gtk.ToolButton(image)
 		self.mesh = gtk.ToolButton(gtk.STOCK_OPEN)
-		tooltips.set_tip(self.mesh, "Look at the materials database")
+		tooltips.set_tip(self.mesh, _("Look at the materials database"))
 		self.mesh.connect("clicked", self.callback_view_materials)
 		toolbar.insert(self.mesh, pos)
 		pos=pos+1
@@ -273,8 +276,8 @@ class layer_widget(gtk.VBox):
 			else:
 				dos_file="yes"
 
-			scan_item_add("epitaxy.inp","#layer"+str(i),"Material for "+str(material),2)
-			scan_item_add("epitaxy.inp","#layer"+str(i),"Layer width "+str(material),1)
+			scan_item_add("epitaxy.inp","#layer"+str(i),_("Material for ")+str(material),2)
+			scan_item_add("epitaxy.inp","#layer"+str(i),_("Layer width ")+str(material),1)
 
 			iter = model.append()
 
@@ -311,7 +314,7 @@ class layer_widget(gtk.VBox):
 		renderer.connect("edited", self.on_cell_edited, model)
 		renderer.set_data("column", COLUMN_NAME)
 		renderer.set_property("editable", True)
-		column = gtk.TreeViewColumn("Layer name", renderer, text=COLUMN_NAME,editable=True)
+		column = gtk.TreeViewColumn(_("Layer name"), renderer, text=COLUMN_NAME,editable=True)
 		treeview.append_column(column)
 
 		# Thicknes
@@ -319,11 +322,11 @@ class layer_widget(gtk.VBox):
 		renderer.connect("edited", self.on_cell_edited, model)
 		renderer.set_data("column", COLUMN_THICKNES)
 		renderer.set_property("editable", True)
-		column = gtk.TreeViewColumn("Thicknes", renderer, text=COLUMN_THICKNES,editable=True)
+		column = gtk.TreeViewColumn(_("Thicknes"), renderer, text=COLUMN_THICKNES,editable=True)
 		treeview.append_column(column)
 
 		# Material file
-		column = gtk.TreeViewColumn("Optical material")
+		column = gtk.TreeViewColumn(_("Optical material"))
 		cellrenderer_combo = gtk.CellRendererCombo()
 		cellrenderer_combo.set_property("editable", True)
 		cellrenderer_combo.set_property("model", self.material_files)
@@ -340,7 +343,7 @@ class layer_widget(gtk.VBox):
 		#renderer.set_property("editable", True)
 		#column = gtk.TreeViewColumn("Active layer", renderer, text=COLUMN_DEVICE,editable=True)
 
-		column = gtk.TreeViewColumn("Active layer")
+		column = gtk.TreeViewColumn(_("Active layer"))
 		render = gtk.CellRendererCombo()
 		render.set_property("editable", True)
 		render.set_property("model", self.active_layer)
@@ -364,7 +367,7 @@ class layer_widget(gtk.VBox):
 		renderer.connect("edited", self.on_dos_layer_edited, model)
 		renderer.set_data("column", COLUMN_DOS_LAYER)
 		renderer.set_property("editable", True)
-		column = gtk.TreeViewColumn("DoS Layer", renderer, text=COLUMN_DOS_LAYER,editable=True)
+		column = gtk.TreeViewColumn(_("DoS Layer"), renderer, text=COLUMN_DOS_LAYER,editable=True)
 		column.set_visible(False)
 		treeview.append_column(column)
 
@@ -372,7 +375,7 @@ class layer_widget(gtk.VBox):
 		renderer.connect("edited", self.on_dos_layer_edited, model)
 		renderer.set_data("column", COLUMN_PL_FILE)
 		renderer.set_property("editable", True)
-		column = gtk.TreeViewColumn("DoS Layer", renderer, text=COLUMN_PL_FILE,editable=True)
+		column = gtk.TreeViewColumn(_("DoS Layer"), renderer, text=COLUMN_PL_FILE,editable=True)
 		column.set_visible(False)
 		treeview.append_column(column)
 
@@ -414,7 +417,7 @@ class layer_widget(gtk.VBox):
 					return
 
 	def on_add_item_clicked(self, button):
-		new_item = ["layer name","100e-9", "pcbm","no","none",False]
+		new_item = [_("layer name"),"100e-9", "pcbm","no","none",False]
 
 		selection = self.treeview.get_selection()
 		model, iter = selection.get_selected()
@@ -464,7 +467,7 @@ class layer_widget(gtk.VBox):
 		self.sync_to_electrical_mesh()
 
 	def callback_optics_sim(self, widget, data=None):
-		my_help_class.help_set_help(["optics.png","<big><b>The optical simulation window</b></big>\nUse this window to perform optical simulations.  Click on the play button to run a simulation.","play.png","Click on the play button to run an optical simulation.  The results will be displayed in the tabs to the right."])
+		my_help_class.help_set_help(["optics.png",_("<big><b>The optical simulation window</b></big>\nUse this window to perform optical simulations.  Click on the play button to run a simulation."),"play.png",_("Click on the play button to run an optical simulation.  The results will be displayed in the tabs to the right.")])
 
 		if self.optics_window==False:
 			self.optics_window=class_optical()

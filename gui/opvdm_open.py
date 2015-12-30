@@ -29,10 +29,14 @@ from plot_io import get_plot_file_info
 from plot_state import plot_state
 from util import latex_to_pygtk_subscript
 from help import my_help_class
+from cal_path import get_image_file_path
 
 COL_PATH = 0
 COL_PIXBUF = 1
 COL_IS_DIRECTORY = 2
+
+import i18n
+_ = i18n.language.gettext
 
 class opvdm_open(gtk.Dialog): 
 	show_inp_files=True
@@ -41,7 +45,7 @@ class opvdm_open(gtk.Dialog):
 	def init(self,path):
 		self.file_path=""
 		self.set_default_response(gtk.RESPONSE_OK)
-		self.set_title("Open file - opvdm")
+		self.set_title(_("Open file - opvdm"))
 		self.set_flags(gtk.DIALOG_DESTROY_WITH_PARENT)
 		#self.add_buttons("OK",True,"Cancel",False)
 
@@ -114,7 +118,7 @@ class opvdm_open(gtk.Dialog):
 		self.show_all()
 
 	def get_icon(self, name):
-		return gtk.gdk.pixbuf_new_from_file(find_data_file(os.path.join("gui",name+"_file.png")))
+		return gtk.gdk.pixbuf_new_from_file(os.path.join(get_image_file_path(),name+"_file.png"))
     
 
 	def create_store(self):
@@ -192,13 +196,13 @@ class opvdm_open(gtk.Dialog):
 			if icon_type=="dat":
 				state=plot_state()
 				get_plot_file_info(state,full_path)
-				summary="<big><b>"+self.store[icon_pos][0]+"</b></big>\n"+"\ntitle: "+state.title+"\nx axis: "+state.x_label+" ("+latex_to_pygtk_subscript(state.x_units)+")\ny axis: "+state.y_label+" ("+latex_to_pygtk_subscript(state.y_units)+")\n\n<big><b>Double click to open</b></big>"
+				summary="<big><b>"+self.store[icon_pos][0]+"</b></big>\n"+_("\ntitle: ")+state.title+_("\nx axis: ")+state.x_label+" ("+latex_to_pygtk_subscript(state.x_units)+_(")\ny axis: ")+state.y_label+" ("+latex_to_pygtk_subscript(state.y_units)+_(")\n\n<big><b>Double click to open</b></big>")
 				my_help_class.help_set_help(["dat_file.png",summary])
 
 			if icon_name.endswith("equilibrium"):
 				state=plot_state()
 				get_plot_file_info(state,full_path)
-				summary="<big><b>equilibrium</b></big>\n"+"\nThis contains the simulation output at 0V in the dark."
+				summary="<big><b>equilibrium</b></big>\n"+_("\nThis contains the simulation output at 0V in the dark.")
 				my_help_class.help_set_help(["dir_file.png",summary])
 
 

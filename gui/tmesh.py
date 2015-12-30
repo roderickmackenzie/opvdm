@@ -263,6 +263,7 @@ class tab_time_mesh(gtk.VBox):
 		sun, = self.ax2.plot(time,self.sun, 'go-', linewidth=3 ,alpha=1.0)
 		laser, = self.ax2.plot(time,self.laser, 'bo-', linewidth=3 ,alpha=1.0)
 
+		fs_laser_enabled=False
 		if self.fs_laser_time!=-1:
 			if len(self.time)>2:
 				dt=(self.time[len(time)-1]-self.time[0])/100
@@ -272,11 +273,13 @@ class tab_time_mesh(gtk.VBox):
 				y=self.gaussian(x,self.fs_laser_time,dt)
 				#print y
 				fs_laser, = self.ax2.plot(x*mul,y, 'g-', linewidth=3 ,alpha=1.0)
-	
-			self.ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+				fs_laser_enabled=True
+				self.ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
-
-			self.fig.legend((voltage, sun, laser), ('Voltage', 'Sun', 'Laser'), 'upper right')
+		if fs_laser_enabled==True:
+			self.fig.legend((voltage, sun, laser,fs_laser), ('Voltage', 'Sun', 'CW laser', 'fs laser'), 'upper right')
+		else:
+			self.fig.legend((voltage, sun, laser), ('Voltage', 'Sun', 'CW laser'), 'upper right')
 
 
 
@@ -369,7 +372,7 @@ class tab_time_mesh(gtk.VBox):
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_laser, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn("Laser", renderer, text=SEG_LASER)
+		column = gtk.TreeViewColumn("CW laser", renderer, text=SEG_LASER)
 		column.set_sort_column_id(SEG_LASER)
 		treeview.append_column(column)
 

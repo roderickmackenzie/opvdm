@@ -193,8 +193,17 @@ int english_to_bin(char *in)
 		return FALSE;
 	} else if (strcmp(in, "left") == 0) {
 		return LEFT;
+	} else if (strcmp(in, "links") == 0) {
+		return LEFT;
+	} else if (strcmp(in, "ja") == 0) {
+		return TRUE;
+	} else if (strcmp(in, "nein") == 0) {
+		return FALSE;
 	} else if (strcmp(in, "right") == 0) {
 		return RIGHT;
+	} else if (strcmp(in, "rechts") == 0) {
+		return RIGHT;
+
 	} else if (strcmp(in, "gaus") == 0) {
 		return 0;
 	} else if (strcmp(in, "exp") == 0) {

@@ -51,6 +51,10 @@ from inp import inp_copy_file
 from inp import inp_remove_file
 from util import strextract_interger
 from global_objects import global_object_get
+from cal_path import get_image_file_path
+
+import i18n
+_ = i18n.language.gettext
 
 def experiment_new_filename():
 	for i in range(0,20):
@@ -68,7 +72,7 @@ class experiment(gtk.Window):
 
 		item_factory.create_items(self.menu_items)
 		if debug_mode()==False:
-			item_factory.delete_item("/Advanced")
+			item_factory.delete_item(_("/Advanced"))
 
 		window.add_accel_group(accel_group)
 
@@ -85,7 +89,7 @@ class experiment(gtk.Window):
 		webbrowser.open('http://www.opvdm.com/man/index.html')
 
 	def callback_add_page(self, widget, data=None):
-		new_sim_name=dlg_get_text( "New experiment name:", "experiment "+str(len(self.notebook.get_children())+1))
+		new_sim_name=dlg_get_text( _("New experiment name:"), _("experiment ")+str(len(self.notebook.get_children())+1))
 
 		if new_sim_name!=None:
 			index=experiment_new_filename()
@@ -104,7 +108,7 @@ class experiment(gtk.Window):
 		pageNum = self.notebook.get_current_page()
 		tab = self.notebook.get_nth_page(pageNum)
 		old_index=tab.index
-		new_sim_name=dlg_get_text( "Clone the current experiment to a new experiment called:", tab.tab_name.split("@")[0])
+		new_sim_name=dlg_get_text( _("Clone the current experiment to a new experiment called:"), tab.tab_name.split("@")[0])
 		if new_sim_name!=None:
 			new_sim_name=new_sim_name+"@"+tab.tab_name.split("@")[1]
 			index=experiment_new_filename()
@@ -126,7 +130,7 @@ class experiment(gtk.Window):
 	def callback_rename_page(self,widget,data):
 		pageNum = self.notebook.get_current_page()
 		tab = self.notebook.get_nth_page(pageNum)
-		new_sim_name=dlg_get_text( "Rename the experiment to be called:", tab.tab_name.split("@")[0])
+		new_sim_name=dlg_get_text( _("Rename the experiment to be called:"), tab.tab_name.split("@")[0])
 
 		if new_sim_name!=None:
 			#new_sim_name=self.remove_invalid(new_sim_name)
@@ -139,7 +143,7 @@ class experiment(gtk.Window):
 	def callback_delete_page(self,widget,data):
 		pageNum = self.notebook.get_current_page()
 		tab = self.notebook.get_nth_page(pageNum)
-		md = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,  gtk.BUTTONS_YES_NO, "Should I remove the experiment file "+tab.tab_name.split("@")[0])
+		md = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,  gtk.BUTTONS_YES_NO, _("Should I remove the experiment file ")+tab.tab_name.split("@")[0])
 
 		response = md.run()
 
@@ -150,7 +154,7 @@ class experiment(gtk.Window):
 			global_object_get("tb_item_sim_mode_update")()
 			
 		elif response == gtk.RESPONSE_NO:
-			print "Not deleting"
+			print _("Not deleting")
 			#edit
 
 
@@ -163,7 +167,7 @@ class experiment(gtk.Window):
 			if self.rod[i].visible==True:
 				tabs_open=tabs_open+1
 
-		print "tabs open",tabs_open,self.number_of_tabs
+		print _("tabs open"),tabs_open,self.number_of_tabs
 
 		for i in range(0, self.number_of_tabs):
 			print self.rod[i].tab_name, name, self.rod[i].visible
@@ -229,7 +233,7 @@ class experiment(gtk.Window):
 		self.tooltips = gtk.Tooltips()
 
 		self.set_border_width(2)
-		self.set_title("Time domain experiment window - opvdm")
+		self.set_title(_("Time domain experiment window - opvdm"))
 
 		self.status_bar = gtk.Statusbar()      
 		self.status_bar.show()
@@ -242,15 +246,15 @@ class experiment(gtk.Window):
 
 
 		self.menu_items = (
-		    ( "/_File",         None,         None, 0, "<Branch>" ),
-		    ( "/File/Close",     None, self.callback_close, 0, None ),
-		    ( "/Experiments/_New",     None, self.callback_add_page, 0, "<StockItem>", "gtk-new" ),
-		    ( "/Experiments/_Delete experiment",     None, self.callback_delete_page, 0, "<StockItem>", "gtk-delete" ),
-		    ( "/Experiments/_Rename experiment",     None, self.callback_rename_page, 0, "<StockItem>", "gtk-edit" ),
-		    ( "/Experiments/_Clone experiment",     None, self.callback_copy_page, 0, "<StockItem>", "gtk-copy" ),
-		    ( "/_Help",         None,         None, 0, "<LastBranch>" ),
-		    ( "/_Help/Help",   None,         self.callback_help, 0, None ),
-		    ( "/_Help/About",   None,         about_dialog_show, 0, "<StockItem>", "gtk-about" ),
+		    ( _("/_File"),         None,         None, 0, "<Branch>" ),
+		    ( _("/File/Close"),     None, self.callback_close, 0, None ),
+		    ( _("/Experiments/_New"),     None, self.callback_add_page, 0, "<StockItem>", "gtk-new" ),
+		    ( _("/Experiments/_Delete experiment"),     None, self.callback_delete_page, 0, "<StockItem>", "gtk-delete" ),
+		    ( _("/Experiments/_Rename experiment"),     None, self.callback_rename_page, 0, "<StockItem>", "gtk-edit" ),
+		    ( _("/Experiments/_Clone experiment"),     None, self.callback_copy_page, 0, "<StockItem>", "gtk-copy" ),
+		    ( _("/_Help"),         None,         None, 0, "<LastBranch>" ),
+		    ( _("/_Help/Help"),   None,         self.callback_help, 0, None ),
+		    ( _("/_Help/About"),   None,         about_dialog_show, 0, "<StockItem>", "gtk-about" ),
 		    )
 
 
@@ -267,27 +271,27 @@ class experiment(gtk.Window):
 
 		tb_new_scan = gtk.ToolButton(gtk.STOCK_NEW)
 		tb_new_scan.connect("clicked", self.callback_add_page)
-		self.tooltips.set_tip(tb_new_scan, "New experiment")
+		self.tooltips.set_tip(tb_new_scan, _("New experiment"))
 
 		toolbar.insert(tb_new_scan, pos)
 		pos=pos+1
 
 		delete = gtk.ToolButton(gtk.STOCK_DELETE)
 		delete.connect("clicked", self.callback_delete_page,None)
-		self.tooltips.set_tip(delete, "Delete experiment")
+		self.tooltips.set_tip(delete, _("Delete experiment"))
 		toolbar.insert(delete, pos)
 		pos=pos+1
 
 		copy = gtk.ToolButton(gtk.STOCK_COPY)
 		copy.connect("clicked", self.callback_copy_page,None)
-		self.tooltips.set_tip(copy, "Clone experiment")
+		self.tooltips.set_tip(copy, _("Clone experiment"))
 		toolbar.insert(copy, pos)
 		pos=pos+1
 
 
 		rename = gtk.ToolButton(gtk.STOCK_EDIT)
 		rename.connect("clicked", self.callback_rename_page,None)
-		self.tooltips.set_tip(rename, "Rename experiment")
+		self.tooltips.set_tip(rename, _("Rename experiment"))
 		toolbar.insert(rename, pos)
 		pos=pos+1
 
@@ -328,7 +332,7 @@ class experiment(gtk.Window):
 
 		self.connect("delete-event", self.callback_close)
 		self.notebook.connect("switch-page",self.switch_page)
-		self.set_icon_from_file(find_data_file(os.path.join("gui","image.jpg")))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 
 		self.hide()
 

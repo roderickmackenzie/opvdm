@@ -31,6 +31,10 @@ from inp import inp_get_token_value
 from inp import inp_load_file
 from inp import inp_lsdir
 from inp import inp_search_token_value
+
+import i18n
+_ = i18n.language.gettext
+
 class store:
 	def __init__(self,token,file):
 		self.token=token
@@ -69,7 +73,7 @@ class tb_item_sim_mode(gtk.ToolItem):
 		self.sim_mode.set_size_request(-1, 20)
 		self.sim_mode.child.connect('changed', self.call_back_sim_mode_changed)
 
-		lable=gtk.Label("Simulation mode:")
+		lable=gtk.Label(_("Simulation mode:"))
 		lable.show()
 
 		hbox = gtk.HBox(False, 2)

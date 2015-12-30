@@ -178,6 +178,10 @@ def get_image_file_path():
 	global share_path
 	return os.path.join(share_path,"gui")
 
+def get_lang_path():
+	global share_path
+	return os.path.join(share_path,"lang")
+
 def find_data_file(name):
 	global share_path
 	return os.path.join(share_path,name)

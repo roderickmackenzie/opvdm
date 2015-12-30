@@ -40,6 +40,7 @@ from inp import inp_load_file
 from help import my_help_class
 from cal_path import find_data_file
 from util import latex_to_pygtk_subscript
+from i18n import yes_no
 
 class tab_class(gtk.VBox,tab_base):
 	
@@ -109,13 +110,13 @@ class tab_class(gtk.VBox,tab_base):
 					index=0
 					true_false=False
 					if len(result.opt)==2:
-						if result.opt[0]=="true" and result.opt[1]=="false":
+						if result.opt[0]==_("true") and result.opt[1]==_("false"):
 							true_false=True
 
 					for i in range(0,len(result.opt)):
 						edit_box.append_text(result.opt[i])
 						if true_false==False:
-							if self.lines[pos]==result.opt[i]:
+							if yes_no(self.lines[pos])==yes_no(result.opt[i]):
 								index=i
 						else:
 							if str2bool(self.lines[pos])==True:

@@ -35,6 +35,9 @@ from cal_path import find_data_file
 from cal_path import calculate_paths
 calculate_paths()
 
+import i18n
+_ = i18n.language.gettext
+
 from ver import ver_load_info
 from ver import ver_error
 ver_load_info()
@@ -95,6 +98,7 @@ from global_objects import global_object_register
 
 from device_lib import device_lib_class
 from export_archive import export_archive
+from export_materials import export_materials
 
 if running_on_linux()==True:
 	import dbus
@@ -102,7 +106,7 @@ if running_on_linux()==True:
 	import pynotify
 
 	if os.geteuid() == 0:
-		exit("Don't run me as root!!")
+		exit(_("Don't run me as root!!"))
 	
 else:
 	from windows_pipe import win_pipe
@@ -168,7 +172,7 @@ class opvdm_main_window(gobject.GObject):
 	def make_menu(self,event_button, event_time, data=None):
 		menu = gtk.Menu()
 		#open_item = gtk.MenuItem("Open App")
-		close_item = gtk.MenuItem("Quit")
+		close_item = gtk.MenuItem(_("Quit"))
 		#Append the menu items
 		#menu.append(open_item)
 		menu.append(close_item)
@@ -251,7 +255,7 @@ class opvdm_main_window(gobject.GObject):
 
 
 	def callback_scan(self, widget, data=None):
-		my_help_class.help_set_help(["scan.png","<big><b>The scan window</b></big>\n Very often it is useful to be able to systematically very a device parameter such as mobility or density of trap states.  This window allows you to do just that.","add.png","Use the plus icon to add a new scan line to the list."])
+		my_help_class.help_set_help(["scan.png",_("<big><b>The scan window</b></big>\n Very often it is useful to be able to systematically very a device parameter such as mobility or density of trap states.  This window allows you to do just that."),"add.png",_("Use the plus icon to add a new scan line to the list.")])
 		self.tb_run_scan.set_sensitive(True)
 
 		if self.scan_window==None:
@@ -267,7 +271,7 @@ class opvdm_main_window(gobject.GObject):
 
 
 	def callback_plot_select(self, widget, data=None):
-		my_help_class.help_set_help(["dat_file.png","<big>Select a file to plot</big>\nSingle clicking shows you the content of the file"])
+		my_help_class.help_set_help(["dat_file.png",_("<big>Select a file to plot</big>\nSingle clicking shows you the content of the file")])
 
 		dialog=opvdm_open()
 		dialog.show_inp_files=False
@@ -285,7 +289,7 @@ class opvdm_main_window(gobject.GObject):
 			self.plotted_graphs.refresh()
 			self.plot_after_run_file=dialog.get_filename()
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no files selected'
+		    print _("Closed, no files selected")
 		dialog.destroy()
 
 	def callback_plot_open(self, widget, data=None):
@@ -299,7 +303,7 @@ class opvdm_main_window(gobject.GObject):
 
 
 	def callback_import(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Import an old opvdm simulation",
+		dialog = gtk.FileChooserDialog(_("Import an old opvdm simulation"),
                                None,
                                gtk.FILE_CHOOSER_ACTION_OPEN,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -316,7 +320,7 @@ class opvdm_main_window(gobject.GObject):
 			import_archive(dialog.get_filename(),os.path.join(os.getcwd(),"sim.opvdm"),False)
 			self.change_dir_and_refresh_interface(os.getcwd())
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no files selected'
+		    print _("Closed, no files selected")
 		dialog.destroy()
 
 	def callback_import_from_lib(self, widget, data=None):
@@ -328,16 +332,16 @@ class opvdm_main_window(gobject.GObject):
 			device_lib.destroy()
 			import_archive(path,os.path.join(os.getcwd(),"sim.opvdm"),False)
 			self.change_dir_and_refresh_interface(os.getcwd())
-			print "file opened",path
+			print _("file opened"),path
 		elif response == False:
-			print "Closed, no files selected"
+			print _("Closed, no files selected")
 			device_lib.destroy()
 
 		
 
 
 	def callback_new(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Make new opvdm simulation",
+		dialog = gtk.FileChooserDialog(_("Make new opvdm simulation"),
                                None,
                                gtk.FILE_CHOOSER_ACTION_OPEN,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -346,7 +350,7 @@ class opvdm_main_window(gobject.GObject):
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_CREATE_FOLDER)
 
 		filter = gtk.FileFilter()
-		filter.set_name("All files")
+		filter.set_name(_("All files"))
 		filter.add_pattern("*")
 		dialog.add_filter(filter)
 
@@ -361,7 +365,7 @@ class opvdm_main_window(gobject.GObject):
 			self.change_dir_and_refresh_interface(dialog.get_filename())
 
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no dir selected'
+		    print _("Closed, no dir selected")
 		dialog.destroy()
 
 	def change_dir_and_refresh_interface(self,new_dir):
@@ -387,24 +391,24 @@ class opvdm_main_window(gobject.GObject):
 			self.undo.set_sensitive(True)
 			#self.save_sim.set_sensitive(True)
 			self.experiment_window_button.set_sensitive(True)
-			my_help_class.help_set_help(["play.png","<big><b>Now run the simulation</b></big>\n Click on the play icon to start a simulation."])
+			my_help_class.help_set_help(["play.png",_("<big><b>Now run the simulation</b></big>\n Click on the play icon to start a simulation.")])
 
-			my_item=self.item_factory.get_item("/File/Import data")
+			my_item=self.item_factory.get_item(_("/File/Import data"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
-			my_item=self.item_factory.get_item("/File/Export data")
+			my_item=self.item_factory.get_item(_("/File/Export data"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
-			my_item=self.item_factory.get_item("/File/Import data")
+			my_item=self.item_factory.get_item(_("/File/Import data"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
-			my_item=self.item_factory.get_item("/File/Import from library")
+			my_item=self.item_factory.get_item(_("/File/Import from library"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
-			my_item=self.item_factory.get_item("/Simulate/Run")
+			my_item=self.item_factory.get_item(_("/Simulate/Run"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
-			my_item=self.item_factory.get_item("/Simulate/Parameter scan")
+			my_item=self.item_factory.get_item(_("/Simulate/Parameter scan"))
 			if my_item!=None:
 				my_item.set_sensitive(True)
 
@@ -417,24 +421,24 @@ class opvdm_main_window(gobject.GObject):
 			self.undo.set_sensitive(False)
 			#self.save_sim.set_sensitive(False)
 			self.experiment_window_button.set_sensitive(False)
-			my_help_class.help_set_help(["icon.png","<big><b>Hi!</b></big>\n I'm the on-line help system :).  If you find any bugs please report them to roderick.mackenzie@nottingham.ac.uk.","new.png","Click on the new icon to make a new simulation directory."])
+			my_help_class.help_set_help(["icon.png",_("<big><b>Hi!</b></big>\n I'm the on-line help system :).  If you find any bugs please report them to roderick.mackenzie@nottingham.ac.uk."),"new.png",_("Click on the new icon to make a new simulation directory.")])
 
-			my_item=self.item_factory.get_item("/File/Import data")
+			my_item=self.item_factory.get_item(_("/File/Import data"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
-			my_item=self.item_factory.get_item("/File/Export data")
+			my_item=self.item_factory.get_item(_("/File/Export data"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
-			my_item=self.item_factory.get_item("/File/Import data")
+			my_item=self.item_factory.get_item(_("/File/Import data"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
-			my_item=self.item_factory.get_item("/File/Import from library")
+			my_item=self.item_factory.get_item(_("/File/Import from library"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
-			my_item=self.item_factory.get_item("/Simulate/Run")
+			my_item=self.item_factory.get_item(_("/Simulate/Run"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
-			my_item=self.item_factory.get_item("/Simulate/Parameter scan")
+			my_item=self.item_factory.get_item(_("/Simulate/Parameter scan"))
 			if my_item!=None:
 				my_item.set_sensitive(False)
 
@@ -468,7 +472,7 @@ class opvdm_main_window(gobject.GObject):
 		#myitem.set_active(self.config.get_value("#plot_after_simulation",False))
 
 	def callback_open(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Open an existing opvdm simulation",
+		dialog = gtk.FileChooserDialog(_("Open an existing opvdm simulation"),
                                None,
                                gtk.FILE_CHOOSER_ACTION_OPEN,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -487,39 +491,45 @@ class opvdm_main_window(gobject.GObject):
 			self.change_dir_and_refresh_interface(new_path)
 
 		elif response == gtk.RESPONSE_CANCEL:
-		    print 'Closed, no files selected'
+		    print _("Closed, no files selected")
 		dialog.destroy()
 
 	def callback_export(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Export the simulation as", None, gtk.FILE_CHOOSER_ACTION_SAVE,
+		dialog = gtk.FileChooserDialog(_("Export the simulation as"), None, gtk.FILE_CHOOSER_ACTION_SAVE,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
 
 		dialog.set_default_response(gtk.RESPONSE_OK)
 
 		filter = gtk.FileFilter()
-		filter.set_name("opvdm archive input+output files")
+		filter.set_name(_("opvdm archive input+output files"))
 		filter.add_pattern("*.opvdm")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name("opvdm archive input files")
+		filter.set_name(_("opvdm archive input files"))
 		filter.add_pattern("*.opvdm")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name("pdf file")
+		filter.set_name(_("pdf file"))
 		filter.add_pattern("*.pdf")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name("jpg image")
+		filter.set_name(_("jpg image"))
 		filter.add_pattern("*.jpg")
 		dialog.add_filter(filter)
 
 		filter = gtk.FileFilter()
-		filter.set_name("tex file")
+		filter.set_name(_("tex file"))
 		filter.add_pattern("*.tex")
 		dialog.add_filter(filter)
+
+		filter = gtk.FileFilter()
+		filter.set_name(_("optical materials database"))
+		filter.add_pattern("*.zip")
+		dialog.add_filter(filter)
+
 
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
@@ -528,11 +538,13 @@ class opvdm_main_window(gobject.GObject):
 			dialog.destroy()
 			print "rod",filter.get_name()
 
-			if filter.get_name()=="opvdm archive input+output files":
+			if filter.get_name()==_("opvdm archive input+output files"):
 				export_archive(file_name,True)
-			elif filter.get_name()=="opvdm archive input files":
+			elif filter.get_name()==_("opvdm archive input files"):
 				export_archive(file_name,False)
-			elif filter.get_name()=="pdf file" or "jpg image" or "tex file":
+			elif filter.get_name()==_("optical materials database"):
+				export_materials(file_name)
+			elif filter.get_name()==_("pdf file") or _("jpg image") or _("tex file"):
 				if os.path.splitext(file_name)[1]=="":
 					export_as(file_name)
 				else:
@@ -540,7 +552,7 @@ class opvdm_main_window(gobject.GObject):
 
 		
 		elif response == gtk.RESPONSE_CANCEL:
-			print 'Closed, no files selected'
+			print _("Closed, no files selected")
 			dialog.destroy()
 
 	def callback_about_dialog(self, widget, data=None):
@@ -569,11 +581,11 @@ class opvdm_main_window(gobject.GObject):
 
 
 	def callback_examine(self, widget, data=None):
-		my_help_class.help_set_help(["plot_time.png","<big><b>Examine the results in time domain</b></big>\n After you have run a simulation in time domain, if is often nice to be able to step through the simulation and look at the results.  This is what this window does.  Use the slider bar to move through the simulation.  When you are simulating a JV curve, the slider sill step through voltage points rather than time points."])
+		my_help_class.help_set_help(["plot_time.png",_("<big><b>Examine the results in time domain</b></big>\n After you have run a simulation in time domain, if is often nice to be able to step through the simulation and look at the results.  This is what this window does.  Use the slider bar to move through the simulation.  When you are simulating a JV curve, the slider sill step through voltage points rather than time points.")])
 		mycmp=cmp_class()
 		ret=mycmp.init()
 		if ret==False:
-			md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,  gtk.BUTTONS_CLOSE, "Re-run the simulation with 'dump all slices' set to one to use this tool.")
+			md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,  gtk.BUTTONS_CLOSE, _("Re-run the simulation with 'dump all slices' set to one to use this tool."))
         		md.run()
         		md.destroy()
 			return
@@ -584,7 +596,7 @@ class opvdm_main_window(gobject.GObject):
 			self.experiment_window=experiment()
 			self.experiment_window.init()
 
-		my_help_class.help_set_help(["time.png","<big><b>The time mesh editor</b></big>\n To do time domain simulations one must define how voltage the light vary as a function of time.  This can be done in this window.  Also use this window to define the simulation length and time step."])
+		my_help_class.help_set_help(["time.png",_("<big><b>The time mesh editor</b></big>\n To do time domain simulations one must define how voltage the light vary as a function of time.  This can be done in this window.  Also use this window to define the simulation length and time step.")])
 		if self.experiment_window.get_property("visible")==True:
 			self.experiment_window.hide_all()
 		else:
@@ -621,8 +633,8 @@ class opvdm_main_window(gobject.GObject):
 
 
 		if debug_mode()==False:
-			item_factory.delete_item("/Advanced")
-			item_factory.delete_item("/Simulate/Start cluster server")
+			item_factory.delete_item(_("/Advanced"))
+			item_factory.delete_item(_("/Simulate/Start cluster server"))
 
 
 		window.add_accel_group(accel_group)
@@ -643,7 +655,7 @@ class opvdm_main_window(gobject.GObject):
 			image = gtk.Image()
 	   		image.set_from_file(find_data_file(os.path.join("gui","qe.png")))
 			self.qe_button = gtk.ToolButton(image)
-			self.tooltips.set_tip(self.qe_button, "Quantum efficiency")
+			self.tooltips.set_tip(self.qe_button, _("Quantum efficiency"))
 			self.qe_button.connect("clicked", self.callback_qe_window)
 			toolbar.insert(self.qe_button, pos)
 			self.qe_button.show_all()
@@ -718,7 +730,7 @@ class opvdm_main_window(gobject.GObject):
 		self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		#self.window.set_size_request(-1,1000)
 		self.window.set_border_width(10)
-		self.window.set_title("Organic Photovoltaic Device Model (www.opvdm.com)")
+		self.window.set_title(_("Organic Photovoltaic Device Model (www.opvdm.com)"))
 
 		splash=splash_window()
 		splash.init()
@@ -752,26 +764,26 @@ class opvdm_main_window(gobject.GObject):
 		self.show_border = True
 
 		self.menu_items = (
-		    ( "/_File",         None,         None, 0, "<Branch>" ),
-			("/File/_New simulation", "<control>N", self.callback_new, 0, "<StockItem>", "gtk-new" ),
-			("/File/_Open simulation", "<control>O", self.callback_open, 0, "<StockItem>", "gtk-open" ),
-		    ( "/File/_Export data",     None, self.callback_export, 0, "<StockItem>", "gtk-save" ),
-		    ( "/File/Import data",     None, self.callback_import, 0 , "<StockItem>", "gtk-harddisk"),
-		    ( "/File/Import from library",     None, self.callback_import_from_lib, 0 , "<StockItem>", "gtk-harddisk"),
-		    ( "/File/Quit",     "<control>Q", gtk.main_quit, 0, "<StockItem>", "gtk-quit" ),
-		    ( "/_Simulate",      None,         None, 0, "<Branch>" ),
-		    ( "/Simulate/Run",  None,         self.callback_simulate, 0, "<StockItem>", "gtk-media-play" ),
-		    ( "/Simulate/Parameter scan",  None,         self.callback_scan , 0, None ),
-		    ( "/Simulate/Start cluster server",  None,         self.callback_start_cluster_server , 0, None ),
-		    ( "/_View",      None,         None, 0, "<Branch>" ),
-		    ( "/_Plots",      None,         None, 0, "<Branch>" ),
-		    ( "/Plots/Plot simulation result",  None,         self.callback_plot_select, 0, "<StockItem>", "gtk-open"),
-		    ( "/_Plots/",     None, None, 0, "<Separator>" ),
-		    ( "/_Help",         None,         None, 0, "<LastBranch>" ),
-			( "/_Help/Help Index",   None,         self.callback_help, 0, "<StockItem>", "gtk-help"  ),
+		    ( _("/_File"),         None,         None, 0, "<Branch>" ),
+			(_("/File/_New simulation"), "<control>N", self.callback_new, 0, "<StockItem>", "gtk-new" ),
+			(_("/File/_Open simulation"), "<control>O", self.callback_open, 0, "<StockItem>", "gtk-open" ),
+		    ( _("/File/_Export data"),     None, self.callback_export, 0, "<StockItem>", "gtk-save" ),
+		    ( _("/File/Import data"),     None, self.callback_import, 0 , "<StockItem>", "gtk-harddisk"),
+		    ( _("/File/Import from library"),     None, self.callback_import_from_lib, 0 , "<StockItem>", "gtk-harddisk"),
+		    ( _("/File/Quit"),     "<control>Q", gtk.main_quit, 0, "<StockItem>", "gtk-quit" ),
+		    ( _("/_Simulate"),      None,         None, 0, "<Branch>" ),
+		    ( _("/Simulate/Run"),  None,         self.callback_simulate, 0, "<StockItem>", "gtk-media-play" ),
+		    ( _("/Simulate/Parameter scan"),  None,         self.callback_scan , 0, None ),
+		    ( _("/Simulate/Start cluster server"),  None,         self.callback_start_cluster_server , 0, None ),
+		    ( _("/_View"),      None,         None, 0, "<Branch>" ),
+		    ( _("/_Plots"),      None,         None, 0, "<Branch>" ),
+		    ( _("/Plots/Plot simulation result"),  None,         self.callback_plot_select, 0, "<StockItem>", "gtk-open"),
+		    ( _("/_Plots/"),     None, None, 0, "<Separator>" ),
+		    ( _("/_Help"),         None,         None, 0, "<LastBranch>" ),
+			( _("/_Help/Help Index"),   None,         self.callback_help, 0, "<StockItem>", "gtk-help"  ),
 			
 
-		    ( "/_Help/About",   None, self.callback_about_dialog, 0, "<StockItem>", "gtk-about" ),
+		    ( _("/_Help/About"),   None, self.callback_about_dialog, 0, "<StockItem>", "gtk-about" ),
 		    )
 		pos=0
 
@@ -803,7 +815,7 @@ class opvdm_main_window(gobject.GObject):
 		toolbar.set_size_request(-1, 50)
 
 		open_sim = gtk.ToolButton(gtk.STOCK_OPEN)
-		self.tooltips.set_tip(open_sim, "Open a simulation")
+		self.tooltips.set_tip(open_sim, _("Open a simulation"))
 		toolbar.insert(open_sim, pos)
 		pos=pos+1
 
@@ -813,7 +825,7 @@ class opvdm_main_window(gobject.GObject):
 		#pos=pos+1
 
 		new_sim = gtk.ToolButton(gtk.STOCK_NEW)
-		self.tooltips.set_tip(new_sim, "Make a new simulation")
+		self.tooltips.set_tip(new_sim, _("Make a new simulation"))
 		toolbar.insert(new_sim, pos)
 		pos=pos+1
 
@@ -838,7 +850,7 @@ class opvdm_main_window(gobject.GObject):
 	        image = gtk.Image()
    		image.set_from_file(find_data_file(os.path.join("gui","play.png")))
 		self.play = gtk.ToolButton(image)
-		self.tooltips.set_tip(self.play, "Run the simulation")
+		self.tooltips.set_tip(self.play, _("Run the simulation"))
 		toolbar.insert(self.play, pos)
 		self.play.connect("clicked", self.callback_simulate)
 		pos=pos+1
@@ -847,7 +859,7 @@ class opvdm_main_window(gobject.GObject):
    		image.set_from_file(find_data_file(os.path.join("gui","forward.png")))
 		self.tb_run_scan = gtk.ToolButton(image)
 		self.tb_run_scan.connect("clicked", self.callback_run_scan)
-		self.tooltips.set_tip(self.tb_run_scan, "Run parameter scan")
+		self.tooltips.set_tip(self.tb_run_scan, _("Run parameter scan"))
 		toolbar.insert(self.tb_run_scan, pos)
 		self.tb_run_scan.set_sensitive(False)
 		pos=pos+1
@@ -857,7 +869,7 @@ class opvdm_main_window(gobject.GObject):
 	   		image.set_from_file(find_data_file(os.path.join("gui","fit.png")))
 			self.tb_run_fit = gtk.ToolButton(image)
 			self.tb_run_fit.connect("clicked", self.callback_run_fit)
-			self.tooltips.set_tip(self.tb_run_fit, "Run a fit command")
+			self.tooltips.set_tip(self.tb_run_fit, _("Run a fit command"))
 			toolbar.insert(self.tb_run_fit, pos)
 			self.tb_run_fit.set_sensitive(True)
 			pos=pos+1
@@ -865,7 +877,7 @@ class opvdm_main_window(gobject.GObject):
 	        image = gtk.Image()
    		image.set_from_file(find_data_file(os.path.join("gui","pause.png")))
 		self.stop = gtk.ToolButton(image )
-		self.tooltips.set_tip(self.stop, "Stop the simulation")
+		self.tooltips.set_tip(self.stop, _("Stop the simulation"))
 		self.stop.connect("clicked", self.callback_simulate_stop)
 		toolbar.insert(self.stop, pos)
 		pos=pos+1
@@ -880,7 +892,7 @@ class opvdm_main_window(gobject.GObject):
    		image.set_from_file(find_data_file(os.path.join("gui","scan.png")))
 		self.param_scan = gtk.ToolButton(image)
 		self.param_scan.connect("clicked", self.callback_scan)
-		self.tooltips.set_tip(self.param_scan, "Parameter scan")
+		self.tooltips.set_tip(self.param_scan, _("Parameter scan"))
 		toolbar.insert(self.param_scan, pos)
 		pos=pos+1
 
@@ -893,7 +905,7 @@ class opvdm_main_window(gobject.GObject):
 	        image = gtk.Image()
    		image.set_from_file(find_data_file(os.path.join("gui","plot.png")))
 		self.plot_select = gtk.MenuToolButton(image,"hello")
-		self.tooltips.set_tip(self.plot_select, "Find a file to plot")
+		self.tooltips.set_tip(self.plot_select, _("Find a file to plot"))
 		self.plotted_graphs = used_files_menu()
 		self.plot_select.set_menu(self.plotted_graphs.menu)
 		toolbar.insert(self.plot_select, pos)
@@ -912,7 +924,7 @@ class opvdm_main_window(gobject.GObject):
 		image = gtk.Image()
    		image.set_from_file(find_data_file(os.path.join("gui","plot_time.png")))
 		self.examine = gtk.ToolButton(image)
-		self.tooltips.set_tip(self.examine, "Examine results in time domain")
+		self.tooltips.set_tip(self.examine, _("Examine results in time domain"))
 		self.examine.connect("clicked", self.callback_examine)
 		toolbar.insert(self.examine, pos)
 		pos=pos+1
@@ -928,7 +940,7 @@ class opvdm_main_window(gobject.GObject):
 		image = gtk.Image()
 	   	image.set_from_file(find_data_file(os.path.join("gui","time.png")))
 		self.experiment_window_button = gtk.ToolButton(image)
-		self.tooltips.set_tip(self.experiment_window_button, "Edit the time mesh")
+		self.tooltips.set_tip(self.experiment_window_button, _("Edit the time mesh"))
 		self.experiment_window_button.connect("clicked", self.callback_edit_experiment_window)
 		toolbar.insert(self.experiment_window_button, pos)
 		pos=pos+1
@@ -1019,7 +1031,7 @@ class opvdm_main_window(gobject.GObject):
 		self.window2 = gtk.Window(gtk.WINDOW_TOPLEVEL)
 		self.window2.set_border_width(10)
 
-		self.window2.set_title("Organic Photovoltaic Device Model (www.opvdm.com)")
+		self.window2.set_title(_("Organic Photovoltaic Device Model (www.opvdm.com)"))
 		self.window2.connect("delete-event", self.callback_close_window2)
 
 		self.window2.set_icon_from_file(find_data_file(os.path.join("gui","image.jpg")))
