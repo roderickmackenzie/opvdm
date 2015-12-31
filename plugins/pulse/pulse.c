@@ -31,6 +31,7 @@
 #include "../../inp.h"
 #include "../../buffer.h"
 #include "../../gui_hooks.h"
+#include "../../lang.h"
 
 static int unused __attribute__ ((unused));
 
@@ -104,8 +105,8 @@ void sim_pulse(struct device *in)
 
 	if (pulse_find_config(config_file_name, in->inputpath, in->simmode) !=
 	    0) {
-		ewe("no pulse config file found %s %s\n", in->inputpath,
-		    in->simmode);
+		ewe("%s %s %s\n", _("no pulse config file found"),
+		    in->inputpath, in->simmode);
 	}
 
 	pulse_load_config(&pulse_config, in, config_file_name);
@@ -138,7 +139,7 @@ void sim_pulse(struct device *in)
 		pulse_newton_sim_voc(in);
 		pulse_newton_sim_voc_fast(in, FALSE);
 	} else {
-		ewe("pulse mode not known\n");
+		ewe(_("pulse mode not known\n"));
 	}
 
 	device_timestep(in);
@@ -163,14 +164,14 @@ void sim_pulse(struct device *in)
 			V = in->Vapplied;
 			pulse_newton_sim_voc_fast(in, TRUE);
 		} else {
-			ewe("pulse mode not known\n");
+			ewe(_("pulse mode not known\n"));
 		}
 
 		if (get_dump_status(dump_print_text) == TRUE) {
-			printf("pulse time=%e step=%d %.1e ", in->time, step,
-			       in->last_error);
-			printf("Vtot=%lf current = %e mA (%e A/m^2)\n", V,
-			       get_I(in) / 1e-3, get_J(in));
+			printf("%s=%e %s=%d %.1e ", _("pulse time"), in->time,
+			       _("step"), step, in->last_error);
+			printf("Vtot=%lf %s = %e mA (%e A/m^2)\n", V,
+			       _("current"), get_I(in) / 1e-3, get_J(in));
 		}
 
 		ittr++;
@@ -205,12 +206,12 @@ void sim_pulse(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1e3;
 	buf.x_mul = 1e6;
-	strcpy(buf.title, "Time - current");
-	strcpy(buf.type, "xy");
-	strcpy(buf.x_label, "Time");
-	strcpy(buf.y_label, "Current");
-	strcpy(buf.x_units, "us");
-	strcpy(buf.y_units, "m");
+	strcpy(buf.title, _("Time - current"));
+	strcpy(buf.type, _("xy"));
+	strcpy(buf.x_label, _("Time"));
+	strcpy(buf.y_label, _("Current"));
+	strcpy(buf.x_units, _("us"));
+	strcpy(buf.y_units, _("m"));
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
@@ -224,12 +225,12 @@ void sim_pulse(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1e3;
 	buf.x_mul = 1e6;
-	strcpy(buf.title, "Time - -current");
-	strcpy(buf.type, "xy");
-	strcpy(buf.x_label, "Time");
-	strcpy(buf.y_label, "-Current");
-	strcpy(buf.x_units, "us");
-	strcpy(buf.y_units, "mA");
+	strcpy(buf.title, _("Time - -current"));
+	strcpy(buf.type, _("xy"));
+	strcpy(buf.x_label, _("Time"));
+	strcpy(buf.y_label, _("-Current"));
+	strcpy(buf.x_units, _("us"));
+	strcpy(buf.y_units, _("mA"));
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
@@ -242,12 +243,12 @@ void sim_pulse(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e6;
-	strcpy(buf.title, "Time - Voltage");
-	strcpy(buf.type, "xy");
-	strcpy(buf.x_label, "Time");
-	strcpy(buf.y_label, "Volts");
-	strcpy(buf.x_units, "us");
-	strcpy(buf.y_units, "Voltage");
+	strcpy(buf.title, _("Time - Voltage"));
+	strcpy(buf.type, _("xy"));
+	strcpy(buf.x_label, _("Time"));
+	strcpy(buf.y_label, _("Volts"));
+	strcpy(buf.x_units, _("us"));
+	strcpy(buf.y_units, _("Voltage"));
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);
@@ -258,12 +259,12 @@ void sim_pulse(struct device *in)
 	buffer_malloc(&buf);
 	buf.y_mul = 1.0;
 	buf.x_mul = 1e6;
-	strcpy(buf.title, "Time - Photogeneration rate");
-	strcpy(buf.type, "xy");
-	strcpy(buf.x_label, "Time");
-	strcpy(buf.y_label, "Generation rate");
-	strcpy(buf.x_units, "s");
-	strcpy(buf.y_units, "m^{-3} s^{-1}");
+	strcpy(buf.title, _("Time - Photogeneration rate"));
+	strcpy(buf.type, _("xy"));
+	strcpy(buf.x_label, _("Time"));
+	strcpy(buf.y_label, _("Generation rate"));
+	strcpy(buf.x_units, _("s"));
+	strcpy(buf.y_units, _("m^{-3} s^{-1}"));
 	buf.logscale_x = 0;
 	buf.logscale_y = 0;
 	buffer_add_info(&buf);

@@ -36,6 +36,7 @@
 #include "../../dos_types.h"
 #include "../../gui_hooks.h"
 #include "../../server.h"
+#include "../../lang.h"
 
 void join_path(int args, ...)
 {
@@ -747,7 +748,8 @@ void remove_dir(char *dir_name)
 					  next_file->d_name);
 				if (isdir(filepath) == 0) {
 					remove_dir(filepath);
-					printf("Deleting dir =%s\n", filepath);
+					printf(_("Deleting dir =%s\n"),
+					       filepath);
 					remove(filepath);
 				} else {
 					//printf("Deleteing file =%s\n",filepath);

@@ -50,6 +50,10 @@ from hpc import hpc_class
 from debug import debug_mode
 from inp import inp_update_token_value
 from inp import inp_get_token_value
+
+import i18n
+_ = i18n.language.gettext
+
 class scan_class(gtk.Window):
 
 	def callback_cluster(self, widget, data=None):
@@ -73,7 +77,7 @@ class scan_class(gtk.Window):
 
 		item_factory.create_items(self.menu_items)
 		if debug_mode()==False:
-			item_factory.delete_item("/Advanced")
+			item_factory.delete_item(_("/Advanced"))
 
 		window.add_accel_group(accel_group)
 
@@ -87,7 +91,7 @@ class scan_class(gtk.Window):
 		return True
 
 	def callback_change_dir(self, widget, data=None):
-		dialog = gtk.FileChooserDialog("Change directory",
+		dialog = gtk.FileChooserDialog(_("Change directory"),
                                None,
                                gtk.FILE_CHOOSER_ACTION_OPEN,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -96,7 +100,7 @@ class scan_class(gtk.Window):
 		dialog.set_action(gtk.FILE_CHOOSER_ACTION_CREATE_FOLDER)
 
 		filter = gtk.FileFilter()
-		filter.set_name("All files")
+		filter.set_name(_("All files"))
 		filter.add_pattern("*")
 		dialog.add_filter(filter)
 
@@ -119,7 +123,7 @@ class scan_class(gtk.Window):
 		webbrowser.open('http://www.opvdm.com/man/index.html')
 
 	def callback_add_page(self, widget, data=None):
-		new_sim_name=dlg_get_text( "New simulation name:", "Simulation "+str(self.number_of_tabs+1))
+		new_sim_name=dlg_get_text( _("New simulation name:"), _("Simulation ")+str(self.number_of_tabs+1))
 
 		if new_sim_name!=None:
 			new_sim_name=self.remove_invalid(new_sim_name)
@@ -157,13 +161,13 @@ class scan_class(gtk.Window):
 		tab = self.notebook.get_nth_page(pageNum)
 		name=tab.tab_name
 		old_dir=os.path.join(self.sim_dir,name)
-		new_sim_name=dlg_get_text( "Clone the current simulation to a new simulation called:", name)
+		new_sim_name=dlg_get_text( _("Clone the current simulation to a new simulation called:"), name)
 		if new_sim_name!=None:
 			new_sim_name=self.remove_invalid(new_sim_name)
 			new_dir=os.path.join(self.sim_dir,new_sim_name)
 
 			copy_scan_dir(new_dir,old_dir)
-			print "I want to copy",new_dir,old_dir
+			print _("I want to copy"),new_dir,old_dir
 			self.add_page(new_sim_name)
 
 	def callback_run_simulation(self,widget,data):
@@ -221,7 +225,7 @@ class scan_class(gtk.Window):
 		config_file=os.path.join(self.sim_dir,"server.inp")
 		hpc_path=inp_get_token_value(config_file, "#hpc_dir")
 
-		dialog = gtk.FileChooserDialog("Select HPC dir",
+		dialog = gtk.FileChooserDialog(_("Select HPC dir"),
                                None,
                                gtk.FILE_CHOOSER_ACTION_OPEN,
                                (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
@@ -232,7 +236,7 @@ class scan_class(gtk.Window):
 			dialog.set_current_folder(hpc_path)
 
 		filter = gtk.FileFilter()
-		filter.set_name("All files")
+		filter.set_name(_("All files"))
 		filter.add_pattern("*")
 		dialog.add_filter(filter)
 
@@ -251,7 +255,7 @@ class scan_class(gtk.Window):
 		tab = self.notebook.get_nth_page(pageNum)
 		name=tab.tab_name
 		old_dir=os.path.join(self.sim_dir,name)
-		new_sim_name=dlg_get_text( "Rename the simulation to be called:", name)
+		new_sim_name=dlg_get_text( _("Rename the simulation to be called:"), name)
 
 		if new_sim_name!=None:
 			new_sim_name=self.remove_invalid(new_sim_name)
@@ -265,7 +269,7 @@ class scan_class(gtk.Window):
 		name=tab.tab_name
 		dir_to_del=os.path.join(self.sim_dir,name)
 
-		md = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,  gtk.BUTTONS_YES_NO, "Should I remove the simulation directory "+dir_to_del)
+		md = gtk.MessageDialog(None, 0, gtk.MESSAGE_QUESTION,  gtk.BUTTONS_YES_NO, _("Should I remove the simulation directory ")+dir_to_del)
 
 #gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, 
 		# gtk.BUTTONS_CLOSE, "Should I remove the simulation directory "+dir_to_del)
@@ -281,11 +285,11 @@ class scan_class(gtk.Window):
 					self.tab_menu.remove(items)
 
 
-			print "I am going to delete file",dir_to_del
+			print _("I am going to delete file"),dir_to_del
 			delete_second_level_link_tree(dir_to_del)
 			self.number_of_tabs=self.number_of_tabs-1
 		elif response == gtk.RESPONSE_NO:
-			print "Not deleting"
+			print _("Not deleting")
 
 
 		md.destroy()
@@ -297,7 +301,7 @@ class scan_class(gtk.Window):
 			if self.rod[i].visible==True:
 				tabs_open=tabs_open+1
 
-		print "tabs open",tabs_open,self.number_of_tabs
+		#print "tabs open",tabs_open,self.number_of_tabs
 
 		for i in range(0, self.number_of_tabs):
 			print self.rod[i].tab_name, name, self.rod[i].visible
@@ -436,7 +440,7 @@ class scan_class(gtk.Window):
 		self.tooltips = gtk.Tooltips()
 
 		self.set_border_width(2)
-		self.set_title("Parameter scan - opvdm")
+		self.set_title(_("Parameter scan - opvdm"))
 
 		n=0
 
@@ -458,35 +462,35 @@ class scan_class(gtk.Window):
 
 
 		self.menu_items = (
-		    ( "/_File",         None,         None, 0, "<Branch>" ),
-		    ( "/File/Change dir",     None, self.callback_change_dir, 0, None ),
-		    ( "/File/Close",     None, self.callback_close, 0, None ),
-		    ( "/Simulations/_New",     None, self.callback_add_page, 0, "<StockItem>", "gtk-new" ),
-		    ( "/Simulations/_Delete simulaton",     None, self.callback_delete_page, 0, "<StockItem>", "gtk-delete" ),
-		    ( "/Simulations/_Rename simulation",     None, self.callback_rename_page, 0, "<StockItem>", "gtk-edit" ),
-		    ( "/Simulations/_Clone simulation",     None, self.callback_copy_page, 0, "<StockItem>", "gtk-copy" ),
-			( "/Simulations/sep1",     None, None, 0, "<Separator>" ),
-		    ( "/Simulations/_Run simulation",     None, self.callback_run_simulation, 0, "<StockItem>", "gtk-media-play" ),
-		    ( "/Advanced/_Build simulation",     None, self.callback_build_simulation, 0, "<StockItem>", "gtk-cdrom" ),
-			( "/Advanced/_Run (no build)",     None, self.callback_run_simulation_no_build, 0, "<StockItem>", "gtk-media-play" ),
-			( "/Advanced/_Run nested simulation",     None, self.callback_nested_simulation, 0, "<StockItem>", "gtk-media-play" ),
-			( "/Advanced/_Clean simulation",     None, self.callback_clean_simulation, 0, "<StockItem>", "gtk-clear" ),
-			( "/Advanced/_Clean unconverged simulation",     None, self.callback_clean_unconverged_simulation, 0, "<StockItem>", "gtk-clear" ),
-			( "/Advanced/_Clean simulation output",     None, self.callback_clean_simulation_output, 0, "<StockItem>", "gtk-clear" ),
-			( "/Advanced/sep2",     None, None, 0, "<Separator>" ),
-			( "/Advanced/_Import from hpc",     None, self.callback_import_from_hpc, 0, "<StockItem>", "gtk-open" ),
-			( "/Advanced/_Push to hpc",     None, self.callback_push_to_hpc, 0, "<StockItem>", "gtk-save" ),
-			( "/Advanced/_Push unconverged to hpc",     None, self.callback_push_unconverged_to_hpc, 0, "<StockItem>", "gtk-save" ),
-			( "/Advanced/_Set hpc dir",     None, self.callback_set_hpc_dir, 0, "<StockItem>", "gtk-open" ),
+		    ( _("/_File"),         None,         None, 0, "<Branch>" ),
+		    ( _("/File/Change dir"),     None, self.callback_change_dir, 0, None ),
+		    ( _("/File/Close"),     None, self.callback_close, 0, None ),
+		    ( _("/Simulations/_New"),     None, self.callback_add_page, 0, "<StockItem>", "gtk-new" ),
+		    ( _("/Simulations/_Delete simulaton"),     None, self.callback_delete_page, 0, "<StockItem>", "gtk-delete" ),
+		    ( _("/Simulations/_Rename simulation"),     None, self.callback_rename_page, 0, "<StockItem>", "gtk-edit" ),
+		    ( _("/Simulations/_Clone simulation"),     None, self.callback_copy_page, 0, "<StockItem>", "gtk-copy" ),
+			( _("/Simulations/sep1"),     None, None, 0, "<Separator>" ),
+		    ( _("/Simulations/_Run simulation"),     None, self.callback_run_simulation, 0, "<StockItem>", "gtk-media-play" ),
+		    ( _("/Advanced/_Build simulation"),     None, self.callback_build_simulation, 0, "<StockItem>", "gtk-cdrom" ),
+			( _("/Advanced/_Run (no build)"),     None, self.callback_run_simulation_no_build, 0, "<StockItem>", "gtk-media-play" ),
+			( _("/Advanced/_Run nested simulation"),     None, self.callback_nested_simulation, 0, "<StockItem>", "gtk-media-play" ),
+			( _("/Advanced/_Clean simulation"),     None, self.callback_clean_simulation, 0, "<StockItem>", "gtk-clear" ),
+			( _("/Advanced/_Clean unconverged simulation"),     None, self.callback_clean_unconverged_simulation, 0, "<StockItem>", "gtk-clear" ),
+			( _("/Advanced/_Clean simulation output"),     None, self.callback_clean_simulation_output, 0, "<StockItem>", "gtk-clear" ),
+			( _("/Advanced/sep2"),     None, None, 0, "<Separator>" ),
+			( _("/Advanced/_Import from hpc"),     None, self.callback_import_from_hpc, 0, "<StockItem>", "gtk-open" ),
+			( _("/Advanced/_Push to hpc"),     None, self.callback_push_to_hpc, 0, "<StockItem>", "gtk-save" ),
+			( _("/Advanced/_Push unconverged to hpc"),     None, self.callback_push_unconverged_to_hpc, 0, "<StockItem>", "gtk-save" ),
+			( _("/Advanced/_Set hpc dir"),     None, self.callback_set_hpc_dir, 0, "<StockItem>", "gtk-open" ),
 
-		    ( "/Advanced/_Cluster sleep",     None, self.callback_cluster_sleep, 0, "<StockItem>", "gtk-copy" ),
-		    ( "/Advanced/_Cluster poweroff",     None, self.callback_cluster_poweroff, 0, "<StockItem>", "gtk-copy" ),
-		    ( "/Advanced/_Cluster wake",     None, self.callback_wol, 0, "<StockItem>", "gtk-copy" ),
+		    ( _("/Advanced/_Cluster sleep"),     None, self.callback_cluster_sleep, 0, "<StockItem>", "gtk-copy" ),
+		    ( _("/Advanced/_Cluster poweroff"),     None, self.callback_cluster_poweroff, 0, "<StockItem>", "gtk-copy" ),
+		    ( _("/Advanced/_Cluster wake"),     None, self.callback_wol, 0, "<StockItem>", "gtk-copy" ),
 
-		    ( "/Advanced/_Remove all results",     None, self.callback_remove_all_results, 0, "<StockItem>", "gtk-copy" ),
-		    ( "/_Help",         None,         None, 0, "<LastBranch>" ),
-		    ( "/_Help/Help",   None,         self.callback_help, 0, None ),
-		    ( "/_Help/About",   None,         about_dialog_show, 0, "<StockItem>", "gtk-about" ),
+		    ( _("/Advanced/_Remove all results"),     None, self.callback_remove_all_results, 0, "<StockItem>", "gtk-copy" ),
+		    ( _("/_Help"),         None,         None, 0, "<LastBranch>" ),
+		    ( _("/_Help/Help"),   None,         self.callback_help, 0, None ),
+		    ( _("/_Help/About"),   None,         about_dialog_show, 0, "<StockItem>", "gtk-about" ),
 		    )
 
 
@@ -506,7 +510,7 @@ class scan_class(gtk.Window):
 		#image.set_from_file(find_data_file(os.path.join("gui","new-tab.png")))
 		tb_new_scan = gtk.MenuToolButton(gtk.STOCK_NEW)
 		tb_new_scan.connect("clicked", self.callback_add_page)
-		self.tooltips.set_tip(tb_new_scan, "New simulation")
+		self.tooltips.set_tip(tb_new_scan, _("New simulation"))
 
 		self.tab_menu=gtk.Menu()
 		tb_new_scan.set_menu(self.tab_menu)
@@ -522,20 +526,20 @@ class scan_class(gtk.Window):
 
 		delete = gtk.ToolButton(gtk.STOCK_DELETE)
 		delete.connect("clicked", self.callback_delete_page,None)
-		self.tooltips.set_tip(delete, "Delete simulation")
+		self.tooltips.set_tip(delete, _("Delete simulation"))
 		toolbar.insert(delete, pos)
 		pos=pos+1
 
 		copy = gtk.ToolButton(gtk.STOCK_COPY)
 		copy.connect("clicked", self.callback_copy_page,None)
-		self.tooltips.set_tip(copy, "Clone simulation")
+		self.tooltips.set_tip(copy, _("Clone simulation"))
 		toolbar.insert(copy, pos)
 		pos=pos+1
 
 
 		rename = gtk.ToolButton(gtk.STOCK_EDIT)
 		rename.connect("clicked", self.callback_rename_page,None)
-		self.tooltips.set_tip(rename, "Rename simulation")
+		self.tooltips.set_tip(rename, _("Rename simulation"))
 		toolbar.insert(rename, pos)
 		pos=pos+1
 
@@ -549,7 +553,7 @@ class scan_class(gtk.Window):
 		image.set_from_file(find_data_file(os.path.join("gui","forward2.png")))
 		tb_simulate = gtk.ToolButton(image)
 		tb_simulate.connect("clicked", self.callback_run_all_simulations)
-		self.tooltips.set_tip(tb_simulate, "Run all simulation")
+		self.tooltips.set_tip(tb_simulate, _("Run all simulation"))
 		toolbar.insert(tb_simulate, pos)
 		pos=pos+1
 
@@ -564,7 +568,7 @@ class scan_class(gtk.Window):
 	   		image.set_from_file(find_data_file(os.path.join("gui","server.png")))
 			cluster = gtk.ToolButton(image)
 			cluster.connect("clicked", self.callback_cluster)
-			self.tooltips.set_tip(cluster, "Configure cluster")
+			self.tooltips.set_tip(cluster, _("Configure cluster"))
 			toolbar.insert(cluster, pos)
 			cluster.show()
 			pos=pos+1
@@ -577,7 +581,7 @@ class scan_class(gtk.Window):
 
 		tb_help = gtk.ToolButton(gtk.STOCK_HELP)
 		tb_help.connect("clicked", self.callback_help)
-		self.tooltips.set_tip(tb_help, "Help")
+		self.tooltips.set_tip(tb_help, _("Help"))
 		toolbar.insert(tb_help, pos)
 		pos=pos+1
 

@@ -113,7 +113,7 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	char lib_name[100];
 	sprintf(lib_name, "%s.so", in->mode);
 
-	get_light_lib_path(lib_dir);
+	strcpy(lib_dir, get_light_path());
 
 	sprintf(lib_path, "./light/%s", lib_name);
 

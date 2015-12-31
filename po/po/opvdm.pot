@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-30 22:54+0000\n"
+"POT-Creation-Date: 2015-12-31 20:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: util.c:903 plugins/i/util.c:903
+#, python-format
+msgid "Deleting dir =%s\n"
+msgstr ""
 
 #: gui/opvdm_notebook.py:99 gui/opvdm_notebook.py:105
 #: gui/opvdm_notebook.py:114 gui/opvdm_notebook.py:115
@@ -55,19 +60,128 @@ msgstr ""
 msgid "Light intensity (Suns):"
 msgstr ""
 
-#: gui/experiment_tab.py:102
+#: gui/experiment_tab.py:102 pub/gpl_github/gui/experiment_tab.py:102
 msgid "time mesh"
 msgstr ""
 
-#: gui/experiment_tab.py:109
+#: gui/experiment_tab.py:109 pub/gpl_github/gui/experiment_tab.py:109
 msgid "Circuit"
 msgstr ""
 
-#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43
+#: gui/scan_tab.py:119
+msgid ""
+"<big><b>The scan window</b></big>\n"
+" Now using the drop down menu in the prameter to change 'column', select the "
+"device parameter you wish to vary, an example may be dos0/Electron Mobility. "
+"Now enter the values you would like it to scan oveer in the  'Values', an "
+"example could be '1e-3 1e-4 1e-5 1e-6'.  And hit the double arrorw to run "
+"the simulation."
+msgstr ""
+
+#: gui/scan_tab.py:133 gui/scan_tab.py:459
+msgid "Select parameter"
+msgstr ""
+
+#: gui/scan_tab.py:238
+msgid ""
+"You have not selected any parameters to scan through.  Use the add button."
+msgstr ""
+
+#: gui/scan_tab.py:246
+msgid "No sim dir name"
+msgstr ""
+
+#: gui/scan_tab.py:311
+msgid "I can't connect to the server"
+msgstr ""
+
+#: gui/scan_tab.py:489 gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
+msgid ""
+"Re-run the simulation with 'dump all slices' set to one to use this tool."
+msgstr ""
+
+#: gui/scan_tab.py:502
+msgid "Select parameter to scan"
+msgstr ""
+
+#: gui/scan_tab.py:511 gui/scan_tab.py:632
+msgid "Delete item"
+msgstr ""
+
+#: gui/scan_tab.py:516
+msgid "Add item"
+msgstr ""
+
+#: gui/scan_tab.py:521 gui/scan_tab.py:638 gui/tmesh.py:544
+#: pub/gpl_github/gui/tmesh.py:544
+msgid "Move down"
+msgstr ""
+
+#: gui/scan_tab.py:530
+msgid "Copy"
+msgstr ""
+
+#: gui/scan_tab.py:534
+msgid "Paste"
+msgstr ""
+
+#: gui/scan_tab.py:538
+msgid "Delete"
+msgstr ""
+
+#: gui/scan_tab.py:568
+msgid "Run simulation"
+msgstr ""
+
+#: gui/scan_tab.py:575 gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
+msgid "Stop the simulation"
+msgstr ""
+
+#: gui/scan_tab.py:590 gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
+msgid "Find a file to plot"
+msgstr ""
+
+#: gui/scan_tab.py:611 gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
+msgid "Examine results in time domain"
+msgstr ""
+
+#: gui/scan_tab.py:625
+msgid "Add parameter to scan"
+msgstr ""
+
+#: gui/scan_tab.py:644
+msgid "Edit notes"
+msgstr ""
+
+#: gui/scan_tab.py:656
+msgid "Show quick selector"
+msgstr ""
+
+#: gui/scan_tab.py:664
+msgid "Insert python command"
+msgstr ""
+
+#: gui/scan_tab.py:695
+msgid "Values"
+msgstr ""
+
+#: gui/scan_tab.py:696
+msgid "Parameter to change"
+msgstr ""
+
+#: gui/scan_tab.py:697
+msgid "Opperation"
+msgstr ""
+
+#: gui/scan_tab.py:735
+msgid "Enabled"
+msgstr ""
+
+#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43 dump_1d_slice.c:586
 msgid "Electron mobility"
 msgstr ""
 
-#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44
+#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44 dump_1d_slice.c:611
 msgid "Hole mobility"
 msgstr ""
 
@@ -87,7 +201,7 @@ msgstr ""
 msgid "Hole tail slope"
 msgstr ""
 
-#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49
+#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49 dump_1d_slice.c:560
 msgid "Relative permittivity"
 msgstr ""
 
@@ -627,8 +741,8 @@ msgstr ""
 msgid "Normalize output x-time to one"
 msgstr ""
 
-#: gui/experiment.py:75 gui/opvdm.py:636 pub/gpl_github/gui/experiment.py:75
-#: pub/gpl_github/gui/opvdm.py:636
+#: gui/experiment.py:75 gui/scan.py:80 gui/opvdm.py:636
+#: pub/gpl_github/gui/experiment.py:75 pub/gpl_github/gui/opvdm.py:636
 msgid "/Advanced"
 msgstr ""
 
@@ -652,7 +766,7 @@ msgstr ""
 msgid "Should I remove the experiment file "
 msgstr ""
 
-#: gui/experiment.py:157 pub/gpl_github/gui/experiment.py:157
+#: gui/experiment.py:157 gui/scan.py:292 pub/gpl_github/gui/experiment.py:157
 msgid "Not deleting"
 msgstr ""
 
@@ -664,12 +778,12 @@ msgstr ""
 msgid "Time domain experiment window - opvdm"
 msgstr ""
 
-#: gui/experiment.py:249 gui/opvdm.py:767 pub/gpl_github/gui/experiment.py:249
-#: pub/gpl_github/gui/opvdm.py:767
+#: gui/experiment.py:249 gui/scan.py:465 gui/opvdm.py:767
+#: pub/gpl_github/gui/experiment.py:249 pub/gpl_github/gui/opvdm.py:767
 msgid "/_File"
 msgstr ""
 
-#: gui/experiment.py:250 pub/gpl_github/gui/experiment.py:250
+#: gui/experiment.py:250 gui/scan.py:467 pub/gpl_github/gui/experiment.py:250
 msgid "/File/Close"
 msgstr ""
 
@@ -689,17 +803,17 @@ msgstr ""
 msgid "/Experiments/_Clone experiment"
 msgstr ""
 
-#: gui/experiment.py:255 gui/opvdm.py:782 pub/gpl_github/gui/experiment.py:255
-#: pub/gpl_github/gui/opvdm.py:782
+#: gui/experiment.py:255 gui/scan.py:491 gui/opvdm.py:782
+#: pub/gpl_github/gui/experiment.py:255 pub/gpl_github/gui/opvdm.py:782
 msgid "/_Help"
 msgstr ""
 
-#: gui/experiment.py:256 pub/gpl_github/gui/experiment.py:256
+#: gui/experiment.py:256 gui/scan.py:492 pub/gpl_github/gui/experiment.py:256
 msgid "/_Help/Help"
 msgstr ""
 
-#: gui/experiment.py:257 gui/opvdm.py:786 pub/gpl_github/gui/experiment.py:257
-#: pub/gpl_github/gui/opvdm.py:786
+#: gui/experiment.py:257 gui/scan.py:493 gui/opvdm.py:786
+#: pub/gpl_github/gui/experiment.py:257 pub/gpl_github/gui/opvdm.py:786
 msgid "/_Help/About"
 msgstr ""
 
@@ -832,9 +946,10 @@ msgstr ""
 
 #: gui/layer_widget.py:139 gui/tmesh.py:317 gui/opvdm.py:292 gui/opvdm.py:323
 #: gui/opvdm.py:337 gui/opvdm.py:494 gui/opvdm.py:555
-#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/opvdm.py:292
-#: pub/gpl_github/gui/opvdm.py:323 pub/gpl_github/gui/opvdm.py:337
-#: pub/gpl_github/gui/opvdm.py:494 pub/gpl_github/gui/opvdm.py:555
+#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/tmesh.py:317
+#: pub/gpl_github/gui/opvdm.py:292 pub/gpl_github/gui/opvdm.py:323
+#: pub/gpl_github/gui/opvdm.py:337 pub/gpl_github/gui/opvdm.py:494
+#: pub/gpl_github/gui/opvdm.py:555
 msgid "Closed, no files selected"
 msgstr ""
 
@@ -921,87 +1036,249 @@ msgstr ""
 msgid "Simulation mode:"
 msgstr ""
 
-#: gui/tmesh.py:154
+#: gui/scan.py:94
+msgid "Change directory"
+msgstr ""
+
+#: gui/scan.py:103 gui/scan.py:239 gui/opvdm.py:353
+#: pub/gpl_github/gui/opvdm.py:353
+msgid "All files"
+msgstr ""
+
+#: gui/scan.py:126
+msgid "New simulation name:"
+msgstr ""
+
+#: gui/scan.py:126
+msgid "Simulation "
+msgstr ""
+
+#: gui/scan.py:164
+msgid "Clone the current simulation to a new simulation called:"
+msgstr ""
+
+#: gui/scan.py:170
+msgid "I want to copy"
+msgstr ""
+
+#: gui/scan.py:228
+msgid "Select HPC dir"
+msgstr ""
+
+#: gui/scan.py:258
+msgid "Rename the simulation to be called:"
+msgstr ""
+
+#: gui/scan.py:272
+msgid "Should I remove the simulation directory "
+msgstr ""
+
+#: gui/scan.py:288
+msgid "I am going to delete file"
+msgstr ""
+
+#: gui/scan.py:443
+msgid "Parameter scan - opvdm"
+msgstr ""
+
+#: gui/scan.py:466
+msgid "/File/Change dir"
+msgstr ""
+
+#: gui/scan.py:468
+msgid "/Simulations/_New"
+msgstr ""
+
+#: gui/scan.py:469
+msgid "/Simulations/_Delete simulaton"
+msgstr ""
+
+#: gui/scan.py:470
+msgid "/Simulations/_Rename simulation"
+msgstr ""
+
+#: gui/scan.py:471
+msgid "/Simulations/_Clone simulation"
+msgstr ""
+
+#: gui/scan.py:472
+msgid "/Simulations/sep1"
+msgstr ""
+
+#: gui/scan.py:473
+msgid "/Simulations/_Run simulation"
+msgstr ""
+
+#: gui/scan.py:474
+msgid "/Advanced/_Build simulation"
+msgstr ""
+
+#: gui/scan.py:475
+msgid "/Advanced/_Run (no build)"
+msgstr ""
+
+#: gui/scan.py:476
+msgid "/Advanced/_Run nested simulation"
+msgstr ""
+
+#: gui/scan.py:477
+msgid "/Advanced/_Clean simulation"
+msgstr ""
+
+#: gui/scan.py:478
+msgid "/Advanced/_Clean unconverged simulation"
+msgstr ""
+
+#: gui/scan.py:479
+msgid "/Advanced/_Clean simulation output"
+msgstr ""
+
+#: gui/scan.py:480
+msgid "/Advanced/sep2"
+msgstr ""
+
+#: gui/scan.py:481
+msgid "/Advanced/_Import from hpc"
+msgstr ""
+
+#: gui/scan.py:482
+msgid "/Advanced/_Push to hpc"
+msgstr ""
+
+#: gui/scan.py:483
+msgid "/Advanced/_Push unconverged to hpc"
+msgstr ""
+
+#: gui/scan.py:484
+msgid "/Advanced/_Set hpc dir"
+msgstr ""
+
+#: gui/scan.py:486
+msgid "/Advanced/_Cluster sleep"
+msgstr ""
+
+#: gui/scan.py:487
+msgid "/Advanced/_Cluster poweroff"
+msgstr ""
+
+#: gui/scan.py:488
+msgid "/Advanced/_Cluster wake"
+msgstr ""
+
+#: gui/scan.py:490
+msgid "/Advanced/_Remove all results"
+msgstr ""
+
+#: gui/scan.py:513
+msgid "New simulation"
+msgstr ""
+
+#: gui/scan.py:529
+msgid "Delete simulation"
+msgstr ""
+
+#: gui/scan.py:535
+msgid "Clone simulation"
+msgstr ""
+
+#: gui/scan.py:542
+msgid "Rename simulation"
+msgstr ""
+
+#: gui/scan.py:556
+msgid "Run all simulation"
+msgstr ""
+
+#: gui/scan.py:571
+msgid "Configure cluster"
+msgstr ""
+
+#: gui/scan.py:584
+msgid "Help"
+msgstr ""
+
+#: gui/tmesh.py:154 pub/gpl_github/gui/tmesh.py:154
 msgid "Enter the start time of the simulation"
 msgstr ""
 
-#: gui/tmesh.py:166
+#: gui/tmesh.py:166 pub/gpl_github/gui/tmesh.py:166
 msgid "Enter the time at which the laser pulse will fire (-1) to turn it off"
 msgstr ""
 
-#: gui/tmesh.py:258
+#: gui/tmesh.py:258 pub/gpl_github/gui/tmesh.py:258
 msgid "Voltage (Volts)"
 msgstr ""
 
-#: gui/tmesh.py:261
+#: gui/tmesh.py:261 pub/gpl_github/gui/tmesh.py:261
 msgid "Time ("
 msgstr ""
 
-#: gui/tmesh.py:264
+#: gui/tmesh.py:264 pub/gpl_github/gui/tmesh.py:264
 msgid "Magnitude (au)"
 msgstr ""
 
-#: gui/tmesh.py:284 gui/tmesh.py:286
+#: gui/tmesh.py:284 gui/tmesh.py:286 pub/gpl_github/gui/tmesh.py:284
+#: pub/gpl_github/gui/tmesh.py:286 plugins/pulse/pulse.c:259 pulse.c:259
 msgid "Voltage"
 msgstr ""
 
 #: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:372
+#: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
+#: pub/gpl_github/gui/tmesh.py:372
 msgid "Sun"
 msgstr ""
 
 #: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:379
+#: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
+#: pub/gpl_github/gui/tmesh.py:379
 msgid "CW laser"
 msgstr ""
 
-#: gui/tmesh.py:284
+#: gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:284
 msgid "fs laser"
 msgstr ""
 
-#: gui/tmesh.py:294
+#: gui/tmesh.py:294 pub/gpl_github/gui/tmesh.py:294
 msgid "Save as.."
 msgstr ""
 
-#: gui/tmesh.py:337
+#: gui/tmesh.py:337 pub/gpl_github/gui/tmesh.py:337
 msgid "Length"
 msgstr ""
 
-#: gui/tmesh.py:350
+#: gui/tmesh.py:350 pub/gpl_github/gui/tmesh.py:350
 msgid "Start Voltage"
 msgstr ""
 
-#: gui/tmesh.py:357
+#: gui/tmesh.py:357 pub/gpl_github/gui/tmesh.py:357
 msgid "Stop Voltage"
 msgstr ""
 
-#: gui/tmesh.py:365
+#: gui/tmesh.py:365 pub/gpl_github/gui/tmesh.py:365
 msgid "Multiply"
 msgstr ""
 
-#: gui/tmesh.py:475
+#: gui/tmesh.py:475 pub/gpl_github/gui/tmesh.py:475
 msgid " mesh points"
 msgstr ""
 
-#: gui/tmesh.py:526
+#: gui/tmesh.py:526 pub/gpl_github/gui/tmesh.py:526
 msgid "Save image"
 msgstr ""
 
-#: gui/tmesh.py:532
+#: gui/tmesh.py:532 pub/gpl_github/gui/tmesh.py:532
 msgid "Add section"
 msgstr ""
 
-#: gui/tmesh.py:538
+#: gui/tmesh.py:538 pub/gpl_github/gui/tmesh.py:538
 msgid "Delete section"
 msgstr ""
 
-#: gui/tmesh.py:544
-msgid "Move down"
-msgstr ""
-
-#: gui/tmesh.py:552
+#: gui/tmesh.py:552 pub/gpl_github/gui/tmesh.py:552
 msgid "Laser start time"
 msgstr ""
 
-#: gui/tmesh.py:560
+#: gui/tmesh.py:560 pub/gpl_github/gui/tmesh.py:560
 msgid "Simulation start time"
 msgstr ""
 
@@ -1041,10 +1318,6 @@ msgstr ""
 
 #: gui/opvdm.py:344 pub/gpl_github/gui/opvdm.py:344
 msgid "Make new opvdm simulation"
-msgstr ""
-
-#: gui/opvdm.py:353 pub/gpl_github/gui/opvdm.py:353
-msgid "All files"
 msgstr ""
 
 #: gui/opvdm.py:368 pub/gpl_github/gui/opvdm.py:368
@@ -1146,11 +1419,6 @@ msgid ""
 "rather than time points."
 msgstr ""
 
-#: gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
-msgid ""
-"Re-run the simulation with 'dump all slices' set to one to use this tool."
-msgstr ""
-
 #: gui/opvdm.py:599 pub/gpl_github/gui/opvdm.py:599
 msgid ""
 "<big><b>The time mesh editor</b></big>\n"
@@ -1233,22 +1501,567 @@ msgstr ""
 msgid "Run a fit command"
 msgstr ""
 
-#: gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
-msgid "Stop the simulation"
-msgstr ""
-
 #: gui/opvdm.py:895 pub/gpl_github/gui/opvdm.py:895
 msgid "Parameter scan"
 msgstr ""
 
-#: gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
-msgid "Find a file to plot"
-msgstr ""
-
-#: gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
-msgid "Examine results in time domain"
-msgstr ""
-
 #: gui/opvdm.py:943 pub/gpl_github/gui/opvdm.py:943
 msgid "Edit the time mesh"
+msgstr ""
+
+#: complex_solver.c:47
+msgid "out of memory!\n"
+msgstr ""
+
+#: complex_solver.c:50
+msgid "matrix is singular!\n"
+msgstr ""
+
+#: complex_solver.c:84
+msgid "Matrix dumped\n"
+msgstr ""
+
+#: complex_solver.c:103
+msgid "Complex solver free\n"
+msgstr ""
+
+#: main.c:184
+msgid "Organic Photovoltaic Device Model (www.opvdm.com)\n"
+msgstr ""
+
+#: main.c:185
+msgid "You should have received a copy of the GNU General Public License\n"
+msgstr ""
+
+#: main.c:186
+msgid "along with this software.  If not, see www.gnu.org/licenses/.\n"
+msgstr ""
+
+#: main.c:188
+msgid "If you wish to collaborate in anyway please get in touch:\n"
+msgstr ""
+
+#: main.c:189
+msgid "roderick.mackenzie@nottingham.ac.uk\n"
+msgstr ""
+
+#: main.c:190
+msgid "www.roderickmackenzie.eu/contact.html\n"
+msgstr ""
+
+#: light_utils.c:55
+msgid "It's dark I know what the answer is\n"
+msgstr ""
+
+#: light_utils.c:211
+msgid "Light free memory\n"
+msgstr ""
+
+#: light_utils.c:282
+msgid "No optical materials found\n"
+msgstr ""
+
+#: light_utils.c:445
+msgid "Error at end of patch file\n"
+msgstr ""
+
+#: plugins/pulse/pulse.c:112 pulse.c:112
+msgid "no pulse config file found"
+msgstr ""
+
+#: plugins/pulse/pulse.c:148 plugins/pulse/pulse.c:177 pulse.c:148 pulse.c:177
+msgid "pulse mode not known\n"
+msgstr ""
+
+#: plugins/pulse/pulse.c:183 pulse.c:183
+msgid "pulse time"
+msgstr ""
+
+#: plugins/pulse/pulse.c:183 pulse.c:183
+msgid "step"
+msgstr ""
+
+#: plugins/pulse/pulse.c:184 pulse.c:184
+msgid "current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:215 pulse.c:215
+msgid "Time - current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:216 plugins/pulse/pulse.c:235
+#: plugins/pulse/pulse.c:255 plugins/pulse/pulse.c:272 dump_1d_slice.c:65
+#: dump_1d_slice.c:90 dump_1d_slice.c:115 dump_1d_slice.c:140
+#: dump_1d_slice.c:165 dump_1d_slice.c:190 dump_1d_slice.c:215
+#: dump_1d_slice.c:240 dump_1d_slice.c:266 dump_1d_slice.c:291
+#: dump_1d_slice.c:316 dump_1d_slice.c:341 dump_1d_slice.c:367
+#: dump_1d_slice.c:392 dump_1d_slice.c:421 dump_1d_slice.c:447
+#: dump_1d_slice.c:473 dump_1d_slice.c:504 dump_1d_slice.c:533
+#: dump_1d_slice.c:558 dump_1d_slice.c:584 dump_1d_slice.c:609
+#: dump_1d_slice.c:634 dump_1d_slice.c:663 dump_1d_slice.c:693
+#: dump_1d_slice.c:718 dump_1d_slice.c:743 dump_1d_slice.c:768
+#: dump_1d_slice.c:793 dump_1d_slice.c:823 dump_1d_slice.c:852
+#: dump_1d_slice.c:881 dump_1d_slice.c:910 dump_1d_slice.c:939
+#: dump_1d_slice.c:968 dump_1d_slice.c:997 dump_1d_slice.c:1026
+#: dump_1d_slice.c:1051 dump_1d_slice.c:1077 dump_1d_slice.c:1102
+#: dump_1d_slice.c:1128 dump_1d_slice.c:1165 dump_1d_slice.c:1202
+#: dump_1d_slice.c:1232 dump_1d_slice.c:1266 dump_1d_slice.c:1292
+#: dump_1d_slice.c:1317 dump_1d_slice.c:1342 pulse.c:216 pulse.c:235
+#: pulse.c:255 pulse.c:272
+msgid "xy"
+msgstr ""
+
+#: plugins/pulse/pulse.c:217 plugins/pulse/pulse.c:236
+#: plugins/pulse/pulse.c:256 plugins/pulse/pulse.c:273 pulse.c:217 pulse.c:236
+#: pulse.c:256 pulse.c:273
+msgid "Time"
+msgstr ""
+
+#: plugins/pulse/pulse.c:218 pulse.c:218
+msgid "Current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:219 plugins/pulse/pulse.c:238
+#: plugins/pulse/pulse.c:258 pulse.c:219 pulse.c:238 pulse.c:258
+msgid "us"
+msgstr ""
+
+#: plugins/pulse/pulse.c:220 pulse.c:220
+msgid "m"
+msgstr ""
+
+#: plugins/pulse/pulse.c:234 pulse.c:234
+msgid "Time - -current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:237 pulse.c:237
+msgid "-Current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:239 pulse.c:239
+msgid "mA"
+msgstr ""
+
+#: plugins/pulse/pulse.c:254 pulse.c:254
+msgid "Time - Voltage"
+msgstr ""
+
+#: plugins/pulse/pulse.c:257 pulse.c:257
+msgid "Volts"
+msgstr ""
+
+#: plugins/pulse/pulse.c:271 pulse.c:271
+msgid "Time - Photogeneration rate"
+msgstr ""
+
+#: plugins/pulse/pulse.c:274 dump_1d_slice.c:1028 dump_1d_slice.c:1053
+#: pulse.c:274
+msgid "Generation rate"
+msgstr ""
+
+#: plugins/pulse/pulse.c:275 pulse.c:275
+msgid "s"
+msgstr ""
+
+#: plugins/pulse/pulse.c:276 dump_1d_slice.c:1030 dump_1d_slice.c:1055
+#: dump_1d_slice.c:1081 dump_1d_slice.c:1106 dump_1d_slice.c:1270
+#: dump_1d_slice.c:1296 dump_1d_slice.c:1321 dump_1d_slice.c:1346 pulse.c:276
+msgid "m^{-3} s^{-1}"
+msgstr ""
+
+#: plugins/server/server.c:161 server.c:161
+msgid "I have shut down the server\n"
+msgstr ""
+
+#: plugins/server/server.c:486 server.c:486
+msgid "All jobs finished jobs"
+msgstr ""
+
+#: plugins/server/server.c:492 server.c:492
+msgid "I have finished all my jobs\n"
+msgstr ""
+
+#: plugins/server/server.c:499 server.c:499
+msgid "The server has detected a crash\n"
+msgstr ""
+
+#: dump_1d_slice.c:64 dump_1d_slice.c:114
+msgid "Drift current density - position"
+msgstr ""
+
+#: dump_1d_slice.c:66 dump_1d_slice.c:91 dump_1d_slice.c:116
+#: dump_1d_slice.c:141 dump_1d_slice.c:166 dump_1d_slice.c:191
+#: dump_1d_slice.c:216 dump_1d_slice.c:241 dump_1d_slice.c:267
+#: dump_1d_slice.c:292 dump_1d_slice.c:317 dump_1d_slice.c:342
+#: dump_1d_slice.c:368 dump_1d_slice.c:393 dump_1d_slice.c:422
+#: dump_1d_slice.c:448 dump_1d_slice.c:474 dump_1d_slice.c:505
+#: dump_1d_slice.c:534 dump_1d_slice.c:559 dump_1d_slice.c:585
+#: dump_1d_slice.c:610 dump_1d_slice.c:635 dump_1d_slice.c:664
+#: dump_1d_slice.c:694 dump_1d_slice.c:719 dump_1d_slice.c:744
+#: dump_1d_slice.c:769 dump_1d_slice.c:794 dump_1d_slice.c:824
+#: dump_1d_slice.c:853 dump_1d_slice.c:882 dump_1d_slice.c:911
+#: dump_1d_slice.c:940 dump_1d_slice.c:969 dump_1d_slice.c:998
+#: dump_1d_slice.c:1027 dump_1d_slice.c:1052 dump_1d_slice.c:1078
+#: dump_1d_slice.c:1103 dump_1d_slice.c:1129 dump_1d_slice.c:1166
+#: dump_1d_slice.c:1203 dump_1d_slice.c:1233 dump_1d_slice.c:1267
+#: dump_1d_slice.c:1293 dump_1d_slice.c:1318 dump_1d_slice.c:1343
+msgid "Position"
+msgstr ""
+
+#: dump_1d_slice.c:67
+msgid "Electron current density (drift)"
+msgstr ""
+
+#: dump_1d_slice.c:68 dump_1d_slice.c:93 dump_1d_slice.c:118
+#: dump_1d_slice.c:143 dump_1d_slice.c:168 dump_1d_slice.c:193
+#: dump_1d_slice.c:218 dump_1d_slice.c:243 dump_1d_slice.c:269
+#: dump_1d_slice.c:294 dump_1d_slice.c:319 dump_1d_slice.c:344
+#: dump_1d_slice.c:370 dump_1d_slice.c:395 dump_1d_slice.c:424
+#: dump_1d_slice.c:450 dump_1d_slice.c:476 dump_1d_slice.c:507
+#: dump_1d_slice.c:536 dump_1d_slice.c:561 dump_1d_slice.c:587
+#: dump_1d_slice.c:612 dump_1d_slice.c:637 dump_1d_slice.c:666
+#: dump_1d_slice.c:696 dump_1d_slice.c:721 dump_1d_slice.c:746
+#: dump_1d_slice.c:771 dump_1d_slice.c:796 dump_1d_slice.c:826
+#: dump_1d_slice.c:855 dump_1d_slice.c:884 dump_1d_slice.c:913
+#: dump_1d_slice.c:942 dump_1d_slice.c:971 dump_1d_slice.c:1000
+#: dump_1d_slice.c:1029 dump_1d_slice.c:1054 dump_1d_slice.c:1080
+#: dump_1d_slice.c:1105 dump_1d_slice.c:1131 dump_1d_slice.c:1168
+#: dump_1d_slice.c:1205 dump_1d_slice.c:1235 dump_1d_slice.c:1269
+#: dump_1d_slice.c:1295 dump_1d_slice.c:1320 dump_1d_slice.c:1345
+msgid "nm"
+msgstr ""
+
+#: dump_1d_slice.c:69 dump_1d_slice.c:94 dump_1d_slice.c:119
+#: dump_1d_slice.c:144 dump_1d_slice.c:425 dump_1d_slice.c:451
+#: dump_1d_slice.c:477 dump_1d_slice.c:508
+msgid "A m^{-2}"
+msgstr ""
+
+#: dump_1d_slice.c:70 dump_1d_slice.c:95 dump_1d_slice.c:120
+#: dump_1d_slice.c:145 dump_1d_slice.c:170 dump_1d_slice.c:195
+#: dump_1d_slice.c:220 dump_1d_slice.c:245 dump_1d_slice.c:271
+#: dump_1d_slice.c:296 dump_1d_slice.c:321 dump_1d_slice.c:346
+#: dump_1d_slice.c:372 dump_1d_slice.c:426 dump_1d_slice.c:452
+#: dump_1d_slice.c:478 dump_1d_slice.c:509 dump_1d_slice.c:538
+#: dump_1d_slice.c:563 dump_1d_slice.c:589 dump_1d_slice.c:614
+#: dump_1d_slice.c:639 dump_1d_slice.c:668 dump_1d_slice.c:698
+#: dump_1d_slice.c:723 dump_1d_slice.c:748 dump_1d_slice.c:773
+#: dump_1d_slice.c:798 dump_1d_slice.c:828 dump_1d_slice.c:857
+#: dump_1d_slice.c:886 dump_1d_slice.c:915 dump_1d_slice.c:944
+#: dump_1d_slice.c:973 dump_1d_slice.c:1002 dump_1d_slice.c:1031
+#: dump_1d_slice.c:1056 dump_1d_slice.c:1082 dump_1d_slice.c:1107
+#: dump_1d_slice.c:1133 dump_1d_slice.c:1170 dump_1d_slice.c:1207
+#: dump_1d_slice.c:1237 dump_1d_slice.c:1271 dump_1d_slice.c:1297
+#: dump_1d_slice.c:1322 dump_1d_slice.c:1347
+msgid "1D position space output"
+msgstr ""
+
+#: dump_1d_slice.c:71 dump_1d_slice.c:96 dump_1d_slice.c:121
+#: dump_1d_slice.c:146 dump_1d_slice.c:221 dump_1d_slice.c:246
+#: dump_1d_slice.c:427 dump_1d_slice.c:453 dump_1d_slice.c:479
+#: dump_1d_slice.c:510
+msgid "Transport"
+msgstr ""
+
+#: dump_1d_slice.c:89 dump_1d_slice.c:139
+msgid "Diffusion current density - position"
+msgstr ""
+
+#: dump_1d_slice.c:92
+msgid "Electron current density (diffusion)"
+msgstr ""
+
+#: dump_1d_slice.c:117
+msgid "Hole current density (drift)"
+msgstr ""
+
+#: dump_1d_slice.c:142
+msgid "Hole current density (diffusion)"
+msgstr ""
+
+#: dump_1d_slice.c:164
+msgid "LUMO-position"
+msgstr ""
+
+#: dump_1d_slice.c:167 dump_1d_slice.c:192 dump_1d_slice.c:293
+#: dump_1d_slice.c:318 dump_1d_slice.c:343
+msgid "Electron Energy"
+msgstr ""
+
+#: dump_1d_slice.c:169 dump_1d_slice.c:194 dump_1d_slice.c:295
+#: dump_1d_slice.c:320 dump_1d_slice.c:345 dump_1d_slice.c:537
+#: dump_1d_slice.c:1132 dump_1d_slice.c:1169
+msgid "eV"
+msgstr ""
+
+#: dump_1d_slice.c:171 dump_1d_slice.c:196 dump_1d_slice.c:297
+#: dump_1d_slice.c:322 dump_1d_slice.c:347 dump_1d_slice.c:373
+#: dump_1d_slice.c:398 dump_1d_slice.c:539 dump_1d_slice.c:1238
+msgid "Band structure"
+msgstr ""
+
+#: dump_1d_slice.c:189
+msgid "HOMO-position"
+msgstr ""
+
+#: dump_1d_slice.c:214
+msgid "Electron temperature - position"
+msgstr ""
+
+#: dump_1d_slice.c:217 dump_1d_slice.c:242
+msgid "Temperature (K)"
+msgstr ""
+
+#: dump_1d_slice.c:219 dump_1d_slice.c:244
+msgid "K"
+msgstr ""
+
+#: dump_1d_slice.c:239
+msgid "Hole temperature - position"
+msgstr ""
+
+#: dump_1d_slice.c:265
+msgid "Doping - position"
+msgstr ""
+
+#: dump_1d_slice.c:268
+msgid "Doping density"
+msgstr ""
+
+#: dump_1d_slice.c:270 dump_1d_slice.c:697 dump_1d_slice.c:722
+#: dump_1d_slice.c:747 dump_1d_slice.c:772 dump_1d_slice.c:797
+#: dump_1d_slice.c:827 dump_1d_slice.c:856 dump_1d_slice.c:885
+#: dump_1d_slice.c:914 dump_1d_slice.c:943 dump_1d_slice.c:972
+#: dump_1d_slice.c:1001
+msgid "m^{-3}"
+msgstr ""
+
+#: dump_1d_slice.c:272 dump_1d_slice.c:749 dump_1d_slice.c:774
+#: dump_1d_slice.c:799 dump_1d_slice.c:829 dump_1d_slice.c:887
+#: dump_1d_slice.c:916 dump_1d_slice.c:945 dump_1d_slice.c:974
+#: dump_1d_slice.c:1003
+msgid "Charge density"
+msgstr ""
+
+#: dump_1d_slice.c:290
+msgid "Band gap-position"
+msgstr ""
+
+#: dump_1d_slice.c:315
+msgid "Electron quasi Fermi-level position"
+msgstr ""
+
+#: dump_1d_slice.c:340
+msgid "Hole quasi Fermi-level position"
+msgstr ""
+
+#: dump_1d_slice.c:366 dump_1d_slice.c:369 dump_1d_slice.c:391
+#: dump_1d_slice.c:394
+msgid "Potential"
+msgstr ""
+
+#: dump_1d_slice.c:371 dump_1d_slice.c:396
+msgid "V"
+msgstr ""
+
+#: dump_1d_slice.c:397
+msgid "Change in 1D position space output"
+msgstr ""
+
+#: dump_1d_slice.c:420 dump_1d_slice.c:446
+msgid "Current density - position"
+msgstr ""
+
+#: dump_1d_slice.c:423
+msgid "Electron current density"
+msgstr ""
+
+#: dump_1d_slice.c:449
+msgid "Hole current density"
+msgstr ""
+
+#: dump_1d_slice.c:472 dump_1d_slice.c:503
+msgid "Total current density (Jn+Jp) - position"
+msgstr ""
+
+#: dump_1d_slice.c:475 dump_1d_slice.c:506
+msgid "Total current density (Jn+Jp)"
+msgstr ""
+
+#: dump_1d_slice.c:532
+msgid "Equlibrium Fermi-level - position"
+msgstr ""
+
+#: dump_1d_slice.c:535
+msgid "Energy"
+msgstr ""
+
+#: dump_1d_slice.c:557
+msgid "Relative permittivity - position"
+msgstr ""
+
+#: dump_1d_slice.c:562 dump_1d_slice.c:1206 dump_1d_slice.c:1236
+msgid "au"
+msgstr ""
+
+#: dump_1d_slice.c:564 dump_1d_slice.c:590 dump_1d_slice.c:615
+#: dump_1d_slice.c:640 dump_1d_slice.c:669 dump_1d_slice.c:699
+#: dump_1d_slice.c:724
+msgid "Material parameters"
+msgstr ""
+
+#: dump_1d_slice.c:583
+msgid "Electron mobility - position"
+msgstr ""
+
+#: dump_1d_slice.c:588 dump_1d_slice.c:613 dump_1d_slice.c:638
+#: dump_1d_slice.c:667
+msgid "m^{2} V^{-1} s^{-1}"
+msgstr ""
+
+#: dump_1d_slice.c:608
+msgid "Hole mobility - position"
+msgstr ""
+
+#: dump_1d_slice.c:633 dump_1d_slice.c:662
+msgid "Average electron mobility free mu0*nf/nall"
+msgstr ""
+
+#: dump_1d_slice.c:636 dump_1d_slice.c:665
+msgid "Mobility"
+msgstr ""
+
+#: dump_1d_slice.c:692
+msgid "Free electron carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:695 dump_1d_slice.c:720 dump_1d_slice.c:745
+#: dump_1d_slice.c:770 dump_1d_slice.c:795 dump_1d_slice.c:825
+#: dump_1d_slice.c:854 dump_1d_slice.c:883 dump_1d_slice.c:912
+#: dump_1d_slice.c:941
+msgid "Carrier density"
+msgstr ""
+
+#: dump_1d_slice.c:717
+msgid "Free hole carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:742
+msgid "Trapped electron carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:767
+msgid "Trapped hole carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:792 dump_1d_slice.c:822
+msgid "Total hole density - position"
+msgstr ""
+
+#: dump_1d_slice.c:851
+msgid "Change in electron population - position"
+msgstr ""
+
+#: dump_1d_slice.c:858
+msgid "Chaerge density"
+msgstr ""
+
+#: dump_1d_slice.c:880
+msgid "Total charge - position"
+msgstr ""
+
+#: dump_1d_slice.c:909
+msgid "Change in total charge - position"
+msgstr ""
+
+#: dump_1d_slice.c:938
+msgid "Change in hole population - position"
+msgstr ""
+
+#: dump_1d_slice.c:967 dump_1d_slice.c:996
+msgid "Excess electron density - position"
+msgstr ""
+
+#: dump_1d_slice.c:970
+msgid "Electron density"
+msgstr ""
+
+#: dump_1d_slice.c:999
+msgid "Hole density"
+msgstr ""
+
+#: dump_1d_slice.c:1025
+msgid "Free electron generation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1032 dump_1d_slice.c:1057 dump_1d_slice.c:1083
+#: dump_1d_slice.c:1108 dump_1d_slice.c:1134 dump_1d_slice.c:1171
+#: dump_1d_slice.c:1272 dump_1d_slice.c:1298 dump_1d_slice.c:1323
+#: dump_1d_slice.c:1348
+msgid "Recombination"
+msgstr ""
+
+#: dump_1d_slice.c:1050
+msgid "Free hole generation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1076
+msgid "Electron recombination rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1079 dump_1d_slice.c:1104
+msgid "Recombination rate"
+msgstr ""
+
+#: dump_1d_slice.c:1101
+msgid "Hole recombination rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1127 dump_1d_slice.c:1164
+msgid "Trap fermi level - position"
+msgstr ""
+
+#: dump_1d_slice.c:1130 dump_1d_slice.c:1167
+msgid "Electron Fermi level"
+msgstr ""
+
+#: dump_1d_slice.c:1201 dump_1d_slice.c:1231
+msgid "Material number - position"
+msgstr ""
+
+#: dump_1d_slice.c:1204 dump_1d_slice.c:1234
+msgid "Number"
+msgstr ""
+
+#: dump_1d_slice.c:1208
+msgid "Model"
+msgstr ""
+
+#: dump_1d_slice.c:1265
+msgid "Free hole to trapped electron - position"
+msgstr ""
+
+#: dump_1d_slice.c:1268 dump_1d_slice.c:1294 dump_1d_slice.c:1319
+#: dump_1d_slice.c:1344
+msgid "Rate"
+msgstr ""
+
+#: dump_1d_slice.c:1291
+msgid "Free electron to trapped hole - position"
+msgstr ""
+
+#: dump_1d_slice.c:1316
+msgid "Hole relaxation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1341
+msgid "Electron relaxation rate - position"
+msgstr ""
+
+#: memory.c:203
+msgid "Solved"
+msgstr ""
+
+#: memory.c:203
+msgid "Equations"
 msgstr ""

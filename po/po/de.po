@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-30 22:51+0000\n"
-"PO-Revision-Date: 2015-12-30 22:53+0000\n"
+"POT-Creation-Date: 2015-12-31 20:12+0000\n"
+"PO-Revision-Date: 2015-12-31 20:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -17,6 +17,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.5\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: util.c:903 plugins/i/util.c:903
+#, python-format
+msgid "Deleting dir =%s\n"
+msgstr "Löschen Verzeichnis = %s\n"
 
 #: gui/opvdm_notebook.py:99 gui/opvdm_notebook.py:105
 #: gui/opvdm_notebook.py:114 gui/opvdm_notebook.py:115
@@ -56,19 +61,136 @@ msgstr "Willkommen"
 msgid "Light intensity (Suns):"
 msgstr "Lichtintensität (Sonnen):"
 
-#: gui/experiment_tab.py:102
+#: gui/experiment_tab.py:102 pub/gpl_github/gui/experiment_tab.py:102
 msgid "time mesh"
 msgstr "Zeitdiskretisierung"
 
-#: gui/experiment_tab.py:109
+#: gui/experiment_tab.py:109 pub/gpl_github/gui/experiment_tab.py:109
 msgid "Circuit"
 msgstr "Ersatzschaltbild"
 
-#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43
+#: gui/scan_tab.py:119
+msgid ""
+"<big><b>The scan window</b></big>\n"
+" Now using the drop down menu in the prameter to change 'column', select the "
+"device parameter you wish to vary, an example may be dos0/Electron Mobility. "
+"Now enter the values you would like it to scan oveer in the  'Values', an "
+"example could be '1e-3 1e-4 1e-5 1e-6'.  And hit the double arrorw to run "
+"the simulation."
+msgstr ""
+"<big><b>Das Scan-Fenster</b></big>\n"
+" Now using the drop down menu in the prameter to change 'column', select the "
+"device parameter you wish to vary, an example may be dos0/Electron Mobility. "
+"Now enter the values you would like it to scan oveer in the  'Values', an "
+"example could be '1e-3 1e-4 1e-5 1e-6'.  And hit the double arrorw to run "
+"the simulation."
+
+#: gui/scan_tab.py:133 gui/scan_tab.py:459
+msgid "Select parameter"
+msgstr "Parameter auswählen"
+
+#: gui/scan_tab.py:238
+msgid ""
+"You have not selected any parameters to scan through.  Use the add button."
+msgstr ""
+"Sie haben keine Parameter ausgewählt  zu durch scannen. Verwenden Sie das "
+"Add-Symbol."
+
+#: gui/scan_tab.py:246
+msgid "No sim dir name"
+msgstr "Keine Simulation Verzeichnisnamen"
+
+#: gui/scan_tab.py:311
+msgid "I can't connect to the server"
+msgstr "Ich kann nicht mit dem Server verbinden"
+
+#: gui/scan_tab.py:489 gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
+msgid ""
+"Re-run the simulation with 'dump all slices' set to one to use this tool."
+msgstr ""
+
+#: gui/scan_tab.py:502
+msgid "Select parameter to scan"
+msgstr "Parameter auswählen zu scannen"
+
+#: gui/scan_tab.py:511 gui/scan_tab.py:632
+msgid "Delete item"
+msgstr "Zeile löschen"
+
+#: gui/scan_tab.py:516
+msgid "Add item"
+msgstr "neue Zeile"
+
+#: gui/scan_tab.py:521 gui/scan_tab.py:638 gui/tmesh.py:544
+#: pub/gpl_github/gui/tmesh.py:544
+msgid "Move down"
+msgstr "Unter schieben"
+
+#: gui/scan_tab.py:530
+msgid "Copy"
+msgstr "Kopieren"
+
+#: gui/scan_tab.py:534
+msgid "Paste"
+msgstr "Einfügen"
+
+#: gui/scan_tab.py:538
+msgid "Delete"
+msgstr "Löschen"
+
+#: gui/scan_tab.py:568
+msgid "Run simulation"
+msgstr "Simulation starten"
+
+#: gui/scan_tab.py:575 gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
+msgid "Stop the simulation"
+msgstr "Simulation abbrechen"
+
+#: gui/scan_tab.py:590 gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
+msgid "Find a file to plot"
+msgstr "Find eine Datei zum Plotten."
+
+#: gui/scan_tab.py:611 gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
+msgid "Examine results in time domain"
+msgstr "Die Ergebnisse im Zeitbereich angucken"
+
+#: gui/scan_tab.py:625
+msgid "Add parameter to scan"
+msgstr ""
+
+#: gui/scan_tab.py:644
+msgid "Edit notes"
+msgstr "Notizen bearbeiten"
+
+#: gui/scan_tab.py:656
+msgid "Show quick selector"
+msgstr ""
+
+#: gui/scan_tab.py:664
+msgid "Insert python command"
+msgstr "Python Befehl Einfügen"
+
+#: gui/scan_tab.py:695
+msgid "Values"
+msgstr "Werte"
+
+#: gui/scan_tab.py:696
+msgid "Parameter to change"
+msgstr "Parameter zu ändern."
+
+#: gui/scan_tab.py:697
+msgid "Opperation"
+msgstr "Funktion"
+
+#: gui/scan_tab.py:735
+msgid "Enabled"
+msgstr "aktiviert"
+
+#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43 dump_1d_slice.c:586
 msgid "Electron mobility"
 msgstr "Elektronenbeweglichkeit"
 
-#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44
+#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44 dump_1d_slice.c:611
 msgid "Hole mobility"
 msgstr "Lochbeweglichkeit"
 
@@ -88,7 +210,7 @@ msgstr "Electron Schwanz Energie"
 msgid "Hole tail slope"
 msgstr "Loch Schwanz Energie"
 
-#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49
+#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49 dump_1d_slice.c:560
 msgid "Relative permittivity"
 msgstr "Dielektrizitätszahl"
 
@@ -153,8 +275,9 @@ msgid "#saturation_rate"
 msgstr ""
 
 #: gui/token_lib.py:67 pub/gpl_github/gui/token_lib.py:67
+#, fuzzy
 msgid "#imps_saturate"
-msgstr ""
+msgstr "IMPS"
 
 #: gui/token_lib.py:70 pub/gpl_github/gui/token_lib.py:70
 msgid "Photon density"
@@ -185,40 +308,47 @@ msgid "Max electrical itterations"
 msgstr "Maximale elektrische Iterationen"
 
 #: gui/token_lib.py:77 pub/gpl_github/gui/token_lib.py:77
+#, fuzzy
 msgid "Electrical clamp"
-msgstr ""
+msgstr "Minimal erlaubt elektrische Fehler"
 
 #: gui/token_lib.py:78 pub/gpl_github/gui/token_lib.py:78
+#, fuzzy
 msgid "Poisson clamping"
-msgstr ""
+msgstr "Print Poisson-Löser Konvergenz"
 
 #: gui/token_lib.py:79 pub/gpl_github/gui/token_lib.py:79
 msgid "Minimum electrical error"
 msgstr "Minimal erlaubt elektrische Fehler"
 
 #: gui/token_lib.py:80 pub/gpl_github/gui/token_lib.py:80
+#, fuzzy
 msgid "Sun's spectra"
-msgstr ""
+msgstr "Sonne Voc"
 
 #: gui/token_lib.py:81 pub/gpl_github/gui/token_lib.py:81
+#, fuzzy
 msgid "Mesh points (x)"
-msgstr ""
+msgstr "Zeitdiskretisierung"
 
 #: gui/token_lib.py:82 pub/gpl_github/gui/token_lib.py:82
+#, fuzzy
 msgid "Mesh points (lambda)"
-msgstr ""
+msgstr "Raum abtastung ändern"
 
 #: gui/token_lib.py:83 pub/gpl_github/gui/token_lib.py:83
+#, fuzzy
 msgid "Lambda start"
-msgstr ""
+msgstr "Anfangsspannung"
 
 #: gui/token_lib.py:84 pub/gpl_github/gui/token_lib.py:84
+#, fuzzy
 msgid "Lambda stop"
-msgstr ""
+msgstr "Stoppspannung"
 
 #: gui/token_lib.py:85 pub/gpl_github/gui/token_lib.py:85
 msgid "Laser wavelength"
-msgstr ""
+msgstr "Laserwellenlänge"
 
 #: gui/token_lib.py:86 pub/gpl_github/gui/token_lib.py:86
 msgid "Spot size x"
@@ -255,7 +385,7 @@ msgstr ""
 #: gui/token_lib.py:94 gui/token_lib.py:102 pub/gpl_github/gui/token_lib.py:94
 #: pub/gpl_github/gui/token_lib.py:102
 msgid "left/right"
-msgstr ""
+msgstr "links/rechts"
 
 #: gui/token_lib.py:94 pub/gpl_github/gui/token_lib.py:94
 msgid "P contact on left or right"
@@ -273,11 +403,12 @@ msgstr "rechts"
 
 #: gui/token_lib.py:95 pub/gpl_github/gui/token_lib.py:95
 msgid "start voltage"
-msgstr ""
+msgstr "Startspannung"
 
 #: gui/token_lib.py:96 pub/gpl_github/gui/token_lib.py:96
+#, fuzzy
 msgid "Max voltage"
-msgstr ""
+msgstr "Spannung"
 
 #: gui/token_lib.py:97 pub/gpl_github/gui/token_lib.py:97
 msgid "Eg"
@@ -288,8 +419,9 @@ msgid "Xi"
 msgstr "Xi"
 
 #: gui/token_lib.py:99 pub/gpl_github/gui/token_lib.py:99
+#, fuzzy
 msgid "Time of pause"
-msgstr ""
+msgstr "Zeit ("
 
 #: gui/token_lib.py:100 pub/gpl_github/gui/token_lib.py:100
 msgid "Pause between iterations"
@@ -334,8 +466,9 @@ msgid "startime"
 msgstr ""
 
 #: gui/token_lib.py:107 pub/gpl_github/gui/token_lib.py:107
+#, fuzzy
 msgid "ea_factor"
-msgstr ""
+msgstr "Idealitätsfaktor"
 
 #: gui/token_lib.py:108 pub/gpl_github/gui/token_lib.py:108
 msgid "Np"
@@ -350,8 +483,9 @@ msgid "externalv"
 msgstr ""
 
 #: gui/token_lib.py:111 pub/gpl_github/gui/token_lib.py:111
+#, fuzzy
 msgid "dt_neg_time"
-msgstr ""
+msgstr "Zeit ("
 
 #: gui/token_lib.py:112 gui/token_lib.py:119
 #: pub/gpl_github/gui/token_lib.py:112 pub/gpl_github/gui/token_lib.py:119
@@ -363,12 +497,14 @@ msgid "dt_mull"
 msgstr ""
 
 #: gui/token_lib.py:114 pub/gpl_github/gui/token_lib.py:114
+#, fuzzy
 msgid "stop"
-msgstr ""
+msgstr "Stoppspannung"
 
 #: gui/token_lib.py:115 pub/gpl_github/gui/token_lib.py:115
+#, fuzzy
 msgid "stark"
-msgstr ""
+msgstr "Stark"
 
 #: gui/token_lib.py:116 pub/gpl_github/gui/token_lib.py:116
 msgid "lasereff"
@@ -383,9 +519,9 @@ msgid "sim_contacts"
 msgstr ""
 
 #: gui/token_lib.py:120 pub/gpl_github/gui/token_lib.py:120
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid "time_{0}"
-msgstr ""
+msgstr "Zeit ("
 
 #: gui/token_lib.py:121 pub/gpl_github/gui/token_lib.py:121
 #, python-brace-format
@@ -393,9 +529,9 @@ msgid "time_{1}"
 msgstr ""
 
 #: gui/token_lib.py:122 pub/gpl_github/gui/token_lib.py:122
-#, python-brace-format
+#, fuzzy, python-brace-format
 msgid "time_{2}"
-msgstr ""
+msgstr "Zeit ("
 
 #: gui/token_lib.py:123 gui/token_lib.py:124
 #: pub/gpl_github/gui/token_lib.py:123 pub/gpl_github/gui/token_lib.py:124
@@ -404,8 +540,9 @@ msgid "R_{short}"
 msgstr ""
 
 #: gui/token_lib.py:125 pub/gpl_github/gui/token_lib.py:125
+#, fuzzy
 msgid "Backgroud light bias"
-msgstr ""
+msgstr "Anlegen Spannung auf der linken oder rechten Seite."
 
 #: gui/token_lib.py:126 pub/gpl_github/gui/token_lib.py:126
 msgid "Modulation depth"
@@ -416,28 +553,34 @@ msgid "Modulation frequency"
 msgstr ""
 
 #: gui/token_lib.py:128 pub/gpl_github/gui/token_lib.py:128
+#, fuzzy
 msgid "Laser Efficiency"
-msgstr ""
+msgstr "Quanteneffizienz"
 
 #: gui/token_lib.py:129 pub/gpl_github/gui/token_lib.py:129
+#, fuzzy
 msgid "Light bias"
-msgstr ""
+msgstr "Anlegen Spannung auf der linken oder rechten Seite."
 
 #: gui/token_lib.py:130 pub/gpl_github/gui/token_lib.py:130
+#, fuzzy
 msgid "High light multiplyer"
-msgstr ""
+msgstr "Lichtintensität (Sonnen):"
 
 #: gui/token_lib.py:131 pub/gpl_github/gui/token_lib.py:131
+#, fuzzy
 msgid "Photon efficiency"
-msgstr ""
+msgstr "Quanteneffizienz"
 
 #: gui/token_lib.py:132 pub/gpl_github/gui/token_lib.py:132
+#, fuzzy
 msgid "JV voltage step multiplyer"
-msgstr ""
+msgstr "Spannungsschnitt"
 
 #: gui/token_lib.py:133 pub/gpl_github/gui/token_lib.py:133
+#, fuzzy
 msgid "Maximum current density"
-msgstr ""
+msgstr "Photonendichte"
 
 #: gui/token_lib.py:135 pub/gpl_github/gui/token_lib.py:135
 #, python-brace-format
@@ -476,11 +619,12 @@ msgstr ""
 
 #: gui/token_lib.py:146 pub/gpl_github/gui/token_lib.py:146
 msgid "Wavelengths to simulate"
-msgstr ""
+msgstr "Anzahl der Wellenlängen zu simulieren."
 
 #: gui/token_lib.py:147 pub/gpl_github/gui/token_lib.py:147
+#, fuzzy
 msgid "External voltage"
-msgstr ""
+msgstr "Spannung"
 
 #: gui/token_lib.py:149 pub/gpl_github/gui/token_lib.py:149
 msgid "External C"
@@ -492,31 +636,35 @@ msgstr ""
 
 #: gui/token_lib.py:152 pub/gpl_github/gui/token_lib.py:152
 msgid "Resistance of scope"
-msgstr ""
+msgstr "Widerstand des Oszilloskops"
 
 #: gui/token_lib.py:153 pub/gpl_github/gui/token_lib.py:153
 msgid "Number of traps"
 msgstr ""
 
 #: gui/token_lib.py:155 pub/gpl_github/gui/token_lib.py:155
+#, fuzzy
 msgid "DoS distribution"
-msgstr ""
+msgstr "DoS Schict"
 
 #: gui/token_lib.py:157 pub/gpl_github/gui/token_lib.py:157
 msgid "Single point"
 msgstr ""
 
 #: gui/token_lib.py:158 pub/gpl_github/gui/token_lib.py:158
+#, fuzzy
 msgid "Start intensity"
-msgstr ""
+msgstr "Lichtintensität (Sonnen):"
 
 #: gui/token_lib.py:159 pub/gpl_github/gui/token_lib.py:159
+#, fuzzy
 msgid "Stop intensity"
-msgstr ""
+msgstr "Stoppspannung"
 
 #: gui/token_lib.py:160 pub/gpl_github/gui/token_lib.py:160
+#, fuzzy
 msgid "step multiplier"
-msgstr ""
+msgstr "Spannungsschnitt"
 
 #: gui/token_lib.py:163 pub/gpl_github/gui/token_lib.py:163
 msgid "Photon Flux"
@@ -577,16 +725,18 @@ msgid "Plot bands etc.. "
 msgstr "Plot Bands usw."
 
 #: gui/token_lib.py:314 pub/gpl_github/gui/token_lib.py:314
+#, fuzzy
 msgid "dump slices by time"
-msgstr ""
+msgstr "Dump 1D Schichten"
 
 #: gui/token_lib.py:315 pub/gpl_github/gui/token_lib.py:315
 msgid "Dump 1D slices"
 msgstr "Dump 1D Schichten"
 
 #: gui/token_lib.py:316 pub/gpl_github/gui/token_lib.py:316
+#, fuzzy
 msgid "Dump slices"
-msgstr ""
+msgstr "Dump 1D Schichten"
 
 #: gui/token_lib.py:317 pub/gpl_github/gui/token_lib.py:317
 msgid "Dump dynamic"
@@ -628,8 +778,8 @@ msgstr "Dump Lumineszenzspektren"
 msgid "Normalize output x-time to one"
 msgstr "Normalisieren maximale x-Mal zu eins."
 
-#: gui/experiment.py:75 gui/opvdm.py:636 pub/gpl_github/gui/experiment.py:75
-#: pub/gpl_github/gui/opvdm.py:636
+#: gui/experiment.py:75 gui/scan.py:80 gui/opvdm.py:636
+#: pub/gpl_github/gui/experiment.py:75 pub/gpl_github/gui/opvdm.py:636
 msgid "/Advanced"
 msgstr ""
 
@@ -653,24 +803,25 @@ msgstr "Umnennen das Experiment:"
 msgid "Should I remove the experiment file "
 msgstr "Sollte ich das Experiment Datei löschen"
 
-#: gui/experiment.py:157 pub/gpl_github/gui/experiment.py:157
+#: gui/experiment.py:157 gui/scan.py:292 pub/gpl_github/gui/experiment.py:157
 msgid "Not deleting"
 msgstr "nicht löschen"
 
 #: gui/experiment.py:170 pub/gpl_github/gui/experiment.py:170
+#, fuzzy
 msgid "tabs open"
-msgstr ""
+msgstr "Öffnen - opvdm"
 
 #: gui/experiment.py:236 pub/gpl_github/gui/experiment.py:236
 msgid "Time domain experiment window - opvdm"
 msgstr "Zeitbereich experimentieren Fenster - opvdm"
 
-#: gui/experiment.py:249 gui/opvdm.py:767 pub/gpl_github/gui/experiment.py:249
-#: pub/gpl_github/gui/opvdm.py:767
+#: gui/experiment.py:249 gui/scan.py:465 gui/opvdm.py:767
+#: pub/gpl_github/gui/experiment.py:249 pub/gpl_github/gui/opvdm.py:767
 msgid "/_File"
 msgstr "/_Datei"
 
-#: gui/experiment.py:250 pub/gpl_github/gui/experiment.py:250
+#: gui/experiment.py:250 gui/scan.py:467 pub/gpl_github/gui/experiment.py:250
 msgid "/File/Close"
 msgstr "/Datei/Schließen"
 
@@ -690,17 +841,17 @@ msgstr "/Experiment/Experiment umbenennen"
 msgid "/Experiments/_Clone experiment"
 msgstr "/Experiment/_Experiment kopieren"
 
-#: gui/experiment.py:255 gui/opvdm.py:782 pub/gpl_github/gui/experiment.py:255
-#: pub/gpl_github/gui/opvdm.py:782
+#: gui/experiment.py:255 gui/scan.py:491 gui/opvdm.py:782
+#: pub/gpl_github/gui/experiment.py:255 pub/gpl_github/gui/opvdm.py:782
 msgid "/_Help"
 msgstr "/_Hilfe"
 
-#: gui/experiment.py:256 pub/gpl_github/gui/experiment.py:256
+#: gui/experiment.py:256 gui/scan.py:492 pub/gpl_github/gui/experiment.py:256
 msgid "/_Help/Help"
 msgstr "/_Hilfe/Hilfe"
 
-#: gui/experiment.py:257 gui/opvdm.py:786 pub/gpl_github/gui/experiment.py:257
-#: pub/gpl_github/gui/opvdm.py:786
+#: gui/experiment.py:257 gui/scan.py:493 gui/opvdm.py:786
+#: pub/gpl_github/gui/experiment.py:257 pub/gpl_github/gui/opvdm.py:786
 msgid "/_Help/About"
 msgstr "/Hilfe/Info"
 
@@ -844,9 +995,10 @@ msgstr "Lumineszenz"
 
 #: gui/layer_widget.py:139 gui/tmesh.py:317 gui/opvdm.py:292 gui/opvdm.py:323
 #: gui/opvdm.py:337 gui/opvdm.py:494 gui/opvdm.py:555
-#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/opvdm.py:292
-#: pub/gpl_github/gui/opvdm.py:323 pub/gpl_github/gui/opvdm.py:337
-#: pub/gpl_github/gui/opvdm.py:494 pub/gpl_github/gui/opvdm.py:555
+#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/tmesh.py:317
+#: pub/gpl_github/gui/opvdm.py:292 pub/gpl_github/gui/opvdm.py:323
+#: pub/gpl_github/gui/opvdm.py:337 pub/gpl_github/gui/opvdm.py:494
+#: pub/gpl_github/gui/opvdm.py:555
 msgid "Closed, no files selected"
 msgstr "Keine ausgewählt Dateien"
 
@@ -933,91 +1085,274 @@ msgstr ""
 msgid "Simulation mode:"
 msgstr "Simulationsmodus:"
 
-#: gui/tmesh.py:154
+#: gui/scan.py:94
+msgid "Change directory"
+msgstr "Verzeichnis wechseln"
+
+#: gui/scan.py:103 gui/scan.py:239 gui/opvdm.py:353
+#: pub/gpl_github/gui/opvdm.py:353
+msgid "All files"
+msgstr "Alle Dateien"
+
+#: gui/scan.py:126
+#, fuzzy
+msgid "New simulation name:"
+msgstr "Namen für das neue Experiment:"
+
+#: gui/scan.py:126
+msgid "Simulation "
+msgstr "Simulation"
+
+#: gui/scan.py:164
+#, fuzzy
+msgid "Clone the current simulation to a new simulation called:"
+msgstr "Copy the current experiment to a new experiment called:"
+
+#: gui/scan.py:170
+msgid "I want to copy"
+msgstr "Ich möchte kopieren"
+
+#: gui/scan.py:228
+#, fuzzy
+msgid "Select HPC dir"
+msgstr "/_Datei/Verzeichnis wechseln"
+
+#: gui/scan.py:258
+#, fuzzy
+msgid "Rename the simulation to be called:"
+msgstr "Umnennen das Experiment:"
+
+#: gui/scan.py:272
+msgid "Should I remove the simulation directory "
+msgstr "Sollte ich die Simulation Verzeichnis zu entfernen?"
+
+#: gui/scan.py:288
+msgid "I am going to delete file"
+msgstr "Ich werde die Datei löschen:"
+
+#: gui/scan.py:443
+msgid "Parameter scan - opvdm"
+msgstr "Parameter Scanfenster - opvdm"
+
+#: gui/scan.py:466
+msgid "/File/Change dir"
+msgstr "/_Datei/Verzeichnis wechseln"
+
+#: gui/scan.py:468
+msgid "/Simulations/_New"
+msgstr "/Simulationen/_Neu"
+
+#: gui/scan.py:469
+msgid "/Simulations/_Delete simulaton"
+msgstr "/Simulationen/_Simulation löschen"
+
+#: gui/scan.py:470
+msgid "/Simulations/_Rename simulation"
+msgstr "/Simulationen/Umnennen das Simulation"
+
+#: gui/scan.py:471
+msgid "/Simulations/_Clone simulation"
+msgstr "/Simulationen/_Simulation kopieren"
+
+#: gui/scan.py:472
+msgid "/Simulations/sep1"
+msgstr "/Simulationen/sep1"
+
+#: gui/scan.py:473
+msgid "/Simulations/_Run simulation"
+msgstr "/Simulationen/Simulation starten"
+
+#: gui/scan.py:474
+#, fuzzy
+msgid "/Advanced/_Build simulation"
+msgstr "Datenexport"
+
+#: gui/scan.py:475
+#, fuzzy
+msgid "/Advanced/_Run (no build)"
+msgstr "Nicht als root benutzen!"
+
+#: gui/scan.py:476
+#, fuzzy
+msgid "/Advanced/_Run nested simulation"
+msgstr "Simulation starten"
+
+#: gui/scan.py:477
+#, fuzzy
+msgid "/Advanced/_Clean simulation"
+msgstr "Datenexport"
+
+#: gui/scan.py:478
+msgid "/Advanced/_Clean unconverged simulation"
+msgstr ""
+
+#: gui/scan.py:479
+#, fuzzy
+msgid "/Advanced/_Clean simulation output"
+msgstr ""
+"\n"
+"Diese enthält die Simulationsausgabe bei 0V im Dunkeln."
+
+#: gui/scan.py:480
+msgid "/Advanced/sep2"
+msgstr ""
+
+#: gui/scan.py:481
+#, fuzzy
+msgid "/Advanced/_Import from hpc"
+msgstr "/Datei/Importieren"
+
+#: gui/scan.py:482
+msgid "/Advanced/_Push to hpc"
+msgstr ""
+
+#: gui/scan.py:483
+msgid "/Advanced/_Push unconverged to hpc"
+msgstr ""
+
+#: gui/scan.py:484
+msgid "/Advanced/_Set hpc dir"
+msgstr ""
+
+#: gui/scan.py:486
+#, fuzzy
+msgid "/Advanced/_Cluster sleep"
+msgstr "/Simulation/Start cluster server"
+
+#: gui/scan.py:487
+#, fuzzy
+msgid "/Advanced/_Cluster poweroff"
+msgstr "/Simulation/Start cluster server"
+
+#: gui/scan.py:488
+#, fuzzy
+msgid "/Advanced/_Cluster wake"
+msgstr "/Simulation/Start cluster server"
+
+#: gui/scan.py:490
+msgid "/Advanced/_Remove all results"
+msgstr "/Advanced/Entfernen alle Ergebnisse"
+
+#: gui/scan.py:513
+msgid "New simulation"
+msgstr "Neue Simulation"
+
+#: gui/scan.py:529
+msgid "Delete simulation"
+msgstr "Experiment löschen"
+
+#: gui/scan.py:535
+msgid "Clone simulation"
+msgstr "Experiment kopieren"
+
+#: gui/scan.py:542
+msgid "Rename simulation"
+msgstr "Experiment umbenennen"
+
+#: gui/scan.py:556
+msgid "Run all simulation"
+msgstr "Starten alle Simulationen."
+
+#: gui/scan.py:571
+msgid "Configure cluster"
+msgstr "Cluster konfigurieren"
+
+#: gui/scan.py:584
+msgid "Help"
+msgstr "Hilfe"
+
+#: gui/tmesh.py:154 pub/gpl_github/gui/tmesh.py:154
 msgid "Enter the start time of the simulation"
 msgstr "Geben Sie die Startzeit der Simulation ein"
 
-#: gui/tmesh.py:166
+#: gui/tmesh.py:166 pub/gpl_github/gui/tmesh.py:166
 msgid "Enter the time at which the laser pulse will fire (-1) to turn it off"
 msgstr ""
 "Geben Sie die Zeit, zu der der Laserpuls wird ausgelöst (-1), um sie "
 "auszuschalten"
 
-#: gui/tmesh.py:258
+#: gui/tmesh.py:258 pub/gpl_github/gui/tmesh.py:258
 msgid "Voltage (Volts)"
 msgstr "Spannung (Volt)"
 
-#: gui/tmesh.py:261
+#: gui/tmesh.py:261 pub/gpl_github/gui/tmesh.py:261
 msgid "Time ("
 msgstr "Zeit ("
 
-#: gui/tmesh.py:264
+#: gui/tmesh.py:264 pub/gpl_github/gui/tmesh.py:264
 msgid "Magnitude (au)"
 msgstr "Größe (au)"
 
-#: gui/tmesh.py:284 gui/tmesh.py:286
+#: gui/tmesh.py:284 gui/tmesh.py:286 pub/gpl_github/gui/tmesh.py:284
+#: pub/gpl_github/gui/tmesh.py:286 plugins/pulse/pulse.c:259 pulse.c:259
 msgid "Voltage"
 msgstr "Spannung"
 
 #: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:372
+#: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
+#: pub/gpl_github/gui/tmesh.py:372
 msgid "Sun"
 msgstr "Sonne"
 
 #: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:379
+#: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
+#: pub/gpl_github/gui/tmesh.py:379
 msgid "CW laser"
 msgstr "CW-Laser"
 
-#: gui/tmesh.py:284
+#: gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:284
 msgid "fs laser"
 msgstr "fs Laser"
 
-#: gui/tmesh.py:294
+#: gui/tmesh.py:294 pub/gpl_github/gui/tmesh.py:294
 msgid "Save as.."
 msgstr "Speichern unter.."
 
-#: gui/tmesh.py:337
+#: gui/tmesh.py:337 pub/gpl_github/gui/tmesh.py:337
 msgid "Length"
 msgstr "Länge"
 
-#: gui/tmesh.py:350
+#: gui/tmesh.py:350 pub/gpl_github/gui/tmesh.py:350
 msgid "Start Voltage"
 msgstr "Startspannung"
 
-#: gui/tmesh.py:357
+#: gui/tmesh.py:357 pub/gpl_github/gui/tmesh.py:357
 msgid "Stop Voltage"
 msgstr "Stopspannung"
 
-#: gui/tmesh.py:365
+#: gui/tmesh.py:365 pub/gpl_github/gui/tmesh.py:365
 msgid "Multiply"
 msgstr "Multiplizieren"
 
-#: gui/tmesh.py:475
+#: gui/tmesh.py:475 pub/gpl_github/gui/tmesh.py:475
+#, fuzzy
 msgid " mesh points"
-msgstr ""
+msgstr "Zeitdiskretisierung"
 
-#: gui/tmesh.py:526
+#: gui/tmesh.py:526 pub/gpl_github/gui/tmesh.py:526
+#, fuzzy
 msgid "Save image"
-msgstr ""
+msgstr "Speichern unter.."
 
-#: gui/tmesh.py:532
+#: gui/tmesh.py:532 pub/gpl_github/gui/tmesh.py:532
+#, fuzzy
 msgid "Add section"
-msgstr ""
+msgstr "Schicht addieren"
 
-#: gui/tmesh.py:538
+#: gui/tmesh.py:538 pub/gpl_github/gui/tmesh.py:538
+#, fuzzy
 msgid "Delete section"
-msgstr ""
+msgstr "Schicht löschen"
 
-#: gui/tmesh.py:544
-msgid "Move down"
-msgstr ""
-
-#: gui/tmesh.py:552
+#: gui/tmesh.py:552 pub/gpl_github/gui/tmesh.py:552
+#, fuzzy
 msgid "Laser start time"
-msgstr ""
+msgstr "Geben Sie die Startzeit der Simulation ein"
 
-#: gui/tmesh.py:560
+#: gui/tmesh.py:560 pub/gpl_github/gui/tmesh.py:560
+#, fuzzy
 msgid "Simulation start time"
-msgstr ""
+msgstr "Geben Sie die Startzeit der Simulation ein"
 
 #: gui/opvdm.py:109 pub/gpl_github/gui/opvdm.py:109
 msgid "Don't run me as root!!"
@@ -1062,10 +1397,6 @@ msgstr "Datei geöffnet"
 #: gui/opvdm.py:344 pub/gpl_github/gui/opvdm.py:344
 msgid "Make new opvdm simulation"
 msgstr "Neue OPVDM Simulation"
-
-#: gui/opvdm.py:353 pub/gpl_github/gui/opvdm.py:353
-msgid "All files"
-msgstr "Alle Dateien"
 
 #: gui/opvdm.py:368 pub/gpl_github/gui/opvdm.py:368
 msgid "Closed, no dir selected"
@@ -1166,11 +1497,6 @@ msgid ""
 "rather than time points."
 msgstr ""
 
-#: gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
-msgid ""
-"Re-run the simulation with 'dump all slices' set to one to use this tool."
-msgstr ""
-
 #: gui/opvdm.py:599 pub/gpl_github/gui/opvdm.py:599
 msgid ""
 "<big><b>The time mesh editor</b></big>\n"
@@ -1253,23 +1579,587 @@ msgstr "Run parameter scan"
 msgid "Run a fit command"
 msgstr "Run fit command"
 
-#: gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
-msgid "Stop the simulation"
-msgstr "Simulation abbrechen"
-
 #: gui/opvdm.py:895 pub/gpl_github/gui/opvdm.py:895
-#, fuzzy
 msgid "Parameter scan"
-msgstr "Run parameter scan"
-
-#: gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
-msgid "Find a file to plot"
-msgstr "Find eine Datei zum Plotten."
-
-#: gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
-msgid "Examine results in time domain"
-msgstr "Die Ergebnisse im Zeitbereich angucken"
+msgstr "Parameter Scan"
 
 #: gui/opvdm.py:943 pub/gpl_github/gui/opvdm.py:943
 msgid "Edit the time mesh"
 msgstr "Ändern wie Zeit abgetastet ist"
+
+#: complex_solver.c:47
+msgid "out of memory!\n"
+msgstr "Kein Speicher!\n"
+
+#: complex_solver.c:50
+msgid "matrix is singular!\n"
+msgstr "Matrix singulär!\n"
+
+#: complex_solver.c:84
+msgid "Matrix dumped\n"
+msgstr "Matrix gespeichert\n"
+
+#: complex_solver.c:103
+msgid "Complex solver free\n"
+msgstr "Complex Löser Speicher freigegeben\n"
+
+#: main.c:184
+msgid "Organic Photovoltaic Device Model (www.opvdm.com)\n"
+msgstr "Organische Photovoltaik Bauteil Model (www.opvdm.com)\n"
+
+#: main.c:185
+msgid "You should have received a copy of the GNU General Public License\n"
+msgstr "Sie sollten eine Kopie der GNU General Public License mit\n"
+
+#: main.c:186
+msgid "along with this software.  If not, see www.gnu.org/licenses/.\n"
+msgstr ""
+"dieser Software erhalten haben. Wenn nicht, siehe www.gnu.org/licenses/.\n"
+
+#: main.c:188
+msgid "If you wish to collaborate in anyway please get in touch:\n"
+msgstr "Wenn Sie zusammenarbeiten möchten, schick bitte eine Email an:\n"
+
+#: main.c:189
+msgid "roderick.mackenzie@nottingham.ac.uk\n"
+msgstr "roderick.mackenzie@nottingham.ac.uk\n"
+
+#: main.c:190
+msgid "www.roderickmackenzie.eu/contact.html\n"
+msgstr "www.roderickmackenzie.eu/contact.html\n"
+
+#: light_utils.c:55
+msgid "It's dark I know what the answer is\n"
+msgstr "Es ist dunkel, ich weiß, was die Antwort ist.\n"
+
+#: light_utils.c:211
+msgid "Light free memory\n"
+msgstr "Licht freier Speicher\n"
+
+#: light_utils.c:282
+msgid "No optical materials found\n"
+msgstr "Keine optische Materialien gefunden\n"
+
+#: light_utils.c:445
+msgid "Error at end of patch file\n"
+msgstr "Fehler am Ende der Patch-Datei\n"
+
+#: plugins/pulse/pulse.c:112 pulse.c:112
+msgid "no pulse config file found"
+msgstr "kein Puls-Konfigurationsdatei gefunden"
+
+#: plugins/pulse/pulse.c:148 plugins/pulse/pulse.c:177 pulse.c:148 pulse.c:177
+msgid "pulse mode not known\n"
+msgstr "Pulsmodus nicht bekannt\n"
+
+#: plugins/pulse/pulse.c:183 pulse.c:183
+msgid "pulse time"
+msgstr "Puls Zeit"
+
+#: plugins/pulse/pulse.c:183 pulse.c:183
+msgid "step"
+msgstr "Schritt"
+
+#: plugins/pulse/pulse.c:184 pulse.c:184
+msgid "current"
+msgstr "Strom"
+
+#: plugins/pulse/pulse.c:215 pulse.c:215
+msgid "Time - current"
+msgstr "Time - current"
+
+#: plugins/pulse/pulse.c:216 plugins/pulse/pulse.c:235
+#: plugins/pulse/pulse.c:255 plugins/pulse/pulse.c:272 dump_1d_slice.c:65
+#: dump_1d_slice.c:90 dump_1d_slice.c:115 dump_1d_slice.c:140
+#: dump_1d_slice.c:165 dump_1d_slice.c:190 dump_1d_slice.c:215
+#: dump_1d_slice.c:240 dump_1d_slice.c:266 dump_1d_slice.c:291
+#: dump_1d_slice.c:316 dump_1d_slice.c:341 dump_1d_slice.c:367
+#: dump_1d_slice.c:392 dump_1d_slice.c:421 dump_1d_slice.c:447
+#: dump_1d_slice.c:473 dump_1d_slice.c:504 dump_1d_slice.c:533
+#: dump_1d_slice.c:558 dump_1d_slice.c:584 dump_1d_slice.c:609
+#: dump_1d_slice.c:634 dump_1d_slice.c:663 dump_1d_slice.c:693
+#: dump_1d_slice.c:718 dump_1d_slice.c:743 dump_1d_slice.c:768
+#: dump_1d_slice.c:793 dump_1d_slice.c:823 dump_1d_slice.c:852
+#: dump_1d_slice.c:881 dump_1d_slice.c:910 dump_1d_slice.c:939
+#: dump_1d_slice.c:968 dump_1d_slice.c:997 dump_1d_slice.c:1026
+#: dump_1d_slice.c:1051 dump_1d_slice.c:1077 dump_1d_slice.c:1102
+#: dump_1d_slice.c:1128 dump_1d_slice.c:1165 dump_1d_slice.c:1202
+#: dump_1d_slice.c:1232 dump_1d_slice.c:1266 dump_1d_slice.c:1292
+#: dump_1d_slice.c:1317 dump_1d_slice.c:1342 pulse.c:216 pulse.c:235
+#: pulse.c:255 pulse.c:272
+msgid "xy"
+msgstr "xy"
+
+#: plugins/pulse/pulse.c:217 plugins/pulse/pulse.c:236
+#: plugins/pulse/pulse.c:256 plugins/pulse/pulse.c:273 pulse.c:217 pulse.c:236
+#: pulse.c:256 pulse.c:273
+msgid "Time"
+msgstr "Zeit"
+
+#: plugins/pulse/pulse.c:218 pulse.c:218
+msgid "Current"
+msgstr "Strom"
+
+#: plugins/pulse/pulse.c:219 plugins/pulse/pulse.c:238
+#: plugins/pulse/pulse.c:258 pulse.c:219 pulse.c:238 pulse.c:258
+msgid "us"
+msgstr "us"
+
+#: plugins/pulse/pulse.c:220 pulse.c:220
+msgid "m"
+msgstr "m"
+
+#: plugins/pulse/pulse.c:234 pulse.c:234
+msgid "Time - -current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:237 pulse.c:237
+msgid "-Current"
+msgstr ""
+
+#: plugins/pulse/pulse.c:239 pulse.c:239
+msgid "mA"
+msgstr "mA"
+
+#: plugins/pulse/pulse.c:254 pulse.c:254
+msgid "Time - Voltage"
+msgstr ""
+
+#: plugins/pulse/pulse.c:257 pulse.c:257
+msgid "Volts"
+msgstr "Volts"
+
+#: plugins/pulse/pulse.c:271 pulse.c:271
+msgid "Time - Photogeneration rate"
+msgstr ""
+
+#: plugins/pulse/pulse.c:274 dump_1d_slice.c:1028 dump_1d_slice.c:1053
+#: pulse.c:274
+msgid "Generation rate"
+msgstr "Ladungsträgererzeugungseffizienz"
+
+#: plugins/pulse/pulse.c:275 pulse.c:275
+msgid "s"
+msgstr ""
+
+#: plugins/pulse/pulse.c:276 dump_1d_slice.c:1030 dump_1d_slice.c:1055
+#: dump_1d_slice.c:1081 dump_1d_slice.c:1106 dump_1d_slice.c:1270
+#: dump_1d_slice.c:1296 dump_1d_slice.c:1321 dump_1d_slice.c:1346 pulse.c:276
+msgid "m^{-3} s^{-1}"
+msgstr "m^{-3} s^{-1}"
+
+#: plugins/server/server.c:161 server.c:161
+msgid "I have shut down the server\n"
+msgstr "Ich habe den Server herunterfahren\n"
+
+#: plugins/server/server.c:486 server.c:486
+msgid "All jobs finished jobs"
+msgstr "Alle Aufgaben  beendet. Aufgaben "
+
+#: plugins/server/server.c:492 server.c:492
+msgid "I have finished all my jobs\n"
+msgstr "Ich habe alle meine Aufgaben abgeschlossen\n"
+
+#: plugins/server/server.c:499 server.c:499
+msgid "The server has detected a crash\n"
+msgstr "Der Server hat einen Crash erkannt\n"
+
+#: dump_1d_slice.c:64 dump_1d_slice.c:114
+msgid "Drift current density - position"
+msgstr ""
+
+#: dump_1d_slice.c:66 dump_1d_slice.c:91 dump_1d_slice.c:116
+#: dump_1d_slice.c:141 dump_1d_slice.c:166 dump_1d_slice.c:191
+#: dump_1d_slice.c:216 dump_1d_slice.c:241 dump_1d_slice.c:267
+#: dump_1d_slice.c:292 dump_1d_slice.c:317 dump_1d_slice.c:342
+#: dump_1d_slice.c:368 dump_1d_slice.c:393 dump_1d_slice.c:422
+#: dump_1d_slice.c:448 dump_1d_slice.c:474 dump_1d_slice.c:505
+#: dump_1d_slice.c:534 dump_1d_slice.c:559 dump_1d_slice.c:585
+#: dump_1d_slice.c:610 dump_1d_slice.c:635 dump_1d_slice.c:664
+#: dump_1d_slice.c:694 dump_1d_slice.c:719 dump_1d_slice.c:744
+#: dump_1d_slice.c:769 dump_1d_slice.c:794 dump_1d_slice.c:824
+#: dump_1d_slice.c:853 dump_1d_slice.c:882 dump_1d_slice.c:911
+#: dump_1d_slice.c:940 dump_1d_slice.c:969 dump_1d_slice.c:998
+#: dump_1d_slice.c:1027 dump_1d_slice.c:1052 dump_1d_slice.c:1078
+#: dump_1d_slice.c:1103 dump_1d_slice.c:1129 dump_1d_slice.c:1166
+#: dump_1d_slice.c:1203 dump_1d_slice.c:1233 dump_1d_slice.c:1267
+#: dump_1d_slice.c:1293 dump_1d_slice.c:1318 dump_1d_slice.c:1343
+msgid "Position"
+msgstr ""
+
+#: dump_1d_slice.c:67
+#, fuzzy
+msgid "Electron current density (drift)"
+msgstr "Effektive Dichte der freien Elektronenzustände"
+
+#: dump_1d_slice.c:68 dump_1d_slice.c:93 dump_1d_slice.c:118
+#: dump_1d_slice.c:143 dump_1d_slice.c:168 dump_1d_slice.c:193
+#: dump_1d_slice.c:218 dump_1d_slice.c:243 dump_1d_slice.c:269
+#: dump_1d_slice.c:294 dump_1d_slice.c:319 dump_1d_slice.c:344
+#: dump_1d_slice.c:370 dump_1d_slice.c:395 dump_1d_slice.c:424
+#: dump_1d_slice.c:450 dump_1d_slice.c:476 dump_1d_slice.c:507
+#: dump_1d_slice.c:536 dump_1d_slice.c:561 dump_1d_slice.c:587
+#: dump_1d_slice.c:612 dump_1d_slice.c:637 dump_1d_slice.c:666
+#: dump_1d_slice.c:696 dump_1d_slice.c:721 dump_1d_slice.c:746
+#: dump_1d_slice.c:771 dump_1d_slice.c:796 dump_1d_slice.c:826
+#: dump_1d_slice.c:855 dump_1d_slice.c:884 dump_1d_slice.c:913
+#: dump_1d_slice.c:942 dump_1d_slice.c:971 dump_1d_slice.c:1000
+#: dump_1d_slice.c:1029 dump_1d_slice.c:1054 dump_1d_slice.c:1080
+#: dump_1d_slice.c:1105 dump_1d_slice.c:1131 dump_1d_slice.c:1168
+#: dump_1d_slice.c:1205 dump_1d_slice.c:1235 dump_1d_slice.c:1269
+#: dump_1d_slice.c:1295 dump_1d_slice.c:1320 dump_1d_slice.c:1345
+msgid "nm"
+msgstr "nm"
+
+#: dump_1d_slice.c:69 dump_1d_slice.c:94 dump_1d_slice.c:119
+#: dump_1d_slice.c:144 dump_1d_slice.c:425 dump_1d_slice.c:451
+#: dump_1d_slice.c:477 dump_1d_slice.c:508
+msgid "A m^{-2}"
+msgstr "A m^{-2}"
+
+#: dump_1d_slice.c:70 dump_1d_slice.c:95 dump_1d_slice.c:120
+#: dump_1d_slice.c:145 dump_1d_slice.c:170 dump_1d_slice.c:195
+#: dump_1d_slice.c:220 dump_1d_slice.c:245 dump_1d_slice.c:271
+#: dump_1d_slice.c:296 dump_1d_slice.c:321 dump_1d_slice.c:346
+#: dump_1d_slice.c:372 dump_1d_slice.c:426 dump_1d_slice.c:452
+#: dump_1d_slice.c:478 dump_1d_slice.c:509 dump_1d_slice.c:538
+#: dump_1d_slice.c:563 dump_1d_slice.c:589 dump_1d_slice.c:614
+#: dump_1d_slice.c:639 dump_1d_slice.c:668 dump_1d_slice.c:698
+#: dump_1d_slice.c:723 dump_1d_slice.c:748 dump_1d_slice.c:773
+#: dump_1d_slice.c:798 dump_1d_slice.c:828 dump_1d_slice.c:857
+#: dump_1d_slice.c:886 dump_1d_slice.c:915 dump_1d_slice.c:944
+#: dump_1d_slice.c:973 dump_1d_slice.c:1002 dump_1d_slice.c:1031
+#: dump_1d_slice.c:1056 dump_1d_slice.c:1082 dump_1d_slice.c:1107
+#: dump_1d_slice.c:1133 dump_1d_slice.c:1170 dump_1d_slice.c:1207
+#: dump_1d_slice.c:1237 dump_1d_slice.c:1271 dump_1d_slice.c:1297
+#: dump_1d_slice.c:1322 dump_1d_slice.c:1347
+msgid "1D position space output"
+msgstr ""
+
+#: dump_1d_slice.c:71 dump_1d_slice.c:96 dump_1d_slice.c:121
+#: dump_1d_slice.c:146 dump_1d_slice.c:221 dump_1d_slice.c:246
+#: dump_1d_slice.c:427 dump_1d_slice.c:453 dump_1d_slice.c:479
+#: dump_1d_slice.c:510
+msgid "Transport"
+msgstr ""
+
+#: dump_1d_slice.c:89 dump_1d_slice.c:139
+msgid "Diffusion current density - position"
+msgstr ""
+
+#: dump_1d_slice.c:92
+msgid "Electron current density (diffusion)"
+msgstr "Elektronenstromdichte (Diffusion)"
+
+#: dump_1d_slice.c:117
+msgid "Hole current density (drift)"
+msgstr "Lochstromdichte (Drift)"
+
+#: dump_1d_slice.c:142
+#, fuzzy
+msgid "Hole current density (diffusion)"
+msgstr "Effektive Dichte der freien Lochzustände"
+
+#: dump_1d_slice.c:164
+msgid "LUMO-position"
+msgstr ""
+
+#: dump_1d_slice.c:167 dump_1d_slice.c:192 dump_1d_slice.c:293
+#: dump_1d_slice.c:318 dump_1d_slice.c:343
+msgid "Electron Energy"
+msgstr "Elektronenenergie"
+
+#: dump_1d_slice.c:169 dump_1d_slice.c:194 dump_1d_slice.c:295
+#: dump_1d_slice.c:320 dump_1d_slice.c:345 dump_1d_slice.c:537
+#: dump_1d_slice.c:1132 dump_1d_slice.c:1169
+msgid "eV"
+msgstr ""
+
+#: dump_1d_slice.c:171 dump_1d_slice.c:196 dump_1d_slice.c:297
+#: dump_1d_slice.c:322 dump_1d_slice.c:347 dump_1d_slice.c:373
+#: dump_1d_slice.c:398 dump_1d_slice.c:539 dump_1d_slice.c:1238
+msgid "Band structure"
+msgstr "Bandstruktur"
+
+#: dump_1d_slice.c:189
+msgid "HOMO-position"
+msgstr ""
+
+#: dump_1d_slice.c:214
+#, fuzzy
+msgid "Electron temperature - position"
+msgstr "Freie-Elektronen zu Gefangen Elektronen"
+
+#: dump_1d_slice.c:217 dump_1d_slice.c:242
+msgid "Temperature (K)"
+msgstr "Temperatur (K)"
+
+#: dump_1d_slice.c:219 dump_1d_slice.c:244
+msgid "K"
+msgstr ""
+
+#: dump_1d_slice.c:239
+#, fuzzy
+msgid "Hole temperature - position"
+msgstr "Freie Loch zu Gefangen Loch"
+
+#: dump_1d_slice.c:265
+msgid "Doping - position"
+msgstr "Dotierung  - Position"
+
+#: dump_1d_slice.c:268
+msgid "Doping density"
+msgstr "Dotierung"
+
+#: dump_1d_slice.c:270 dump_1d_slice.c:697 dump_1d_slice.c:722
+#: dump_1d_slice.c:747 dump_1d_slice.c:772 dump_1d_slice.c:797
+#: dump_1d_slice.c:827 dump_1d_slice.c:856 dump_1d_slice.c:885
+#: dump_1d_slice.c:914 dump_1d_slice.c:943 dump_1d_slice.c:972
+#: dump_1d_slice.c:1001
+msgid "m^{-3}"
+msgstr "m^{-3}"
+
+#: dump_1d_slice.c:272 dump_1d_slice.c:749 dump_1d_slice.c:774
+#: dump_1d_slice.c:799 dump_1d_slice.c:829 dump_1d_slice.c:887
+#: dump_1d_slice.c:916 dump_1d_slice.c:945 dump_1d_slice.c:974
+#: dump_1d_slice.c:1003
+msgid "Charge density"
+msgstr "Ladungsdichte"
+
+#: dump_1d_slice.c:290
+msgid "Band gap-position"
+msgstr "Bandgap-Position"
+
+#: dump_1d_slice.c:315
+msgid "Electron quasi Fermi-level position"
+msgstr ""
+
+#: dump_1d_slice.c:340
+msgid "Hole quasi Fermi-level position"
+msgstr ""
+
+#: dump_1d_slice.c:366 dump_1d_slice.c:369 dump_1d_slice.c:391
+#: dump_1d_slice.c:394
+msgid "Potential"
+msgstr ""
+
+#: dump_1d_slice.c:371 dump_1d_slice.c:396
+msgid "V"
+msgstr "V"
+
+#: dump_1d_slice.c:397
+msgid "Change in 1D position space output"
+msgstr ""
+
+#: dump_1d_slice.c:420 dump_1d_slice.c:446
+#, fuzzy
+msgid "Current density - position"
+msgstr "Photonendichte"
+
+#: dump_1d_slice.c:423
+#, fuzzy
+msgid "Electron current density"
+msgstr "Elektronenzustandsdichte"
+
+#: dump_1d_slice.c:449
+#, fuzzy
+msgid "Hole current density"
+msgstr "Lochzustandsdichte"
+
+#: dump_1d_slice.c:472 dump_1d_slice.c:503
+msgid "Total current density (Jn+Jp) - position"
+msgstr "Gesamtstromdichte (Jn+Jp) - Position"
+
+#: dump_1d_slice.c:475 dump_1d_slice.c:506
+msgid "Total current density (Jn+Jp)"
+msgstr "Gesamtstromdichte (Joh + Jp)"
+
+#: dump_1d_slice.c:532
+msgid "Equlibrium Fermi-level - position"
+msgstr "Equilibrium Fermi-Niveau - Position"
+
+#: dump_1d_slice.c:535
+msgid "Energy"
+msgstr "Energie"
+
+#: dump_1d_slice.c:557
+#, fuzzy
+msgid "Relative permittivity - position"
+msgstr "Dielektrizitätszahl"
+
+#: dump_1d_slice.c:562 dump_1d_slice.c:1206 dump_1d_slice.c:1236
+msgid "au"
+msgstr "au"
+
+#: dump_1d_slice.c:564 dump_1d_slice.c:590 dump_1d_slice.c:615
+#: dump_1d_slice.c:640 dump_1d_slice.c:669 dump_1d_slice.c:699
+#: dump_1d_slice.c:724
+#, fuzzy
+msgid "Material parameters"
+msgstr "Material für"
+
+#: dump_1d_slice.c:583
+#, fuzzy
+msgid "Electron mobility - position"
+msgstr "Elektronenbeweglichkeit"
+
+#: dump_1d_slice.c:588 dump_1d_slice.c:613 dump_1d_slice.c:638
+#: dump_1d_slice.c:667
+msgid "m^{2} V^{-1} s^{-1}"
+msgstr "m^{2} V^{-1} s^{-1}"
+
+#: dump_1d_slice.c:608
+#, fuzzy
+msgid "Hole mobility - position"
+msgstr "Lochbeweglichkeit"
+
+#: dump_1d_slice.c:633 dump_1d_slice.c:662
+msgid "Average electron mobility free mu0*nf/nall"
+msgstr ""
+
+#: dump_1d_slice.c:636 dump_1d_slice.c:665
+msgid "Mobility"
+msgstr "Ladungsträgerbeweglichkeit"
+
+#: dump_1d_slice.c:692
+#, fuzzy
+msgid "Free electron carrier density - position"
+msgstr "Effektive Dichte der freien Elektronenzustände"
+
+#: dump_1d_slice.c:695 dump_1d_slice.c:720 dump_1d_slice.c:745
+#: dump_1d_slice.c:770 dump_1d_slice.c:795 dump_1d_slice.c:825
+#: dump_1d_slice.c:854 dump_1d_slice.c:883 dump_1d_slice.c:912
+#: dump_1d_slice.c:941
+msgid "Carrier density"
+msgstr "Trägerdichte"
+
+#: dump_1d_slice.c:717
+#, fuzzy
+msgid "Free hole carrier density - position"
+msgstr "Effektive Dichte der freien Lochzustände"
+
+#: dump_1d_slice.c:742
+msgid "Trapped electron carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:767
+msgid "Trapped hole carrier density - position"
+msgstr ""
+
+#: dump_1d_slice.c:792 dump_1d_slice.c:822
+#, fuzzy
+msgid "Total hole density - position"
+msgstr "Effektive Dichte der freien Lochzustände"
+
+#: dump_1d_slice.c:851
+msgid "Change in electron population - position"
+msgstr ""
+
+#: dump_1d_slice.c:858
+#, fuzzy
+msgid "Chaerge density"
+msgstr "Photonendichte"
+
+#: dump_1d_slice.c:880
+#, fuzzy
+msgid "Total charge - position"
+msgstr "Ladung auf der rechten Kontakt"
+
+#: dump_1d_slice.c:909
+msgid "Change in total charge - position"
+msgstr ""
+
+#: dump_1d_slice.c:938
+msgid "Change in hole population - position"
+msgstr ""
+
+#: dump_1d_slice.c:967 dump_1d_slice.c:996
+#, fuzzy
+msgid "Excess electron density - position"
+msgstr "Effektive Dichte der freien Elektronenzustände"
+
+#: dump_1d_slice.c:970
+msgid "Electron density"
+msgstr "Elektronendichte"
+
+#: dump_1d_slice.c:999
+msgid "Hole density"
+msgstr "Lochdichte"
+
+#: dump_1d_slice.c:1025
+msgid "Free electron generation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1032 dump_1d_slice.c:1057 dump_1d_slice.c:1083
+#: dump_1d_slice.c:1108 dump_1d_slice.c:1134 dump_1d_slice.c:1171
+#: dump_1d_slice.c:1272 dump_1d_slice.c:1298 dump_1d_slice.c:1323
+#: dump_1d_slice.c:1348
+msgid "Recombination"
+msgstr "Rekombination"
+
+#: dump_1d_slice.c:1050
+msgid "Free hole generation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1076
+msgid "Electron recombination rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1079 dump_1d_slice.c:1104
+msgid "Recombination rate"
+msgstr ""
+
+#: dump_1d_slice.c:1101
+msgid "Hole recombination rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1127 dump_1d_slice.c:1164
+msgid "Trap fermi level - position"
+msgstr ""
+
+#: dump_1d_slice.c:1130 dump_1d_slice.c:1167
+msgid "Electron Fermi level"
+msgstr "Electron Fermi-Niveau"
+
+#: dump_1d_slice.c:1201 dump_1d_slice.c:1231
+msgid "Material number - position"
+msgstr "Materialnummer - Position"
+
+#: dump_1d_slice.c:1204 dump_1d_slice.c:1234
+msgid "Number"
+msgstr "Anzahl"
+
+#: dump_1d_slice.c:1208
+msgid "Model"
+msgstr "Organische Photovoltaik Device Model (www.opvdm.com)"
+
+#: dump_1d_slice.c:1265
+#, fuzzy
+msgid "Free hole to trapped electron - position"
+msgstr "Gefangen Elektronen zu Freie-Loch"
+
+#: dump_1d_slice.c:1268 dump_1d_slice.c:1294 dump_1d_slice.c:1319
+#: dump_1d_slice.c:1344
+msgid "Rate"
+msgstr ""
+
+#: dump_1d_slice.c:1291
+#, fuzzy
+msgid "Free electron to trapped hole - position"
+msgstr "Gefangen Elektronen zu Freie-Loch"
+
+#: dump_1d_slice.c:1316
+msgid "Hole relaxation rate - position"
+msgstr ""
+
+#: dump_1d_slice.c:1341
+msgid "Electron relaxation rate - position"
+msgstr ""
+
+#: memory.c:203
+msgid "Solved"
+msgstr "Gelöst"
+
+#: memory.c:203
+msgid "Equations"
+msgstr "Gleichungen"

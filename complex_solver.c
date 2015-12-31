@@ -27,6 +27,7 @@
 #include <math.h>
 #include "buffer.h"
 #include <string.h>
+#include "lang.h"
 
 static int last_col = 0;
 static int last_nz = 0;
@@ -44,10 +45,10 @@ void complex_error_report(int status, const char *file, const char *func,
 
 	switch (status) {
 	case UMFPACK_ERROR_out_of_memory:
-		fprintf(stderr, "out of memory!\n");
+		fprintf(stderr, _("out of memory!\n"));
 		break;
 	case UMFPACK_WARNING_singular_matrix:
-		fprintf(stderr, "matrix is singular!\n");
+		fprintf(stderr, _("matrix is singular!\n"));
 		break;
 	default:
 		fprintf(stderr, "UMFPACK error code %d\n", status);
@@ -80,7 +81,7 @@ void complex_solver_dump_matrix(int col, int nz, int *Ti, int *Tj, double *Tx,
 	buffer_dump("matrix.dat", &buf);
 
 	buffer_free(&buf);
-	printf("Matrix dumped\n");
+	printf(_("Matrix dumped\n"));
 }
 
 void complex_solver_free()
@@ -99,7 +100,7 @@ void complex_solver_free()
 	Az = NULL;
 	last_col = 0;
 	last_nz = 0;
-	printf("Complex solver free\n");
+	printf(_("Complex solver free\n"));
 }
 
 void complex_solver_print(int col, int nz, int *Ti, int *Tj, double *Tx,

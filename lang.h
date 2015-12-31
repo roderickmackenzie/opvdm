@@ -19,10 +19,8 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-#ifndef cal_path_h
-#define cal_path_h
-void cal_path();
-char *get_light_path();
-char *get_lang_path();
-char *get_share_path();
+#ifndef _
+#include <libintl.h>
+#include <locale.h>
+#define _(String) gettext (String)
 #endif

@@ -37,6 +37,7 @@
 #include "util.h"
 #include "hard_limit.h"
 #include "epitaxy.h"
+#include "lang.h"
 
 static int unused __attribute__ ((unused));
 
@@ -51,7 +52,7 @@ void light_solve_optical_problem(struct light *in)
 	if ((in->laser_eff == 0) && (in->Psun == 0)) {
 
 		if (get_dump_status(dump_optics) == TRUE)
-			printf("It's dark I know what the answer is\n");
+			printf(_("It's dark I know what the answer is\n"));
 		for (i = 0; i < in->lpoints; i++) {
 			memset(in->En[i], 0.0, in->points * sizeof(double));
 			memset(in->Ep[i], 0.0, in->points * sizeof(double));
@@ -205,7 +206,7 @@ void light_free_memory(struct light *in)
 	free(in->bz);
 	free(in->l);
 	inter_free(&(in->sun_read));
-	printf("Light free memory\n");
+	printf(_("Light free memory\n"));
 }
 
 void light_load_materials(struct light *in)
@@ -263,7 +264,7 @@ void light_load_materials(struct light *in)
 	}
 
 	if (found == FALSE) {
-		ewe("No optical materials found\n");
+		ewe(_("No optical materials found\n"));
 	}
 
 	join_path(2, file_path, materialsdir, in->suns_spectrum_file);
@@ -436,7 +437,7 @@ void light_load_materials(struct light *in)
 			} while (!feof(patch_in));
 
 			if (strcmp(token, "#end") != 0) {
-				printf("Error at end of patch file\n");
+				printf(_("Error at end of patch file\n"));
 				exit(0);
 			}
 

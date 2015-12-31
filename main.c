@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+
 #include <pwd.h>
 
 #include <math.h>
@@ -52,6 +53,8 @@
 #include "rand.h"
 #include "hard_limit.h"
 #include "patch.h"
+#include "cal_path.h"
+#include "lang.h"
 
 static int unused __attribute__ ((unused));
 
@@ -70,6 +73,11 @@ void device_init(struct device *in)
 
 int main(int argc, char *argv[])
 {
+	cal_path();
+	setlocale(LC_MESSAGES, "");
+	bindtextdomain("opvdm", get_lang_path());
+	textdomain("opvdm");
+
 	timer_init(0);
 	timer_init(1);
 	dbus_init();
@@ -145,19 +153,16 @@ int main(int argc, char *argv[])
 	set_io_dump(FALSE);
 	srand(time(0));
 	textcolor(fg_green);
-	randomprint("Organic Photovoltaic Device Model (www.opvdm.com)\n");
-	randomprint(copyright);
-#ifdef gnu_copyright
-	randomprint
-	    ("You should have received a copy of the GNU General Public License\n");
-	randomprint
-	    ("along with this software.  If not, see www.gnu.org/licenses/.\n");
-#endif
+	randomprint(_("Organic Photovoltaic Device Model (www.opvdm.com)\n"));
+	randomprint(_
+		    ("You should have received a copy of the GNU General Public License\n"));
+	randomprint(_
+		    ("along with this software.  If not, see www.gnu.org/licenses/.\n"));
 	randomprint("\n");
-	randomprint
-	    ("If you wish to collaborate in anyway please get in touch:\n");
-	randomprint("roderick.mackenzie@nottingham.ac.uk\n");
-	randomprint("www.roderickmackenzie.eu/contact.html\n");
+	randomprint(_
+		    ("If you wish to collaborate in anyway please get in touch:\n"));
+	randomprint(_("roderick.mackenzie@nottingham.ac.uk\n"));
+	randomprint(_("www.roderickmackenzie.eu/contact.html\n"));
 	randomprint("\n");
 	textcolor(fg_reset);
 

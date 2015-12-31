@@ -31,7 +31,6 @@ from inp import inp_update_token_value
 from inp import inp_get_token_value
 from search import return_file_list
 from plot import check_info_file
-from cal_path import find_data_file
 from about import about_dialog_show
 from used_files_menu import used_files_menu
 from server import server
@@ -40,7 +39,7 @@ from plot_gen import plot_gen
 from plot_state import plot_state
 import threading
 import gobject
-#import pyinotify
+
 import multiprocessing
 import time
 from util import get_cache_path
@@ -71,6 +70,7 @@ from scan_tree import tree_load_flat_list
 from scan_tree import tree_save_flat_list
 from cal_path import get_exe_command
 from help import my_help_class
+from cal_path import get_image_file_path
 
 class scan_vbox(gtk.VBox):
 
@@ -116,7 +116,7 @@ class scan_vbox(gtk.VBox):
 
 
 	def add_line(self,data):
-		my_help_class.help_set_help(["forward.png","<big><b>The scan window</b></big>\n Now using the drop down menu in the prameter to change 'column', select the device parameter you wish to vary, an example may be dos0/Electron Mobility. Now enter the values you would like it to scan oveer in the  'Values', an example could be '1e-3 1e-4 1e-5 1e-6'.  And hit the double arrorw to run the simulation."])
+		my_help_class.help_set_help(["forward.png",_("<big><b>The scan window</b></big>\n Now using the drop down menu in the prameter to change 'column', select the device parameter you wish to vary, an example may be dos0/Electron Mobility. Now enter the values you would like it to scan oveer in the  'Values', an example could be '1e-3 1e-4 1e-5 1e-6'.  And hit the double arrorw to run the simulation.")])
 		selection = self.treeview.get_selection()
 		model, pathlist = selection.get_selected_rows()
 
@@ -130,7 +130,7 @@ class scan_vbox(gtk.VBox):
 		self.rebuild_liststore_op_type()
 
 	def callback_add_item(self, widget, data=None):
-		self.add_line(["Select parameter", "0.0 0.0", "scan",True])
+		self.add_line([_("Select parameter"), "0.0 0.0", "scan",True])
 		
 
 	def callback_copy_item(self, widget, data=None):
@@ -235,7 +235,7 @@ class scan_vbox(gtk.VBox):
 
 		if len(self.liststore_combobox) == 0:
 			message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-			message.set_markup("You have not selected any parameters to scan through.  Use the add button.")
+			message.set_markup(_("You have not selected any parameters to scan through.  Use the add button."))
 			message.run()
 			message.destroy()
 			return
@@ -243,7 +243,7 @@ class scan_vbox(gtk.VBox):
 
 		if self.sim_name=="":
 			message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-			message.set_markup("No sim dir name")
+			message.set_markup(_("No sim dir name"))
 			message.run()
 			message.destroy()
 			return
@@ -308,7 +308,7 @@ class scan_vbox(gtk.VBox):
 
 		else:
 			message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-			message.set_markup("I can't connect to the server")
+			message.set_markup(_("I can't connect to the server"))
 			message.run()
 			message.destroy()
 
@@ -456,7 +456,7 @@ class scan_vbox(gtk.VBox):
 		self.liststore_op_type.append(["python_code"])
 
 		for i in range(0,len(self.liststore_combobox)):
-			if self.liststore_combobox[i][0]!="Select parameter":
+			if self.liststore_combobox[i][0]!=_("Select parameter"):
 				self.liststore_op_type.append([self.liststore_combobox[i][0]])
 	def set_tab_caption(self,name):
 		mytext=name
@@ -486,7 +486,7 @@ class scan_vbox(gtk.VBox):
 		mycmp=cmp_class()
 		ret=mycmp.init(self.sim_dir,get_exe_command())
 		if ret==False:
-			md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,  gtk.BUTTONS_CLOSE, "Re-run the simulation with 'dump all slices' set to one to use this tool.")
+			md = gtk.MessageDialog(None, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,  gtk.BUTTONS_CLOSE, _("Re-run the simulation with 'dump all slices' set to one to use this tool."))
         		md.run()
         		md.destroy()
 			return
@@ -499,7 +499,7 @@ class scan_vbox(gtk.VBox):
 		self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
 		self.popup_menu = gtk.Menu()
 
-		menu_item = gtk.MenuItem("Select parameter to scan")
+		menu_item = gtk.MenuItem(_("Select parameter to scan"))
 		menu_item.connect("activate", self.callback_show_list)
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
@@ -508,17 +508,17 @@ class scan_vbox(gtk.VBox):
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
 
-		menu_item = gtk.MenuItem("Delete item")
+		menu_item = gtk.MenuItem(_("Delete item"))
 		menu_item.connect("activate", self.callback_delete_item)
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
 
-		menu_item = gtk.MenuItem("Add item")
+		menu_item = gtk.MenuItem(_("Add item"))
 		menu_item.connect("activate", self.callback_add_item)
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
 
-		menu_item = gtk.MenuItem("Move down")
+		menu_item = gtk.MenuItem(_("Move down"))
 		menu_item.connect("activate", self.callback_move_down)
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
@@ -527,15 +527,15 @@ class scan_vbox(gtk.VBox):
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
 
-		menu_item = gtk.MenuItem("Copy")
+		menu_item = gtk.MenuItem(_("Copy"))
 		menu_item.connect("activate", self.callback_copy_item)
 		self.popup_menu.append(menu_item)
 
-		menu_item = gtk.MenuItem("Paste")
+		menu_item = gtk.MenuItem(_("Paste"))
 		menu_item.connect("activate", self.callback_paste_item)
 		self.popup_menu.append(menu_item)
 
-		menu_item = gtk.MenuItem("Delete")
+		menu_item = gtk.MenuItem(_("Delete"))
 		menu_item.connect("activate", self.callback_delete_item)
 		self.popup_menu.append(menu_item)
 		self.popup_menu.show_all()
@@ -562,17 +562,17 @@ class scan_vbox(gtk.VBox):
 		pos=0
 
 		image = gtk.Image()
-		image.set_from_file(find_data_file("gui/forward.png"))
+		image.set_from_file(os.path.join(get_image_file_path(),"forward.png"))
 		tb_simulate = gtk.ToolButton(image)
 		tb_simulate.connect("clicked", self.callback_run_simulation)
-		self.tooltips.set_tip(tb_simulate, "Run simulation")
+		self.tooltips.set_tip(tb_simulate, _("Run simulation"))
 		toolbar.insert(tb_simulate, pos)
 		pos=pos+1
 
 	        image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/pause.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"pause.png"))
 		self.stop = gtk.ToolButton(image)
-		self.tooltips.set_tip(self.stop, "Stop the simulation")
+		self.tooltips.set_tip(self.stop, _("Stop the simulation"))
 		self.stop.connect("clicked", self.callback_stop_simulation)
 		toolbar.insert(self.stop, pos)
 		pos=pos+1
@@ -584,10 +584,10 @@ class scan_vbox(gtk.VBox):
 		pos=pos+1
 
 		image = gtk.Image()
-		image.set_from_file(find_data_file("gui/plot.png"))
+		image.set_from_file(os.path.join(get_image_file_path(),"plot.png"))
 		plot_select = gtk.MenuToolButton(image,"hello")
 		plot_select.connect("clicked", self.callback_gen_plot_command)
-		self.tooltips.set_tip(plot_select, "Find a file to plot")
+		self.tooltips.set_tip(plot_select, _("Find a file to plot"))
 
 		self.plotted_graphs = used_files_menu()
 		self.plotted_graphs.init(self.sim_dir,self.callback_last_menu_click)
@@ -606,9 +606,9 @@ class scan_vbox(gtk.VBox):
 		pos=pos+1
 
 	        image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/plot_time.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"plot_time.png"))
 		self.examine = gtk.ToolButton(image)
-		self.tooltips.set_tip(self.examine, "Examine results in time domain")
+		self.tooltips.set_tip(self.examine, _("Examine results in time domain"))
 		self.examine.connect("clicked", self.callback_examine)
 		toolbar.insert(self.examine, pos)
 		pos=pos+1
@@ -619,29 +619,29 @@ class scan_vbox(gtk.VBox):
 		toolbar.insert(sep, pos)
 		pos=pos+1
 
-   		image.set_from_file(find_data_file("gui/add.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"add.png"))
 		add = gtk.ToolButton(image)
 		add.connect("clicked", self.callback_add_item)
-		self.tooltips.set_tip(add, "Add parameter to scan")
+		self.tooltips.set_tip(add, _("Add parameter to scan"))
 		toolbar.insert(add, pos)
 		pos=pos+1
 
 
 		remove = gtk.ToolButton(gtk.STOCK_CLEAR)
 		remove.connect("clicked", self.callback_delete_item)
-		self.tooltips.set_tip(remove, "Delete item")
+		self.tooltips.set_tip(remove, _("Delete item"))
 		toolbar.insert(remove, pos)
 		pos=pos+1
 
 		move = gtk.ToolButton(gtk.STOCK_GO_DOWN)
 		move.connect("clicked", self.callback_move_down)
-		self.tooltips.set_tip(move, "Move down")
+		self.tooltips.set_tip(move, _("Move down"))
 		toolbar.insert(move, pos)
 		pos=pos+1
 
 		notes = gtk.ToolButton(gtk.STOCK_EDIT)
 		notes.connect("clicked", self.callback_notes)
-		self.tooltips.set_tip(notes, "Edit notes")
+		self.tooltips.set_tip(notes, _("Edit notes"))
 		toolbar.insert(notes, pos)
 		pos=pos+1
 
@@ -653,15 +653,15 @@ class scan_vbox(gtk.VBox):
 
 		quick = gtk.ToolButton(gtk.STOCK_INDEX)
 		quick.connect("clicked", self.callback_show_list)
-		self.tooltips.set_tip(quick, "Show quick selector")
+		self.tooltips.set_tip(quick, _("Show quick selector"))
 		toolbar.insert(quick, pos)
 		pos=pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/command.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"command.png"))
 		insert_command = gtk.ToolButton(image)
 		insert_command.connect("clicked", self.callback_insert_command)
-		self.tooltips.set_tip(insert_command, "Insert python command")
+		self.tooltips.set_tip(insert_command, _("Insert python command"))
 		toolbar.insert(insert_command, pos)
 		pos=pos+1
 		#reopen_xy = gtk.ToolButton(gtk.STOCK_SELECT_COLOR)
@@ -692,9 +692,9 @@ class scan_vbox(gtk.VBox):
 		self.select_param_window=select_param()
 		self.select_param_window.init(self.liststore_combobox,self.treeview)
 
-		column_text = gtk.TreeViewColumn("Values")
-		column_combo = gtk.TreeViewColumn("Parameter to change")
-		column_mirror = gtk.TreeViewColumn("Opperation")
+		column_text = gtk.TreeViewColumn(_("Values"))
+		column_combo = gtk.TreeViewColumn(_("Parameter to change"))
+		column_mirror = gtk.TreeViewColumn(_("Opperation"))
 
 		cellrenderer_combo = gtk.CellRendererCombo()
 		cellrenderer_combo.set_property("editable", True)
@@ -732,7 +732,7 @@ class scan_vbox(gtk.VBox):
 		#renderer_enable.set_property("activatable", True)
 		renderer_enable.set_activatable(True)
 		renderer_enable.connect("toggled", self.toggled_cb, self.liststore_combobox)
-		column_enable = gtk.TreeViewColumn("Enabled",renderer_enable)
+		column_enable = gtk.TreeViewColumn(_("Enabled"),renderer_enable)
 		column_enable.set_max_width(50)
 		column_enable.set_visible(False)
 	

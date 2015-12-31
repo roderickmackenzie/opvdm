@@ -46,6 +46,7 @@
 #include "advmath.h"
 #include "light_interface.h"
 #include "newton.h"
+#include "lang.h"
 
 char *sim_output_path();
 char *sim_input_path();

@@ -194,7 +194,7 @@ void device_free(struct device *in)
 
 	free(in->phi_save);
 
-	printf("Solved %i Equations\n", in->odes);
+	printf("%s %i %s\n", _("Solved"), in->odes, _("Equations"));
 }
 
 void device_get_memory(struct device *in)

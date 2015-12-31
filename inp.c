@@ -430,9 +430,9 @@ void inp_check(struct inp_file *in, double ver)
 	inp_reset_read(in);
 	char *line = inp_get_string(in);
 	while (line != NULL) {
-
 		if (strcmp(line, "#ver") == 0) {
 			line = inp_get_string(in);
+
 			sscanf(line, "%le", &read_ver);
 
 			if (ver != read_ver) {

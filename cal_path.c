@@ -33,8 +33,37 @@
 #include <sys/stat.h>
 #include "cal_path.h"
 #include "util.h"
+#include "inp.h"
 
-void get_light_lib_path(char *out)
+static char share_path[400];
+static char light_path[400];
+static char lang_path[400];
+
+void cal_path()
 {
-	strcpy(out, "/usr/lib64/opvdm/light/");
+	if (isfile("main.c") == 0) {
+		if (getcwd(share_path, 1000) == NULL) {
+			ewe("IO error\n");
+		}
+	} else {
+		strcpy(share_path, "/usr/lib64/opvdm/light/");
+	}
+	join_path(2, light_path, share_path, "light");
+	join_path(2, lang_path, share_path, "lang");
+
+}
+
+char *get_light_path()
+{
+	return light_path;
+}
+
+char *get_lang_path()
+{
+	return lang_path;
+}
+
+char *get_share_path()
+{
+	return share_path;
 }
