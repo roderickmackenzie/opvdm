@@ -44,28 +44,15 @@ import glob
 from window_list import windows
 from scan_item import scan_items_get_list
 
-class select_param:
+class select_param(gtk.Window):
 	def init(self,liststore_combobox,dest_treeview):
 		self.win_list=windows()
 		self.liststore_combobox=liststore_combobox
 		self.dest_treeview=dest_treeview
-		self.select_window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-		self.select_window.set_title("Select simulation parameter")
-		self.select_window.set_size_request (300,700) 
+		self.set_title(_("Select simulation parameter"))
+		self.set_size_request (300,700) 
 		self.treestore = gtk.TreeStore(str)
-		self.win_list.set_window(self.select_window,"scan_select")
-		old=""
-		param_list=scan_items_get_list()
-		for item in range(0, len(param_list)):
-			split=os.path.split(param_list[item].name)
-			main=split[0]
-			sub=split[1]
-			if main!=old:
-				piter = self.treestore.append(None, [main])
-				old=main
-
-			if main==old:
-				self.treestore.append(piter, [sub])
+		self.win_list.set_window(self,"scan_select")
 
 		#for item in range(0, len(self.param_list)):
 		#	self.combo_box_list.append(self.param_list[item].name)
@@ -120,12 +107,28 @@ class select_param:
 
 		my_vbox.pack_start(button_hbox, gtk.FALSE, gtk.FALSE, 0)
 		my_vbox.show_all()
-		self.select_window.connect('delete-event', self.on_destroy)
-		self.select_window.add(my_vbox)
+		self.connect('delete-event', self.on_destroy)
+		self.add(my_vbox)
+		self.update()
+
+	def update(self):
+		old=""
+		self.treestore.clear()
+		param_list=scan_items_get_list()
+		for item in range(0, len(param_list)):
+			split=os.path.split(param_list[item].name)
+			main=split[0]
+			sub=split[1]
+			if main!=old:
+				piter = self.treestore.append(None, [main])
+				old=main
+
+			if main==old:
+				self.treestore.append(piter, [sub])
 
 	def on_destroy(self, widget, data=None):
-		self.win_list.update(self.select_window,"scan_select")
-		self.select_window.hide()
+		self.win_list.update(self,"scan_select")
+		self.hide()
 		return True
 
 	def tree_apply_click(self, widget, data=None):
@@ -146,4 +149,4 @@ class select_param:
 			self.liststore_combobox[dest_pathlist[0][0]][0]=ret
 
 	def tree_close_click(self, widget, data=None):
-		self.select_window.hide()
+		self.hide()

@@ -42,6 +42,9 @@ from cal_path import find_data_file
 from epitaxy import epitaxy_get_pl_file
 from epitaxy import epitaxy_get_name
 
+import i18n
+_ = i18n.language.gettext
+
 class tab_main(gtk.VBox,tab_base):
 
 	label_name="tab_main"
@@ -240,4 +243,4 @@ class tab_main(gtk.VBox,tab_base):
 		self.draw()
 
 	def help(self):
-		my_help_class.help_set_help(["device.png","<big><b>The device structure tab</b></big>\n Use this tab to change the structure of the device, the layer thicknesses and to perform optical simulations.  You can also browse the materials data base and  edit the electrical mesh."])
+		my_help_class.help_set_help(["device.png",_("<big><b>The device structure tab</b></big>\n Use this tab to change the structure of the device, the layer thicknesses and to perform optical simulations.  You can also browse the materials data base and  edit the electrical mesh.")])

@@ -52,7 +52,6 @@ import platform
 import getpass
 from tab_base import tab_base
 from help import my_help_class
-from cal_path import find_data_file
 
 socket.setdefaulttimeout = 1.0
 os.environ['no_proxy'] = '127.0.0.1,localhost'
@@ -127,8 +126,7 @@ class welcome_class(gtk.HBox,tab_base):
 		self.web=web_thread()
 		#self.web.connect("got-data", self.update)
 
-		print "Welcome"
-		self.text="<big><b>Organic photovoltaic device model</b>\n(<a href=\"http://www.opvdm.com\" title=\"Click to find out more\">www.opvdm.com</a>)\n\n To make a new simulation directory click <i>new</i> in the <i>file</i> menu\n or to open an existing simulation click on the <i>open</i> button.\n There is more help on the <a href=\"http://www.opvdm.com/man/index.html\">man pages</a>.  Please report bugs to\nroderick.mackenzie@nottingham.ac.uk.\n\n Rod\n18/10/13\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n\nChecking web for updates....."
+		self.text=_("<big><b>Organic photovoltaic device model</b>\n(<a href=\"http://www.opvdm.com\" title=\"Click to find out more\">www.opvdm.com</a>)\n\n To make a new simulation directory click <i>new</i> in the <i>file</i> menu\n or to open an existing simulation click on the <i>open</i> button.\n There is more help on the <a href=\"http://www.opvdm.com/man/index.html\">man pages</a>.  Please report bugs to\nroderick.mackenzie@nottingham.ac.uk.\n\n Rod\n18/10/13\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n\n\nChecking web for updates.....")
 		read_page=False
 
 
@@ -149,7 +147,7 @@ class welcome_class(gtk.HBox,tab_base):
 		#self.hide_all()
 
 	def help(self):
-		my_help_class.help_set_help(["icon.png","<big><b>Welcome to opvdm</b></big>\n The window will provide you with information about new versions and bugs in opvdm."])
+		my_help_class.help_set_help(["icon.png",_("<big><b>Welcome to opvdm</b></big>\n The window will provide you with information about new versions and bugs in opvdm.")])
 
 gobject.type_register(web_thread)
 gobject.signal_new("got-data", web_thread, gobject.SIGNAL_RUN_FIRST,gobject.TYPE_NONE, ())

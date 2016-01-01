@@ -62,6 +62,8 @@ void device_timestep(struct device *in);
 void find_n0(struct device *in);
 
 //from time.c
+void time_mesh_save();
+void time_load_mesh_build(struct device *in, int number);
 void time_load_mesh(struct device *in, int number);
 void time_init(struct device *in);
 void device_timestep(struct device *in);

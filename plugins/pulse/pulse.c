@@ -116,8 +116,10 @@ void sim_pulse(struct device *in)
 	in->time = 0.0;
 
 	time_init(in);
-	time_load_mesh(in, number);
-
+//time_load_mesh(in,number);
+	time_load_mesh_build(in, number);
+//time_mesh_save();
+//getchar();
 //struct istruct pulseout;
 //inter_init(&pulseout);
 

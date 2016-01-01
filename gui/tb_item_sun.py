@@ -27,6 +27,8 @@ import math
 import gobject
 from inp import inp_update_token_value
 from inp import inp_get_token_value
+from global_objects import global_object_get
+from global_objects import global_isobject
 
 import i18n
 _ = i18n.language.gettext
@@ -34,8 +36,11 @@ _ = i18n.language.gettext
 class tb_item_sun(gtk.ToolItem):
 	def call_back_light_changed(self, widget, data=None):
 		light_power=self.light.get_active_text()
-		print light_power
+		#print light_power
 		inp_update_token_value("light.inp", "#Psun", light_power,1)
+		if global_isobject("experiment_graph_update")==True:
+			global_object_get("experiment_graph_update")()
+
 		self.emit("refresh")
 
 	def __init__(self):

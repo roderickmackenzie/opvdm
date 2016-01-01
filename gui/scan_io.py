@@ -92,12 +92,12 @@ def scan_ask_to_delete(dirs_to_del):
 		if len(dirs_to_del)>30:
 			for i in range(0,30,1):
 				text_del_dirs=text_del_dirs+dirs_to_del[i]+"\n"
-			text_del_dirs=text_del_dirs+"and "+str(len(dirs_to_del)-30)+" more."
+			text_del_dirs=text_del_dirs+_("and ")+str(len(dirs_to_del)-30)+_(" more.")
 		else:
 			for i in range(0,len(dirs_to_del)):
 				text_del_dirs=text_del_dirs+dirs_to_del[i]+"\n"
 
-		label = gtk.Label("Should I delete these files?:\n"+"\n"+text_del_dirs)
+		label = gtk.Label(_("Should I delete these files?:\n")+"\n"+text_del_dirs)
 		dialog.vbox.pack_start(label, True, True, 0)
 		label.show()
 

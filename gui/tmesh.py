@@ -43,6 +43,8 @@ import webbrowser
 from util import time_with_units
 from inp import inp_search_token_value
 from cal_path import get_image_file_path
+from scan_item import scan_remove_file
+from scan_item import scan_item_add
 
 import i18n
 _ = i18n.language.gettext
@@ -71,6 +73,9 @@ class tab_time_mesh(gtk.VBox):
 	visible=1
 
 	def save_data(self):
+		file_name="time_mesh_config"+str(self.index)+".inp"
+		scan_remove_file(file_name)
+
 		out_text=[]
 		out_text.append("#start_time")
 		out_text.append(str(float(self.start_time)))
@@ -81,18 +86,31 @@ class tab_time_mesh(gtk.VBox):
 		i=0
 		for line in self.store:
 			out_text.append("#time_segment"+str(i)+"_len")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" period"),1)
 			out_text.append(str(line[SEG_LENGTH]))
+
 			out_text.append("#time_segment"+str(i)+"_dt")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" dt"),1)
 			out_text.append(str(line[SEG_DT]))
+
 			out_text.append("#time_segment"+str(i)+"_voltage_start")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" start voltage"),1)
 			out_text.append(str(line[SEG_VOLTAGE_START]))
+
 			out_text.append("#time_segment"+str(i)+"_voltage_stop")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" stop voltage"),1)
 			out_text.append(str(line[SEG_VOLTAGE_STOP]))
+
 			out_text.append("#time_segment"+str(i)+"_mul")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" mul"),1)
 			out_text.append(str(line[SEG_MUL]))
+
 			out_text.append("#time_segment"+str(i)+"_sun")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" sun"),1)
 			out_text.append(str(line[SEG_SUN]))
+
 			out_text.append("#time_segment"+str(i)+"_laser")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" laser"),1)
 			out_text.append(str(line[SEG_LASER]))
 			i=i+1
 
@@ -100,7 +118,22 @@ class tab_time_mesh(gtk.VBox):
 		out_text.append("1.1")
 		out_text.append("#end")
 		
-		inp_write_lines_to_file(os.path.join(os.getcwd(),"time_mesh_config"+str(self.index)+".inp"),out_text)
+		inp_write_lines_to_file(os.path.join(os.getcwd(),file_name),out_text)
+		self.update_scan_tokens()
+
+	def update_scan_tokens(self):
+		file_name="time_mesh_config"+str(self.index)+".inp"
+		scan_remove_file(file_name)
+
+		for i in range(0,len(self.list)):
+			scan_item_add(file_name,"#time_segment"+str(i)+"_len",_("Part ")+str(i)+_(" period"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_dt",_("Part ")+str(i)+_(" dt"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_voltage_start",_("Part ")+str(i)+_(" start voltage"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_voltage_stop",_("Part ")+str(i)+_(" stop voltage"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_mul",_("Part ")+str(i)+_(" mul"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_sun",_("Part ")+str(i)+_(" Sun"),1)
+			scan_item_add(file_name,"#time_segment"+str(i)+"_laser",_("Part ")+str(i)+_(" CW laser"),1)
+
 
 	def callback_add_section(self, widget, treeview):
 		data=["0.0", "0.0", "0.0", "0.0", "1.0", "0.0", "0.0"]
@@ -180,6 +213,12 @@ class tab_time_mesh(gtk.VBox):
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
+
+	def update(self):
+		self.build_mesh()
+		self.save_mesh()
+		self.draw_graph()
+		self.fig.canvas.draw()
 
 	def on_cell_edited_dt(self, cell, path, new_text, model):
 		#print "Rod",path
@@ -385,7 +424,6 @@ class tab_time_mesh(gtk.VBox):
 		lines=[]
 		self.start_time=0.0
 		self.fs_laser_time=0.0
-		self.segments=0
 		self.list=[]
 
 		file_name="time_mesh_config"+str(self.index)+".inp"
@@ -401,9 +439,9 @@ class tab_time_mesh(gtk.VBox):
 				self.fs_laser_time=float(value)
 
 				token,value,pos=inp_read_next_item(lines,pos)
-				self.segments=int(value)
+				segments=int(value)
 
-				for i in range(0, self.segments):
+				for i in range(0, segments):
 					token,length,pos=inp_read_next_item(lines,pos)
 					token,dt,pos=inp_read_next_item(lines,pos)
 					token,voltage_start,pos=inp_read_next_item(lines,pos)
@@ -436,6 +474,7 @@ class tab_time_mesh(gtk.VBox):
 
 		laser_pulse_width=float(inp_get_token_value("optics.inp", "#laser_pulse_width"))
 
+		sun_steady_state=float(inp_get_token_value("light.inp", "#Psun"))
 
 		seg=0
 		for line in self.store:
@@ -450,11 +489,11 @@ class tab_time_mesh(gtk.VBox):
 
 			if dt!=0.0 and mul!=0.0:
 				voltage=voltage_start
-				dv=(voltage_stop-voltage_start)/(float(line[SEG_LENGTH])/dt)
 				while(pos<end_time):
+					dv=(voltage_stop-voltage_start)*(dt/float(line[SEG_LENGTH]))
 					self.time.append(pos)
 					self.laser.append(laser)
-					self.sun.append(sun)
+					self.sun.append(sun+sun_steady_state)
 					self.voltage.append(voltage)
 					#print seg,voltage
 					self.fs_laser.append(0.0)
@@ -473,14 +512,13 @@ class tab_time_mesh(gtk.VBox):
 		#print self.voltage
 
 		self.statusbar.push(0, str(len(self.time))+_(" mesh points"))
-
-
+		
 	def save_mesh(self):
 		lines=[]
 		
 		lines.append(str(len(self.time)))
 		for i in range(0,len(self.time)):
-			lines.append(str(self.time[i])+" "+str(self.laser[i])+" "+str(self.sun[i])+" "+str(self.voltage[i])+" "+str(self.fs_laser[i]))
+			lines.append(str(format(self.time[i],'.6e'))+" "+str(format(self.laser[i],'.6e'))+" "+str(format(self.sun[i],'.6e'))+" "+str(format(self.voltage[i],'.6e'))+" "+str(format(self.fs_laser[i],'.6e')))
 		lines.append("#ver")
 		lines.append("1.0")
 		lines.append("#end")
@@ -500,6 +538,7 @@ class tab_time_mesh(gtk.VBox):
 		self.list=[]
 
 		self.load_data()
+		self.update_scan_tokens()
 
 		gui_pos=gui_pos+1
 

@@ -58,6 +58,8 @@ from epitaxy import epitaxy_get_name
 import i18n
 _ = i18n.language.gettext
 
+from i18n import yes_no
+
 (
   COLUMN_NAME,
   COLUMN_THICKNES,
@@ -80,7 +82,7 @@ class layer_widget(gtk.VBox):
 	def sync_to_electrical_mesh(self):
 		tot=0
 		for i in range(0,len(self.model)):
-			if self.model[i][COLUMN_DEVICE]=="yes":
+			if yes_no(self.model[i][COLUMN_DEVICE])==True:
 				tot=tot+float(self.model[i][COLUMN_THICKNES])
 
 		lines=[]
@@ -92,7 +94,7 @@ class layer_widget(gtk.VBox):
 	def active_layer_edit(self, widget, path, text, model):
 		old_text=self.model[path][COLUMN_DEVICE]
 		self.model[path][COLUMN_DEVICE]=text
-		if old_text=="no" and text=="yes":
+		if yes_no(old_text)==False and yes_no(text)==True:
 			self.model[path][COLUMN_DOS_LAYER]=epitay_get_next_dos()
 			self.model[path][COLUMN_PL_FILE]=epitay_get_next_pl()
 			new_file=self.model[path][COLUMN_DOS_LAYER]+".inp"
@@ -103,7 +105,7 @@ class layer_widget(gtk.VBox):
 			if inp_isfile(new_file)==False:
 				inp_copy_file(new_file,"pl0.inp")
 
-		if text=="no":
+		if yes_no(text)==False:
 			self.model[path][COLUMN_DOS_LAYER]="none"
 			self.model[path][COLUMN_PL_FILE]="none"
 
@@ -120,8 +122,8 @@ class layer_widget(gtk.VBox):
 		for i in range(0,len(mat)):
 			self.material_files.append([mat[i]])
 
-		self.active_layer.append(["yes"])
-		self.active_layer.append(["no"])
+		self.active_layer.append([_("yes")])
+		self.active_layer.append([_("no")])
 
 	def callback_view_materials(self, widget, data=None):
 		dialog=opvdm_open()
@@ -236,7 +238,7 @@ class layer_widget(gtk.VBox):
 
 		hbox0=gtk.HBox()
 
-		self.frame.set_label("Device layers")
+		self.frame.set_label(_("Device layers"))
 		self.frame.set_label_align(0.0, 0.0)
 		self.frame.set_shadow_type(gtk.SHADOW_ETCHED_OUT)
 		hbox0.show()
@@ -272,9 +274,9 @@ class layer_widget(gtk.VBox):
 			dos_file=""
 
 			if dos_layer=="none":
-				dos_file="no"
+				dos_file=_("no")
 			else:
-				dos_file="yes"
+				dos_file=_("yes")
 
 			scan_item_add("epitaxy.inp","#layer"+str(i),_("Material for ")+str(material),2)
 			scan_item_add("epitaxy.inp","#layer"+str(i),_("Layer width ")+str(material),1)
@@ -417,7 +419,7 @@ class layer_widget(gtk.VBox):
 					return
 
 	def on_add_item_clicked(self, button):
-		new_item = [_("layer name"),"100e-9", "pcbm","no","none",False]
+		new_item = [_("layer name"),"100e-9", "pcbm",_("no"),"none",False]
 
 		selection = self.treeview.get_selection()
 		model, iter = selection.get_selected()

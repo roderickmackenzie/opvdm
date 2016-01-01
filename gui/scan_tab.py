@@ -156,7 +156,8 @@ class scan_vbox(gtk.VBox):
 				#build=model[0][0]+"\n"+model[0][1]+"\n"+model[0][2]
 				#self.clipboard.set_text(build, -1)
 	def callback_show_list(self, widget, data=None):
-		self.select_param_window.select_window.show()
+		self.select_param_window.update()
+		self.select_param_window.show()
 
 	def callback_delete_item(self, widget, data=None):
 		selection = self.treeview.get_selection()
@@ -228,6 +229,7 @@ class scan_vbox(gtk.VBox):
 	def nested_simulation(self):
 		commands=scan_nested_simulation(self.sim_dir,"/home/rod/juan/hpc/final_graphs/orig/probe")
 		self.send_commands_to_server(commands)
+
 	def simulate(self,run_simulation,generate_simulations):
 
 		base_dir=os.getcwd()
@@ -390,7 +392,7 @@ class scan_vbox(gtk.VBox):
 				self.plotted_graphs.refresh()
 
 		else:
-			print 'Closed, no files selected'
+			print _("Closed, no files selected")
 			dialog.destroy()
 
 	def save_combo(self):
@@ -427,9 +429,6 @@ class scan_vbox(gtk.VBox):
 		self.save_combo()
 
 	def toggled_cb( self, cell, path, model ):
-		"""
-		Sets the toggled state on the toggle button to true or false.
-		"""
 		model[path][3] = not model[path][3]
 		print model[path][2],model[path][3]
 		self.save_combo()
@@ -562,6 +561,47 @@ class scan_vbox(gtk.VBox):
 		pos=0
 
 		image = gtk.Image()
+   		image.set_from_file(os.path.join(get_image_file_path(),"add.png"))
+		add = gtk.ToolButton(image)
+		add.connect("clicked", self.callback_add_item)
+		self.tooltips.set_tip(add, _("Add parameter to scan"))
+		toolbar.insert(add, pos)
+		pos=pos+1
+
+
+		remove = gtk.ToolButton(gtk.STOCK_CLEAR)
+		remove.connect("clicked", self.callback_delete_item)
+		self.tooltips.set_tip(remove, _("Delete item"))
+		toolbar.insert(remove, pos)
+		pos=pos+1
+
+		move = gtk.ToolButton(gtk.STOCK_GO_DOWN)
+		move.connect("clicked", self.callback_move_down)
+		self.tooltips.set_tip(move, _("Move down"))
+		toolbar.insert(move, pos)
+		pos=pos+1
+
+		notes = gtk.ToolButton(gtk.STOCK_EDIT)
+		notes.connect("clicked", self.callback_notes)
+		self.tooltips.set_tip(notes, _("Edit notes"))
+		toolbar.insert(notes, pos)
+		pos=pos+1
+
+		image = gtk.Image()
+   		image.set_from_file(os.path.join(get_image_file_path(),"select.png"))
+		quick = gtk.ToolButton(image)
+		quick.connect("clicked", self.callback_show_list)
+		self.tooltips.set_tip(quick, _("Select parameter to change"))
+		toolbar.insert(quick, pos)
+		pos=pos+1
+
+		sep = gtk.SeparatorToolItem()
+		sep.set_draw(True)
+		sep.set_expand(False)
+		toolbar.insert(sep, pos)
+		pos=pos+1
+
+		image = gtk.Image()
 		image.set_from_file(os.path.join(get_image_file_path(),"forward.png"))
 		tb_simulate = gtk.ToolButton(image)
 		tb_simulate.connect("clicked", self.callback_run_simulation)
@@ -605,7 +645,7 @@ class scan_vbox(gtk.VBox):
 		toolbar.insert(self.plot_open, pos)
 		pos=pos+1
 
-	        image = gtk.Image()
+		image = gtk.Image()
    		image.set_from_file(os.path.join(get_image_file_path(),"plot_time.png"))
 		self.examine = gtk.ToolButton(image)
 		self.tooltips.set_tip(self.examine, _("Examine results in time domain"))
@@ -617,44 +657,6 @@ class scan_vbox(gtk.VBox):
 		sep.set_draw(True)
 		sep.set_expand(False)
 		toolbar.insert(sep, pos)
-		pos=pos+1
-
-   		image.set_from_file(os.path.join(get_image_file_path(),"add.png"))
-		add = gtk.ToolButton(image)
-		add.connect("clicked", self.callback_add_item)
-		self.tooltips.set_tip(add, _("Add parameter to scan"))
-		toolbar.insert(add, pos)
-		pos=pos+1
-
-
-		remove = gtk.ToolButton(gtk.STOCK_CLEAR)
-		remove.connect("clicked", self.callback_delete_item)
-		self.tooltips.set_tip(remove, _("Delete item"))
-		toolbar.insert(remove, pos)
-		pos=pos+1
-
-		move = gtk.ToolButton(gtk.STOCK_GO_DOWN)
-		move.connect("clicked", self.callback_move_down)
-		self.tooltips.set_tip(move, _("Move down"))
-		toolbar.insert(move, pos)
-		pos=pos+1
-
-		notes = gtk.ToolButton(gtk.STOCK_EDIT)
-		notes.connect("clicked", self.callback_notes)
-		self.tooltips.set_tip(notes, _("Edit notes"))
-		toolbar.insert(notes, pos)
-		pos=pos+1
-
-		sep = gtk.SeparatorToolItem()
-		sep.set_draw(True)
-		sep.set_expand(False)
-		toolbar.insert(sep, pos)
-		pos=pos+1
-
-		quick = gtk.ToolButton(gtk.STOCK_INDEX)
-		quick.connect("clicked", self.callback_show_list)
-		self.tooltips.set_tip(quick, _("Show quick selector"))
-		toolbar.insert(quick, pos)
 		pos=pos+1
 
 		image = gtk.Image()

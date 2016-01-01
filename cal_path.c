@@ -46,7 +46,7 @@ void cal_path()
 			ewe("IO error\n");
 		}
 	} else {
-		strcpy(share_path, "/usr/lib64/opvdm/light/");
+		strcpy(share_path, "/usr/lib64/opvdm/");
 	}
 	join_path(2, light_path, share_path, "light");
 	join_path(2, lang_path, share_path, "lang");

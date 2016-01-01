@@ -42,6 +42,7 @@ from plot_state import plot_state
 from plot_io import plot_load_info
 from cal_path import get_exe_command
 
+from i18n import yes_no
 
 layers=0
 electrical_layers=0
@@ -87,6 +88,7 @@ def epitaxy_load():
 			mat_file.append(lines[pos])
 
 			pos=pos+1
+			
 			electrical_layer.append(lines[pos])		#value
 
 			if lines[pos]!="none":

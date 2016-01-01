@@ -31,7 +31,6 @@ from numpy import arange, sin, pi
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
 from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
 import gobject
-from cal_path import find_data_file
 from scan_item import scan_item_add
 from inp import inp_load_file
 from inp import inp_read_next_item
@@ -46,6 +45,7 @@ from inp import inp_search_token_value
 from tmesh import tab_time_mesh
 from circuit import circuit
 from inp import inp_update_token_value
+from cal_path import get_image_file_path
 
 (
 SEG_LENGTH,
@@ -60,6 +60,9 @@ SEG_LASER
 mesh_articles = []
 
 class experiment_tab(gtk.VBox):
+
+	def update(self):
+		self.tmesh.update()
 
 	def init(self,index):
 		self.tab_label=None
@@ -83,7 +86,7 @@ class experiment_tab(gtk.VBox):
 
 		self.close_button = gtk.Button()
 		close_image = gtk.Image()
-   		close_image.set_from_file(find_data_file(os.path.join("gui","close.png")))
+   		close_image.set_from_file(os.path.join(get_image_file_path(),"close.png"))
 		close_image.show()
 		self.close_button.add(close_image)
 		self.close_button.props.relief = gtk.RELIEF_NONE

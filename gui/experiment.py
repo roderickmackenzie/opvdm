@@ -52,7 +52,7 @@ from inp import inp_remove_file
 from util import strextract_interger
 from global_objects import global_object_get
 from cal_path import get_image_file_path
-
+from global_objects import global_object_register
 import i18n
 _ = i18n.language.gettext
 
@@ -65,6 +65,10 @@ def experiment_new_filename():
 	return -1
 
 class experiment(gtk.Window):
+
+	def update(self):
+		for item in self.notebook.get_children():
+			item.update()
 
 	def get_main_menu(self, window):
 		accel_group = gtk.AccelGroup()
@@ -140,6 +144,7 @@ class experiment(gtk.Window):
 			global_object_get("tb_item_sim_mode_update")()
 			#edit
 
+
 	def callback_delete_page(self,widget,data):
 		pageNum = self.notebook.get_current_page()
 		tab = self.notebook.get_nth_page(pageNum)
@@ -160,32 +165,12 @@ class experiment(gtk.Window):
 
 		md.destroy()
 
-	def toggle_tab_visible(self,name):
-		tabs_open=0
-		print name
-		for i in range(0, self.number_of_tabs):
-			if self.rod[i].visible==True:
-				tabs_open=tabs_open+1
-
-		print _("tabs open"),tabs_open,self.number_of_tabs
-
-		for i in range(0, self.number_of_tabs):
-			print self.rod[i].tab_name, name, self.rod[i].visible
-			if self.rod[i].tab_name==name:
-				if self.rod[i].visible==False:
-					self.rod[i].set_visible(True)
-					self.rod[i].visible=True
-				else:
-					if tabs_open>1:
-						print self.rod[i].tab_label
-						self.rod[i].set_visible(False)
-						self.rod[i].visible=False
-
-	def callback_view_toggle(self, widget, data):
-		self.toggle_tab_visible(widget.get_label())
+	#def callback_view_toggle(self, widget, data):
+		#self.toggle_tab_visible(widget.get_label())
 
 	def callback_view_toggle_tab(self, widget, data):
-		self.toggle_tab_visible(data)
+		print "add code"
+		#self.toggle_tab_visible(data)
 
 	def load_tabs(self):
 
@@ -209,7 +194,6 @@ class experiment(gtk.Window):
 		for child in self.notebook.get_children():
     			self.notebook.remove(child)
 
-		self.rod=[]
 
 	def add_page(self,index):
 		new_tab=experiment_tab()
@@ -228,6 +212,7 @@ class experiment(gtk.Window):
 		self.win_list=windows()
 		self.win_list.load()
 		self.win_list.set_window(self,"experiment_window")
+		global_object_register("experiment_graph_update",self.update)
 		print "constructur"
 
 		self.tooltips = gtk.Tooltips()

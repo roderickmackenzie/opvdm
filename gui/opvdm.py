@@ -168,21 +168,14 @@ class opvdm_main_window(gobject.GObject):
 				Hello.set_timeout(2000)
 				Hello.show ()
 
-
 	def make_menu(self,event_button, event_time, data=None):
 		menu = gtk.Menu()
-		#open_item = gtk.MenuItem("Open App")
 		close_item = gtk.MenuItem(_("Quit"))
-		#Append the menu items
-		#menu.append(open_item)
 		menu.append(close_item)
-		#add callbacks
-		#open_item.connect_object("activate", open_app, "Open App")
+
 		close_item.connect_object("activate", self.callback_close_window, "Quit")
-		#Show the menu items
-		#open_item.show()
+
 		close_item.show()
-		#Popup the menu
 		menu.popup(None, None, None, event_button, event_time)
 
 	def on_status_icon_right_click(self,data, event_button, event_time):

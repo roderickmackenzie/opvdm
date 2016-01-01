@@ -28,6 +28,14 @@
 
 static int unused __attribute__ ((unused));
 
+void time_mesh_save()
+{
+}
+
+void time_load_mesh_build(struct device *in, int number)
+{
+}
+
 void time_load_mesh(struct device *in, int number)
 {
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-31 20:15+0000\n"
+"POT-Creation-Date: 2016-01-01 18:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,9 +17,51 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: util.c:903 plugins/i/util.c:903
+#: util.c:903 pub/gpl_github/plugins/i/util.c:751 plugins/i/util.c:903
 #, python-format
 msgid "Deleting dir =%s\n"
+msgstr ""
+
+#: light_interface.c:85
+msgid "Light initialization\n"
+msgstr ""
+
+#: light_interface.c:190
+msgid "dll not loaded"
+msgstr ""
+
+#: light_interface.c:196 light_interface.c:202 light_interface.c:209
+#: light_interface.c:215 light_interface.c:221 light_interface.c:227
+msgid "dll function not found\n"
+msgstr ""
+
+#: gui/welcome.py:129
+msgid ""
+"<big><b>Organic photovoltaic device model</b>\n"
+"(<a href=\"http://www.opvdm.com\" title=\"Click to find out more\">www.opvdm."
+"com</a>)\n"
+"\n"
+" To make a new simulation directory click <i>new</i> in the <i>file</i> "
+"menu\n"
+" or to open an existing simulation click on the <i>open</i> button.\n"
+" There is more help on the <a href=\"http://www.opvdm.com/man/index.html"
+"\">man pages</a>.  Please report bugs to\n"
+"roderick.mackenzie@nottingham.ac.uk.\n"
+"\n"
+" Rod\n"
+"18/10/13\n"
+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+"\n"
+"\n"
+"\n"
+"Checking web for updates....."
+msgstr ""
+
+#: gui/welcome.py:150
+msgid ""
+"<big><b>Welcome to opvdm</b></big>\n"
+" The window will provide you with information about new versions and bugs in "
+"opvdm."
 msgstr ""
 
 #: gui/opvdm_notebook.py:99 gui/opvdm_notebook.py:105
@@ -56,19 +98,31 @@ msgstr ""
 msgid "Welcome"
 msgstr ""
 
-#: gui/tb_item_sun.py:60 pub/gpl_github/gui/tb_item_sun.py:60
+#: gui/scan_io.py:95
+msgid "and "
+msgstr ""
+
+#: gui/scan_io.py:95
+msgid " more."
+msgstr ""
+
+#: gui/scan_io.py:100
+msgid "Should I delete these files?:\n"
+msgstr ""
+
+#: gui/tb_item_sun.py:65 pub/gpl_github/gui/tb_item_sun.py:60
 msgid "Light intensity (Suns):"
 msgstr ""
 
-#: gui/experiment_tab.py:102 pub/gpl_github/gui/experiment_tab.py:102
+#: gui/experiment_tab.py:105 pub/gpl_github/gui/experiment_tab.py:102
 msgid "time mesh"
 msgstr ""
 
-#: gui/experiment_tab.py:109 pub/gpl_github/gui/experiment_tab.py:109
+#: gui/experiment_tab.py:112 pub/gpl_github/gui/experiment_tab.py:109
 msgid "Circuit"
 msgstr ""
 
-#: gui/scan_tab.py:119
+#: gui/scan_tab.py:119 pub/gpl_github/gui/scan_tab.py:119
 msgid ""
 "<big><b>The scan window</b></big>\n"
 " Now using the drop down menu in the prameter to change 'column', select the "
@@ -78,110 +132,128 @@ msgid ""
 "the simulation."
 msgstr ""
 
-#: gui/scan_tab.py:133 gui/scan_tab.py:459
+#: gui/scan_tab.py:133 gui/scan_tab.py:458 pub/gpl_github/gui/scan_tab.py:133
+#: pub/gpl_github/gui/scan_tab.py:459
 msgid "Select parameter"
 msgstr ""
 
-#: gui/scan_tab.py:238
+#: gui/scan_tab.py:240 pub/gpl_github/gui/scan_tab.py:238
 msgid ""
 "You have not selected any parameters to scan through.  Use the add button."
 msgstr ""
 
-#: gui/scan_tab.py:246
+#: gui/scan_tab.py:248 pub/gpl_github/gui/scan_tab.py:246
 msgid "No sim dir name"
 msgstr ""
 
-#: gui/scan_tab.py:311
+#: gui/scan_tab.py:313 pub/gpl_github/gui/scan_tab.py:311
 msgid "I can't connect to the server"
 msgstr ""
 
-#: gui/scan_tab.py:489 gui/opvdm.py:588 pub/gpl_github/gui/opvdm.py:588
+#: gui/scan_tab.py:395 gui/layer_widget.py:141 gui/tmesh.py:356
+#: gui/opvdm.py:285 gui/opvdm.py:316 gui/opvdm.py:330 gui/opvdm.py:487
+#: gui/opvdm.py:548 pub/gpl_github/gui/layer_widget.py:139
+#: pub/gpl_github/gui/tmesh.py:317 pub/gpl_github/gui/opvdm.py:292
+#: pub/gpl_github/gui/opvdm.py:323 pub/gpl_github/gui/opvdm.py:337
+#: pub/gpl_github/gui/opvdm.py:494 pub/gpl_github/gui/opvdm.py:555
+msgid "Closed, no files selected"
+msgstr ""
+
+#: gui/scan_tab.py:488 gui/opvdm.py:581 pub/gpl_github/gui/scan_tab.py:489
+#: pub/gpl_github/gui/opvdm.py:588
 msgid ""
 "Re-run the simulation with 'dump all slices' set to one to use this tool."
 msgstr ""
 
-#: gui/scan_tab.py:502
+#: gui/scan_tab.py:501 pub/gpl_github/gui/scan_tab.py:502
 msgid "Select parameter to scan"
 msgstr ""
 
-#: gui/scan_tab.py:511 gui/scan_tab.py:632
+#: gui/scan_tab.py:510 gui/scan_tab.py:631 pub/gpl_github/gui/scan_tab.py:511
+#: pub/gpl_github/gui/scan_tab.py:632
 msgid "Delete item"
 msgstr ""
 
-#: gui/scan_tab.py:516
+#: gui/scan_tab.py:515 pub/gpl_github/gui/scan_tab.py:516
 msgid "Add item"
 msgstr ""
 
-#: gui/scan_tab.py:521 gui/scan_tab.py:638 gui/tmesh.py:544
+#: gui/scan_tab.py:520 gui/scan_tab.py:637 gui/tmesh.py:583
+#: pub/gpl_github/gui/scan_tab.py:521 pub/gpl_github/gui/scan_tab.py:638
 #: pub/gpl_github/gui/tmesh.py:544
 msgid "Move down"
 msgstr ""
 
-#: gui/scan_tab.py:530
+#: gui/scan_tab.py:529 pub/gpl_github/gui/scan_tab.py:530
 msgid "Copy"
 msgstr ""
 
-#: gui/scan_tab.py:534
+#: gui/scan_tab.py:533 pub/gpl_github/gui/scan_tab.py:534
 msgid "Paste"
 msgstr ""
 
-#: gui/scan_tab.py:538
+#: gui/scan_tab.py:537 pub/gpl_github/gui/scan_tab.py:538
 msgid "Delete"
 msgstr ""
 
-#: gui/scan_tab.py:568
+#: gui/scan_tab.py:567 pub/gpl_github/gui/scan_tab.py:568
 msgid "Run simulation"
 msgstr ""
 
-#: gui/scan_tab.py:575 gui/opvdm.py:880 pub/gpl_github/gui/opvdm.py:880
+#: gui/scan_tab.py:574 gui/opvdm.py:873 pub/gpl_github/gui/scan_tab.py:575
+#: pub/gpl_github/gui/opvdm.py:880
 msgid "Stop the simulation"
 msgstr ""
 
-#: gui/scan_tab.py:590 gui/opvdm.py:908 pub/gpl_github/gui/opvdm.py:908
+#: gui/scan_tab.py:589 gui/opvdm.py:901 pub/gpl_github/gui/scan_tab.py:590
+#: pub/gpl_github/gui/opvdm.py:908
 msgid "Find a file to plot"
 msgstr ""
 
-#: gui/scan_tab.py:611 gui/opvdm.py:927 pub/gpl_github/gui/opvdm.py:927
+#: gui/scan_tab.py:610 gui/opvdm.py:920 pub/gpl_github/gui/scan_tab.py:611
+#: pub/gpl_github/gui/opvdm.py:927
 msgid "Examine results in time domain"
 msgstr ""
 
-#: gui/scan_tab.py:625
+#: gui/scan_tab.py:624 pub/gpl_github/gui/scan_tab.py:625
 msgid "Add parameter to scan"
 msgstr ""
 
-#: gui/scan_tab.py:644
+#: gui/scan_tab.py:643 pub/gpl_github/gui/scan_tab.py:644
 msgid "Edit notes"
 msgstr ""
 
-#: gui/scan_tab.py:656
+#: gui/scan_tab.py:655 pub/gpl_github/gui/scan_tab.py:656
 msgid "Show quick selector"
 msgstr ""
 
-#: gui/scan_tab.py:664
+#: gui/scan_tab.py:663 pub/gpl_github/gui/scan_tab.py:664
 msgid "Insert python command"
 msgstr ""
 
-#: gui/scan_tab.py:695
+#: gui/scan_tab.py:694 pub/gpl_github/gui/scan_tab.py:695
 msgid "Values"
 msgstr ""
 
-#: gui/scan_tab.py:696
+#: gui/scan_tab.py:695 pub/gpl_github/gui/scan_tab.py:696
 msgid "Parameter to change"
 msgstr ""
 
-#: gui/scan_tab.py:697
+#: gui/scan_tab.py:696 pub/gpl_github/gui/scan_tab.py:697
 msgid "Opperation"
 msgstr ""
 
-#: gui/scan_tab.py:735
+#: gui/scan_tab.py:734 pub/gpl_github/gui/scan_tab.py:735
 msgid "Enabled"
 msgstr ""
 
-#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43 dump_1d_slice.c:586
+#: gui/token_lib.py:43 pub/gpl_github/gui/token_lib.py:43
+#: pub/gpl_github/dump_1d_slice.c:498 dump_1d_slice.c:586
 msgid "Electron mobility"
 msgstr ""
 
-#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44 dump_1d_slice.c:611
+#: gui/token_lib.py:44 pub/gpl_github/gui/token_lib.py:44
+#: pub/gpl_github/dump_1d_slice.c:519 dump_1d_slice.c:611
 msgid "Hole mobility"
 msgstr ""
 
@@ -201,7 +273,8 @@ msgstr ""
 msgid "Hole tail slope"
 msgstr ""
 
-#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49 dump_1d_slice.c:560
+#: gui/token_lib.py:49 pub/gpl_github/gui/token_lib.py:49
+#: pub/gpl_github/dump_1d_slice.c:477 dump_1d_slice.c:560
 msgid "Relative permittivity"
 msgstr ""
 
@@ -741,95 +814,98 @@ msgstr ""
 msgid "Normalize output x-time to one"
 msgstr ""
 
-#: gui/experiment.py:75 gui/scan.py:80 gui/opvdm.py:636
-#: pub/gpl_github/gui/experiment.py:75 pub/gpl_github/gui/opvdm.py:636
+#: gui/experiment.py:79 gui/scan.py:80 gui/opvdm.py:629
+#: pub/gpl_github/gui/experiment.py:75 pub/gpl_github/gui/scan.py:80
+#: pub/gpl_github/gui/opvdm.py:636
 msgid "/Advanced"
 msgstr ""
 
-#: gui/experiment.py:92 pub/gpl_github/gui/experiment.py:92
+#: gui/experiment.py:96 pub/gpl_github/gui/experiment.py:92
 msgid "New experiment name:"
 msgstr ""
 
-#: gui/experiment.py:92 pub/gpl_github/gui/experiment.py:92
+#: gui/experiment.py:96 pub/gpl_github/gui/experiment.py:92
 msgid "experiment "
 msgstr ""
 
-#: gui/experiment.py:111 pub/gpl_github/gui/experiment.py:111
+#: gui/experiment.py:115 pub/gpl_github/gui/experiment.py:111
 msgid "Clone the current experiment to a new experiment called:"
 msgstr ""
 
-#: gui/experiment.py:133 pub/gpl_github/gui/experiment.py:133
+#: gui/experiment.py:137 pub/gpl_github/gui/experiment.py:133
 msgid "Rename the experiment to be called:"
 msgstr ""
 
-#: gui/experiment.py:146 pub/gpl_github/gui/experiment.py:146
+#: gui/experiment.py:151 pub/gpl_github/gui/experiment.py:146
 msgid "Should I remove the experiment file "
 msgstr ""
 
-#: gui/experiment.py:157 gui/scan.py:292 pub/gpl_github/gui/experiment.py:157
+#: gui/experiment.py:162 gui/scan.py:292 pub/gpl_github/gui/experiment.py:157
+#: pub/gpl_github/gui/scan.py:292
 msgid "Not deleting"
 msgstr ""
 
-#: gui/experiment.py:170 pub/gpl_github/gui/experiment.py:170
-msgid "tabs open"
-msgstr ""
-
-#: gui/experiment.py:236 pub/gpl_github/gui/experiment.py:236
+#: gui/experiment.py:221 pub/gpl_github/gui/experiment.py:236
 msgid "Time domain experiment window - opvdm"
 msgstr ""
 
-#: gui/experiment.py:249 gui/scan.py:465 gui/opvdm.py:767
-#: pub/gpl_github/gui/experiment.py:249 pub/gpl_github/gui/opvdm.py:767
+#: gui/experiment.py:234 gui/scan.py:465 gui/opvdm.py:760
+#: pub/gpl_github/gui/experiment.py:249 pub/gpl_github/gui/scan.py:465
+#: pub/gpl_github/gui/opvdm.py:767
 msgid "/_File"
 msgstr ""
 
-#: gui/experiment.py:250 gui/scan.py:467 pub/gpl_github/gui/experiment.py:250
+#: gui/experiment.py:235 gui/scan.py:467 pub/gpl_github/gui/experiment.py:250
+#: pub/gpl_github/gui/scan.py:467
 msgid "/File/Close"
 msgstr ""
 
-#: gui/experiment.py:251 pub/gpl_github/gui/experiment.py:251
+#: gui/experiment.py:236 pub/gpl_github/gui/experiment.py:251
 msgid "/Experiments/_New"
 msgstr ""
 
-#: gui/experiment.py:252 pub/gpl_github/gui/experiment.py:252
+#: gui/experiment.py:237 pub/gpl_github/gui/experiment.py:252
 msgid "/Experiments/_Delete experiment"
 msgstr ""
 
-#: gui/experiment.py:253 pub/gpl_github/gui/experiment.py:253
+#: gui/experiment.py:238 pub/gpl_github/gui/experiment.py:253
 msgid "/Experiments/_Rename experiment"
 msgstr ""
 
-#: gui/experiment.py:254 pub/gpl_github/gui/experiment.py:254
+#: gui/experiment.py:239 pub/gpl_github/gui/experiment.py:254
 msgid "/Experiments/_Clone experiment"
 msgstr ""
 
-#: gui/experiment.py:255 gui/scan.py:491 gui/opvdm.py:782
-#: pub/gpl_github/gui/experiment.py:255 pub/gpl_github/gui/opvdm.py:782
+#: gui/experiment.py:240 gui/scan.py:491 gui/opvdm.py:775
+#: pub/gpl_github/gui/experiment.py:255 pub/gpl_github/gui/scan.py:491
+#: pub/gpl_github/gui/opvdm.py:782
 msgid "/_Help"
 msgstr ""
 
-#: gui/experiment.py:256 gui/scan.py:492 pub/gpl_github/gui/experiment.py:256
+#: gui/experiment.py:241 gui/scan.py:492 pub/gpl_github/gui/experiment.py:256
+#: pub/gpl_github/gui/scan.py:492
 msgid "/_Help/Help"
 msgstr ""
 
-#: gui/experiment.py:257 gui/scan.py:493 gui/opvdm.py:786
-#: pub/gpl_github/gui/experiment.py:257 pub/gpl_github/gui/opvdm.py:786
+#: gui/experiment.py:242 gui/scan.py:493 gui/opvdm.py:779
+#: pub/gpl_github/gui/experiment.py:257 pub/gpl_github/gui/scan.py:493
+#: pub/gpl_github/gui/opvdm.py:786
 msgid "/_Help/About"
 msgstr ""
 
-#: gui/experiment.py:274 pub/gpl_github/gui/experiment.py:274
+#: gui/experiment.py:259 pub/gpl_github/gui/experiment.py:274
 msgid "New experiment"
 msgstr ""
 
-#: gui/experiment.py:281 pub/gpl_github/gui/experiment.py:281
+#: gui/experiment.py:266 pub/gpl_github/gui/experiment.py:281
 msgid "Delete experiment"
 msgstr ""
 
-#: gui/experiment.py:287 pub/gpl_github/gui/experiment.py:287
+#: gui/experiment.py:272 pub/gpl_github/gui/experiment.py:287
 msgid "Clone experiment"
 msgstr ""
 
-#: gui/experiment.py:294 pub/gpl_github/gui/experiment.py:294
+#: gui/experiment.py:279 pub/gpl_github/gui/experiment.py:294
 msgid "Rename experiment"
 msgstr ""
 
@@ -944,89 +1020,96 @@ msgstr ""
 msgid "Luminescence"
 msgstr ""
 
-#: gui/layer_widget.py:139 gui/tmesh.py:317 gui/opvdm.py:292 gui/opvdm.py:323
-#: gui/opvdm.py:337 gui/opvdm.py:494 gui/opvdm.py:555
-#: pub/gpl_github/gui/layer_widget.py:139 pub/gpl_github/gui/tmesh.py:317
-#: pub/gpl_github/gui/opvdm.py:292 pub/gpl_github/gui/opvdm.py:323
-#: pub/gpl_github/gui/opvdm.py:337 pub/gpl_github/gui/opvdm.py:494
-#: pub/gpl_github/gui/opvdm.py:555
-msgid "Closed, no files selected"
+#: gui/scan_select.py:52
+msgid "Select simulation parameter"
 msgstr ""
 
-#: gui/layer_widget.py:172 pub/gpl_github/gui/layer_widget.py:172
+#: gui/layer_widget.py:125 gui/layer_widget.py:279
+msgid "yes"
+msgstr ""
+
+#: gui/layer_widget.py:126 gui/layer_widget.py:277 gui/layer_widget.py:422
+msgid "no"
+msgstr ""
+
+#: gui/layer_widget.py:174 pub/gpl_github/gui/layer_widget.py:172
 msgid "Add layer"
 msgstr ""
 
-#: gui/layer_widget.py:175 pub/gpl_github/gui/layer_widget.py:175
+#: gui/layer_widget.py:177 pub/gpl_github/gui/layer_widget.py:175
 msgid "Delete layer"
 msgstr ""
 
-#: gui/layer_widget.py:193 pub/gpl_github/gui/layer_widget.py:193
+#: gui/layer_widget.py:195 pub/gpl_github/gui/layer_widget.py:193
 msgid "Add device layer"
 msgstr ""
 
-#: gui/layer_widget.py:200 pub/gpl_github/gui/layer_widget.py:200
+#: gui/layer_widget.py:202 pub/gpl_github/gui/layer_widget.py:200
 msgid "Delete device layer"
 msgstr ""
 
-#: gui/layer_widget.py:206 pub/gpl_github/gui/layer_widget.py:206
+#: gui/layer_widget.py:208 pub/gpl_github/gui/layer_widget.py:206
 msgid "Move device layer"
 msgstr ""
 
-#: gui/layer_widget.py:214 pub/gpl_github/gui/layer_widget.py:214
+#: gui/layer_widget.py:216 pub/gpl_github/gui/layer_widget.py:214
 msgid "Edit the electrical mesh"
 msgstr ""
 
-#: gui/layer_widget.py:222 pub/gpl_github/gui/layer_widget.py:222
+#: gui/layer_widget.py:224 pub/gpl_github/gui/layer_widget.py:222
 msgid "Optical simulation"
 msgstr ""
 
-#: gui/layer_widget.py:232 pub/gpl_github/gui/layer_widget.py:232
+#: gui/layer_widget.py:234 pub/gpl_github/gui/layer_widget.py:232
 msgid "Look at the materials database"
 msgstr ""
 
-#: gui/layer_widget.py:279 pub/gpl_github/gui/layer_widget.py:279
+#: gui/layer_widget.py:241
+msgid "Device layers"
+msgstr ""
+
+#: gui/layer_widget.py:281 pub/gpl_github/gui/layer_widget.py:279
 msgid "Material for "
 msgstr ""
 
-#: gui/layer_widget.py:280 pub/gpl_github/gui/layer_widget.py:280
+#: gui/layer_widget.py:282 pub/gpl_github/gui/layer_widget.py:280
 msgid "Layer width "
 msgstr ""
 
-#: gui/layer_widget.py:317 pub/gpl_github/gui/layer_widget.py:317
+#: gui/layer_widget.py:319 pub/gpl_github/gui/layer_widget.py:317
 msgid "Layer name"
 msgstr ""
 
-#: gui/layer_widget.py:325 pub/gpl_github/gui/layer_widget.py:325
+#: gui/layer_widget.py:327 pub/gpl_github/gui/layer_widget.py:325
 msgid "Thicknes"
 msgstr ""
 
-#: gui/layer_widget.py:329 pub/gpl_github/gui/layer_widget.py:329
+#: gui/layer_widget.py:331 pub/gpl_github/gui/layer_widget.py:329
 msgid "Optical material"
 msgstr ""
 
-#: gui/layer_widget.py:346 pub/gpl_github/gui/layer_widget.py:346
+#: gui/layer_widget.py:348 pub/gpl_github/gui/layer_widget.py:346
 msgid "Active layer"
 msgstr ""
 
-#: gui/layer_widget.py:370 gui/layer_widget.py:378
+#: gui/layer_widget.py:372 gui/layer_widget.py:380
 #: pub/gpl_github/gui/layer_widget.py:370
 #: pub/gpl_github/gui/layer_widget.py:378
 msgid "DoS Layer"
 msgstr ""
 
-#: gui/layer_widget.py:420 pub/gpl_github/gui/layer_widget.py:420
+#: gui/layer_widget.py:422 pub/gpl_github/gui/layer_widget.py:420
 msgid "layer name"
 msgstr ""
 
-#: gui/layer_widget.py:470 pub/gpl_github/gui/layer_widget.py:470
+#: gui/layer_widget.py:472 pub/gpl_github/gui/layer_widget.py:470
 msgid ""
 "<big><b>The optical simulation window</b></big>\n"
 "Use this window to perform optical simulations.  Click on the play button to "
 "run a simulation."
 msgstr ""
 
-#: gui/layer_widget.py:470 pub/gpl_github/gui/layer_widget.py:470
+#: gui/layer_widget.py:472 pub/gpl_github/gui/layer_widget.py:470
 msgid ""
 "Click on the play button to run an optical simulation.  The results will be "
 "displayed in the tabs to the right."
@@ -1036,249 +1119,308 @@ msgstr ""
 msgid "Simulation mode:"
 msgstr ""
 
-#: gui/scan.py:94
+#: gui/server.py:116
+msgid ""
+"<big><b>Simulation finished!</b></big>\n"
+"Click on the plot icon to plot the results"
+msgstr ""
+
+#: gui/tab_main.py:246
+msgid ""
+"<big><b>The device structure tab</b></big>\n"
+" Use this tab to change the structure of the device, the layer thicknesses "
+"and to perform optical simulations.  You can also browse the materials data "
+"base and  edit the electrical mesh."
+msgstr ""
+
+#: gui/scan.py:94 pub/gpl_github/gui/scan.py:94
 msgid "Change directory"
 msgstr ""
 
-#: gui/scan.py:103 gui/scan.py:239 gui/opvdm.py:353
+#: gui/scan.py:103 gui/scan.py:239 gui/opvdm.py:346
+#: pub/gpl_github/gui/scan.py:103 pub/gpl_github/gui/scan.py:239
 #: pub/gpl_github/gui/opvdm.py:353
 msgid "All files"
 msgstr ""
 
-#: gui/scan.py:126
+#: gui/scan.py:126 pub/gpl_github/gui/scan.py:126
 msgid "New simulation name:"
 msgstr ""
 
-#: gui/scan.py:126
+#: gui/scan.py:126 pub/gpl_github/gui/scan.py:126
 msgid "Simulation "
 msgstr ""
 
-#: gui/scan.py:164
+#: gui/scan.py:164 pub/gpl_github/gui/scan.py:164
 msgid "Clone the current simulation to a new simulation called:"
 msgstr ""
 
-#: gui/scan.py:170
+#: gui/scan.py:170 pub/gpl_github/gui/scan.py:170
 msgid "I want to copy"
 msgstr ""
 
-#: gui/scan.py:228
+#: gui/scan.py:228 pub/gpl_github/gui/scan.py:228
 msgid "Select HPC dir"
 msgstr ""
 
-#: gui/scan.py:258
+#: gui/scan.py:258 pub/gpl_github/gui/scan.py:258
 msgid "Rename the simulation to be called:"
 msgstr ""
 
-#: gui/scan.py:272
+#: gui/scan.py:272 pub/gpl_github/gui/scan.py:272
 msgid "Should I remove the simulation directory "
 msgstr ""
 
-#: gui/scan.py:288
+#: gui/scan.py:288 pub/gpl_github/gui/scan.py:288
 msgid "I am going to delete file"
 msgstr ""
 
-#: gui/scan.py:443
+#: gui/scan.py:443 pub/gpl_github/gui/scan.py:443
 msgid "Parameter scan - opvdm"
 msgstr ""
 
-#: gui/scan.py:466
+#: gui/scan.py:466 pub/gpl_github/gui/scan.py:466
 msgid "/File/Change dir"
 msgstr ""
 
-#: gui/scan.py:468
+#: gui/scan.py:468 pub/gpl_github/gui/scan.py:468
 msgid "/Simulations/_New"
 msgstr ""
 
-#: gui/scan.py:469
+#: gui/scan.py:469 pub/gpl_github/gui/scan.py:469
 msgid "/Simulations/_Delete simulaton"
 msgstr ""
 
-#: gui/scan.py:470
+#: gui/scan.py:470 pub/gpl_github/gui/scan.py:470
 msgid "/Simulations/_Rename simulation"
 msgstr ""
 
-#: gui/scan.py:471
+#: gui/scan.py:471 pub/gpl_github/gui/scan.py:471
 msgid "/Simulations/_Clone simulation"
 msgstr ""
 
-#: gui/scan.py:472
+#: gui/scan.py:472 pub/gpl_github/gui/scan.py:472
 msgid "/Simulations/sep1"
 msgstr ""
 
-#: gui/scan.py:473
+#: gui/scan.py:473 pub/gpl_github/gui/scan.py:473
 msgid "/Simulations/_Run simulation"
 msgstr ""
 
-#: gui/scan.py:474
+#: gui/scan.py:474 pub/gpl_github/gui/scan.py:474
 msgid "/Advanced/_Build simulation"
 msgstr ""
 
-#: gui/scan.py:475
+#: gui/scan.py:475 pub/gpl_github/gui/scan.py:475
 msgid "/Advanced/_Run (no build)"
 msgstr ""
 
-#: gui/scan.py:476
+#: gui/scan.py:476 pub/gpl_github/gui/scan.py:476
 msgid "/Advanced/_Run nested simulation"
 msgstr ""
 
-#: gui/scan.py:477
+#: gui/scan.py:477 pub/gpl_github/gui/scan.py:477
 msgid "/Advanced/_Clean simulation"
 msgstr ""
 
-#: gui/scan.py:478
+#: gui/scan.py:478 pub/gpl_github/gui/scan.py:478
 msgid "/Advanced/_Clean unconverged simulation"
 msgstr ""
 
-#: gui/scan.py:479
+#: gui/scan.py:479 pub/gpl_github/gui/scan.py:479
 msgid "/Advanced/_Clean simulation output"
 msgstr ""
 
-#: gui/scan.py:480
+#: gui/scan.py:480 pub/gpl_github/gui/scan.py:480
 msgid "/Advanced/sep2"
 msgstr ""
 
-#: gui/scan.py:481
+#: gui/scan.py:481 pub/gpl_github/gui/scan.py:481
 msgid "/Advanced/_Import from hpc"
 msgstr ""
 
-#: gui/scan.py:482
+#: gui/scan.py:482 pub/gpl_github/gui/scan.py:482
 msgid "/Advanced/_Push to hpc"
 msgstr ""
 
-#: gui/scan.py:483
+#: gui/scan.py:483 pub/gpl_github/gui/scan.py:483
 msgid "/Advanced/_Push unconverged to hpc"
 msgstr ""
 
-#: gui/scan.py:484
+#: gui/scan.py:484 pub/gpl_github/gui/scan.py:484
 msgid "/Advanced/_Set hpc dir"
 msgstr ""
 
-#: gui/scan.py:486
+#: gui/scan.py:486 pub/gpl_github/gui/scan.py:486
 msgid "/Advanced/_Cluster sleep"
 msgstr ""
 
-#: gui/scan.py:487
+#: gui/scan.py:487 pub/gpl_github/gui/scan.py:487
 msgid "/Advanced/_Cluster poweroff"
 msgstr ""
 
-#: gui/scan.py:488
+#: gui/scan.py:488 pub/gpl_github/gui/scan.py:488
 msgid "/Advanced/_Cluster wake"
 msgstr ""
 
-#: gui/scan.py:490
+#: gui/scan.py:490 pub/gpl_github/gui/scan.py:490
 msgid "/Advanced/_Remove all results"
 msgstr ""
 
-#: gui/scan.py:513
+#: gui/scan.py:513 pub/gpl_github/gui/scan.py:513
 msgid "New simulation"
 msgstr ""
 
-#: gui/scan.py:529
+#: gui/scan.py:529 pub/gpl_github/gui/scan.py:529
 msgid "Delete simulation"
 msgstr ""
 
-#: gui/scan.py:535
+#: gui/scan.py:535 pub/gpl_github/gui/scan.py:535
 msgid "Clone simulation"
 msgstr ""
 
-#: gui/scan.py:542
+#: gui/scan.py:542 pub/gpl_github/gui/scan.py:542
 msgid "Rename simulation"
 msgstr ""
 
-#: gui/scan.py:556
+#: gui/scan.py:556 pub/gpl_github/gui/scan.py:556
 msgid "Run all simulation"
 msgstr ""
 
-#: gui/scan.py:571
+#: gui/scan.py:571 pub/gpl_github/gui/scan.py:571
 msgid "Configure cluster"
 msgstr ""
 
-#: gui/scan.py:584
+#: gui/scan.py:584 pub/gpl_github/gui/scan.py:584
 msgid "Help"
 msgstr ""
 
-#: gui/tmesh.py:154 pub/gpl_github/gui/tmesh.py:154
+#: gui/tmesh.py:89 gui/tmesh.py:93 gui/tmesh.py:97 gui/tmesh.py:101
+#: gui/tmesh.py:105 gui/tmesh.py:109 gui/tmesh.py:113 gui/tmesh.py:129
+#: gui/tmesh.py:130 gui/tmesh.py:131 gui/tmesh.py:132 gui/tmesh.py:133
+#: gui/tmesh.py:134 gui/tmesh.py:135
+msgid "Part "
+msgstr ""
+
+#: gui/tmesh.py:89 gui/tmesh.py:129
+msgid " period"
+msgstr ""
+
+#: gui/tmesh.py:93 gui/tmesh.py:130
+msgid " dt"
+msgstr ""
+
+#: gui/tmesh.py:97 gui/tmesh.py:131
+msgid " start voltage"
+msgstr ""
+
+#: gui/tmesh.py:101 gui/tmesh.py:132
+msgid " stop voltage"
+msgstr ""
+
+#: gui/tmesh.py:105 gui/tmesh.py:133
+msgid " mul"
+msgstr ""
+
+#: gui/tmesh.py:109
+msgid " sun"
+msgstr ""
+
+#: gui/tmesh.py:113
+msgid " laser"
+msgstr ""
+
+#: gui/tmesh.py:134
+msgid " Sun"
+msgstr ""
+
+#: gui/tmesh.py:135
+msgid " CW laser"
+msgstr ""
+
+#: gui/tmesh.py:187 pub/gpl_github/gui/tmesh.py:154
 msgid "Enter the start time of the simulation"
 msgstr ""
 
-#: gui/tmesh.py:166 pub/gpl_github/gui/tmesh.py:166
+#: gui/tmesh.py:199 pub/gpl_github/gui/tmesh.py:166
 msgid "Enter the time at which the laser pulse will fire (-1) to turn it off"
 msgstr ""
 
-#: gui/tmesh.py:258 pub/gpl_github/gui/tmesh.py:258
+#: gui/tmesh.py:297 pub/gpl_github/gui/tmesh.py:258
 msgid "Voltage (Volts)"
 msgstr ""
 
-#: gui/tmesh.py:261 pub/gpl_github/gui/tmesh.py:261
+#: gui/tmesh.py:300 pub/gpl_github/gui/tmesh.py:261
 msgid "Time ("
 msgstr ""
 
-#: gui/tmesh.py:264 pub/gpl_github/gui/tmesh.py:264
+#: gui/tmesh.py:303 pub/gpl_github/gui/tmesh.py:264
 msgid "Magnitude (au)"
 msgstr ""
 
-#: gui/tmesh.py:284 gui/tmesh.py:286 pub/gpl_github/gui/tmesh.py:284
-#: pub/gpl_github/gui/tmesh.py:286 plugins/pulse/pulse.c:259 pulse.c:259
+#: gui/tmesh.py:323 gui/tmesh.py:325 pub/gpl_github/gui/tmesh.py:284
+#: pub/gpl_github/gui/tmesh.py:286 pub/gpl_github/plugins/pulse/pulse.c:251
+#: plugins/pulse/pulse.c:261 pulse.c:261
 msgid "Voltage"
 msgstr ""
 
-#: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:372
+#: gui/tmesh.py:323 gui/tmesh.py:325 gui/tmesh.py:411
 #: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
 #: pub/gpl_github/gui/tmesh.py:372
 msgid "Sun"
 msgstr ""
 
-#: gui/tmesh.py:284 gui/tmesh.py:286 gui/tmesh.py:379
+#: gui/tmesh.py:323 gui/tmesh.py:325 gui/tmesh.py:418
 #: pub/gpl_github/gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:286
 #: pub/gpl_github/gui/tmesh.py:379
 msgid "CW laser"
 msgstr ""
 
-#: gui/tmesh.py:284 pub/gpl_github/gui/tmesh.py:284
+#: gui/tmesh.py:323 pub/gpl_github/gui/tmesh.py:284
 msgid "fs laser"
 msgstr ""
 
-#: gui/tmesh.py:294 pub/gpl_github/gui/tmesh.py:294
+#: gui/tmesh.py:333 pub/gpl_github/gui/tmesh.py:294
 msgid "Save as.."
 msgstr ""
 
-#: gui/tmesh.py:337 pub/gpl_github/gui/tmesh.py:337
+#: gui/tmesh.py:376 pub/gpl_github/gui/tmesh.py:337
 msgid "Length"
 msgstr ""
 
-#: gui/tmesh.py:350 pub/gpl_github/gui/tmesh.py:350
+#: gui/tmesh.py:389 pub/gpl_github/gui/tmesh.py:350
 msgid "Start Voltage"
 msgstr ""
 
-#: gui/tmesh.py:357 pub/gpl_github/gui/tmesh.py:357
+#: gui/tmesh.py:396 pub/gpl_github/gui/tmesh.py:357
 msgid "Stop Voltage"
 msgstr ""
 
-#: gui/tmesh.py:365 pub/gpl_github/gui/tmesh.py:365
+#: gui/tmesh.py:404 pub/gpl_github/gui/tmesh.py:365
 msgid "Multiply"
 msgstr ""
 
-#: gui/tmesh.py:475 pub/gpl_github/gui/tmesh.py:475
+#: gui/tmesh.py:514 pub/gpl_github/gui/tmesh.py:475
 msgid " mesh points"
 msgstr ""
 
-#: gui/tmesh.py:526 pub/gpl_github/gui/tmesh.py:526
+#: gui/tmesh.py:565 pub/gpl_github/gui/tmesh.py:526
 msgid "Save image"
 msgstr ""
 
-#: gui/tmesh.py:532 pub/gpl_github/gui/tmesh.py:532
+#: gui/tmesh.py:571 pub/gpl_github/gui/tmesh.py:532
 msgid "Add section"
 msgstr ""
 
-#: gui/tmesh.py:538 pub/gpl_github/gui/tmesh.py:538
+#: gui/tmesh.py:577 pub/gpl_github/gui/tmesh.py:538
 msgid "Delete section"
 msgstr ""
 
-#: gui/tmesh.py:552 pub/gpl_github/gui/tmesh.py:552
+#: gui/tmesh.py:591 pub/gpl_github/gui/tmesh.py:552
 msgid "Laser start time"
 msgstr ""
 
-#: gui/tmesh.py:560 pub/gpl_github/gui/tmesh.py:560
+#: gui/tmesh.py:599 pub/gpl_github/gui/tmesh.py:560
 msgid "Simulation start time"
 msgstr ""
 
@@ -1286,11 +1428,11 @@ msgstr ""
 msgid "Don't run me as root!!"
 msgstr ""
 
-#: gui/opvdm.py:175 pub/gpl_github/gui/opvdm.py:175
+#: gui/opvdm.py:173 pub/gpl_github/gui/opvdm.py:175
 msgid "Quit"
 msgstr ""
 
-#: gui/opvdm.py:258 pub/gpl_github/gui/opvdm.py:258
+#: gui/opvdm.py:251 pub/gpl_github/gui/opvdm.py:258
 msgid ""
 "<big><b>The scan window</b></big>\n"
 " Very often it is useful to be able to systematically very a device "
@@ -1298,118 +1440,118 @@ msgid ""
 "you to do just that."
 msgstr ""
 
-#: gui/opvdm.py:258 pub/gpl_github/gui/opvdm.py:258
+#: gui/opvdm.py:251 pub/gpl_github/gui/opvdm.py:258
 msgid "Use the plus icon to add a new scan line to the list."
 msgstr ""
 
-#: gui/opvdm.py:274 pub/gpl_github/gui/opvdm.py:274
+#: gui/opvdm.py:267 pub/gpl_github/gui/opvdm.py:274
 msgid ""
 "<big>Select a file to plot</big>\n"
 "Single clicking shows you the content of the file"
 msgstr ""
 
-#: gui/opvdm.py:306 pub/gpl_github/gui/opvdm.py:306
+#: gui/opvdm.py:299 pub/gpl_github/gui/opvdm.py:306
 msgid "Import an old opvdm simulation"
 msgstr ""
 
-#: gui/opvdm.py:335 pub/gpl_github/gui/opvdm.py:335
+#: gui/opvdm.py:328 pub/gpl_github/gui/opvdm.py:335
 msgid "file opened"
 msgstr ""
 
-#: gui/opvdm.py:344 pub/gpl_github/gui/opvdm.py:344
+#: gui/opvdm.py:337 pub/gpl_github/gui/opvdm.py:344
 msgid "Make new opvdm simulation"
 msgstr ""
 
-#: gui/opvdm.py:368 pub/gpl_github/gui/opvdm.py:368
+#: gui/opvdm.py:361 pub/gpl_github/gui/opvdm.py:368
 msgid "Closed, no dir selected"
 msgstr ""
 
-#: gui/opvdm.py:394 pub/gpl_github/gui/opvdm.py:394
+#: gui/opvdm.py:387 pub/gpl_github/gui/opvdm.py:394
 msgid ""
 "<big><b>Now run the simulation</b></big>\n"
 " Click on the play icon to start a simulation."
 msgstr ""
 
-#: gui/opvdm.py:396 gui/opvdm.py:402 gui/opvdm.py:426 gui/opvdm.py:432
-#: gui/opvdm.py:771 pub/gpl_github/gui/opvdm.py:396
+#: gui/opvdm.py:389 gui/opvdm.py:395 gui/opvdm.py:419 gui/opvdm.py:425
+#: gui/opvdm.py:764 pub/gpl_github/gui/opvdm.py:396
 #: pub/gpl_github/gui/opvdm.py:402 pub/gpl_github/gui/opvdm.py:426
 #: pub/gpl_github/gui/opvdm.py:432 pub/gpl_github/gui/opvdm.py:771
 msgid "/File/Import data"
 msgstr ""
 
-#: gui/opvdm.py:399 gui/opvdm.py:429 pub/gpl_github/gui/opvdm.py:399
+#: gui/opvdm.py:392 gui/opvdm.py:422 pub/gpl_github/gui/opvdm.py:399
 #: pub/gpl_github/gui/opvdm.py:429
 msgid "/File/Export data"
 msgstr ""
 
-#: gui/opvdm.py:405 gui/opvdm.py:435 gui/opvdm.py:772
+#: gui/opvdm.py:398 gui/opvdm.py:428 gui/opvdm.py:765
 #: pub/gpl_github/gui/opvdm.py:405 pub/gpl_github/gui/opvdm.py:435
 #: pub/gpl_github/gui/opvdm.py:772
 msgid "/File/Import from library"
 msgstr ""
 
-#: gui/opvdm.py:408 gui/opvdm.py:438 gui/opvdm.py:775
+#: gui/opvdm.py:401 gui/opvdm.py:431 gui/opvdm.py:768
 #: pub/gpl_github/gui/opvdm.py:408 pub/gpl_github/gui/opvdm.py:438
 #: pub/gpl_github/gui/opvdm.py:775
 msgid "/Simulate/Run"
 msgstr ""
 
-#: gui/opvdm.py:411 gui/opvdm.py:441 gui/opvdm.py:776
+#: gui/opvdm.py:404 gui/opvdm.py:434 gui/opvdm.py:769
 #: pub/gpl_github/gui/opvdm.py:411 pub/gpl_github/gui/opvdm.py:441
 #: pub/gpl_github/gui/opvdm.py:776
 msgid "/Simulate/Parameter scan"
 msgstr ""
 
-#: gui/opvdm.py:424 pub/gpl_github/gui/opvdm.py:424
+#: gui/opvdm.py:417 pub/gpl_github/gui/opvdm.py:424
 msgid ""
 "<big><b>Hi!</b></big>\n"
 " I'm the on-line help system :).  If you find any bugs please report them to "
 "roderick.mackenzie@nottingham.ac.uk."
 msgstr ""
 
-#: gui/opvdm.py:424 pub/gpl_github/gui/opvdm.py:424
+#: gui/opvdm.py:417 pub/gpl_github/gui/opvdm.py:424
 msgid "Click on the new icon to make a new simulation directory."
 msgstr ""
 
-#: gui/opvdm.py:475 pub/gpl_github/gui/opvdm.py:475
+#: gui/opvdm.py:468 pub/gpl_github/gui/opvdm.py:475
 msgid "Open an existing opvdm simulation"
 msgstr ""
 
-#: gui/opvdm.py:498 pub/gpl_github/gui/opvdm.py:498
+#: gui/opvdm.py:491 pub/gpl_github/gui/opvdm.py:498
 msgid "Export the simulation as"
 msgstr ""
 
-#: gui/opvdm.py:504 gui/opvdm.py:541 pub/gpl_github/gui/opvdm.py:504
+#: gui/opvdm.py:497 gui/opvdm.py:534 pub/gpl_github/gui/opvdm.py:504
 #: pub/gpl_github/gui/opvdm.py:541
 msgid "opvdm archive input+output files"
 msgstr ""
 
-#: gui/opvdm.py:509 gui/opvdm.py:543 pub/gpl_github/gui/opvdm.py:509
+#: gui/opvdm.py:502 gui/opvdm.py:536 pub/gpl_github/gui/opvdm.py:509
 #: pub/gpl_github/gui/opvdm.py:543
 msgid "opvdm archive input files"
 msgstr ""
 
-#: gui/opvdm.py:514 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:514
+#: gui/opvdm.py:507 gui/opvdm.py:540 pub/gpl_github/gui/opvdm.py:514
 #: pub/gpl_github/gui/opvdm.py:547
 msgid "pdf file"
 msgstr ""
 
-#: gui/opvdm.py:519 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:519
+#: gui/opvdm.py:512 gui/opvdm.py:540 pub/gpl_github/gui/opvdm.py:519
 #: pub/gpl_github/gui/opvdm.py:547
 msgid "jpg image"
 msgstr ""
 
-#: gui/opvdm.py:524 gui/opvdm.py:547 pub/gpl_github/gui/opvdm.py:524
+#: gui/opvdm.py:517 gui/opvdm.py:540 pub/gpl_github/gui/opvdm.py:524
 #: pub/gpl_github/gui/opvdm.py:547
 msgid "tex file"
 msgstr ""
 
-#: gui/opvdm.py:529 gui/opvdm.py:545 pub/gpl_github/gui/opvdm.py:529
+#: gui/opvdm.py:522 gui/opvdm.py:538 pub/gpl_github/gui/opvdm.py:529
 #: pub/gpl_github/gui/opvdm.py:545
 msgid "optical materials database"
 msgstr ""
 
-#: gui/opvdm.py:584 pub/gpl_github/gui/opvdm.py:584
+#: gui/opvdm.py:577 pub/gpl_github/gui/opvdm.py:584
 msgid ""
 "<big><b>Examine the results in time domain</b></big>\n"
 " After you have run a simulation in time domain, if is often nice to be able "
@@ -1419,7 +1561,7 @@ msgid ""
 "rather than time points."
 msgstr ""
 
-#: gui/opvdm.py:599 pub/gpl_github/gui/opvdm.py:599
+#: gui/opvdm.py:592 pub/gpl_github/gui/opvdm.py:599
 msgid ""
 "<big><b>The time mesh editor</b></big>\n"
 " To do time domain simulations one must define how voltage the light vary as "
@@ -1427,268 +1569,336 @@ msgid ""
 "to define the simulation length and time step."
 msgstr ""
 
-#: gui/opvdm.py:637 gui/opvdm.py:777 pub/gpl_github/gui/opvdm.py:637
+#: gui/opvdm.py:630 gui/opvdm.py:770 pub/gpl_github/gui/opvdm.py:637
 #: pub/gpl_github/gui/opvdm.py:777
 msgid "/Simulate/Start cluster server"
 msgstr ""
 
-#: gui/opvdm.py:658 pub/gpl_github/gui/opvdm.py:658
+#: gui/opvdm.py:651 pub/gpl_github/gui/opvdm.py:658
 msgid "Quantum efficiency"
 msgstr ""
 
-#: gui/opvdm.py:733 gui/opvdm.py:1034 pub/gpl_github/gui/opvdm.py:733
+#: gui/opvdm.py:726 gui/opvdm.py:1027 pub/gpl_github/gui/opvdm.py:733
 #: pub/gpl_github/gui/opvdm.py:1034
 msgid "Organic Photovoltaic Device Model (www.opvdm.com)"
 msgstr ""
 
-#: gui/opvdm.py:768 pub/gpl_github/gui/opvdm.py:768
+#: gui/opvdm.py:761 pub/gpl_github/gui/opvdm.py:768
 msgid "/File/_New simulation"
 msgstr ""
 
-#: gui/opvdm.py:769 pub/gpl_github/gui/opvdm.py:769
+#: gui/opvdm.py:762 pub/gpl_github/gui/opvdm.py:769
 msgid "/File/_Open simulation"
 msgstr ""
 
-#: gui/opvdm.py:770 pub/gpl_github/gui/opvdm.py:770
+#: gui/opvdm.py:763 pub/gpl_github/gui/opvdm.py:770
 msgid "/File/_Export data"
 msgstr ""
 
-#: gui/opvdm.py:773 pub/gpl_github/gui/opvdm.py:773
+#: gui/opvdm.py:766 pub/gpl_github/gui/opvdm.py:773
 msgid "/File/Quit"
 msgstr ""
 
-#: gui/opvdm.py:774 pub/gpl_github/gui/opvdm.py:774
+#: gui/opvdm.py:767 pub/gpl_github/gui/opvdm.py:774
 msgid "/_Simulate"
 msgstr ""
 
-#: gui/opvdm.py:778 pub/gpl_github/gui/opvdm.py:778
+#: gui/opvdm.py:771 pub/gpl_github/gui/opvdm.py:778
 msgid "/_View"
 msgstr ""
 
-#: gui/opvdm.py:779 pub/gpl_github/gui/opvdm.py:779
+#: gui/opvdm.py:772 pub/gpl_github/gui/opvdm.py:779
 msgid "/_Plots"
 msgstr ""
 
-#: gui/opvdm.py:780 pub/gpl_github/gui/opvdm.py:780
+#: gui/opvdm.py:773 pub/gpl_github/gui/opvdm.py:780
 msgid "/Plots/Plot simulation result"
 msgstr ""
 
-#: gui/opvdm.py:781 pub/gpl_github/gui/opvdm.py:781
+#: gui/opvdm.py:774 pub/gpl_github/gui/opvdm.py:781
 msgid "/_Plots/"
 msgstr ""
 
-#: gui/opvdm.py:783 pub/gpl_github/gui/opvdm.py:783
+#: gui/opvdm.py:776 pub/gpl_github/gui/opvdm.py:783
 msgid "/_Help/Help Index"
 msgstr ""
 
-#: gui/opvdm.py:818 pub/gpl_github/gui/opvdm.py:818
+#: gui/opvdm.py:811 pub/gpl_github/gui/opvdm.py:818
 msgid "Open a simulation"
 msgstr ""
 
-#: gui/opvdm.py:828 pub/gpl_github/gui/opvdm.py:828
+#: gui/opvdm.py:821 pub/gpl_github/gui/opvdm.py:828
 msgid "Make a new simulation"
 msgstr ""
 
-#: gui/opvdm.py:853 pub/gpl_github/gui/opvdm.py:853
+#: gui/opvdm.py:846 pub/gpl_github/gui/opvdm.py:853
 msgid "Run the simulation"
 msgstr ""
 
-#: gui/opvdm.py:862 pub/gpl_github/gui/opvdm.py:862
+#: gui/opvdm.py:855 pub/gpl_github/gui/opvdm.py:862
 msgid "Run parameter scan"
 msgstr ""
 
-#: gui/opvdm.py:872 pub/gpl_github/gui/opvdm.py:872
+#: gui/opvdm.py:865 pub/gpl_github/gui/opvdm.py:872
 msgid "Run a fit command"
 msgstr ""
 
-#: gui/opvdm.py:895 pub/gpl_github/gui/opvdm.py:895
+#: gui/opvdm.py:888 pub/gpl_github/gui/opvdm.py:895
 msgid "Parameter scan"
 msgstr ""
 
-#: gui/opvdm.py:943 pub/gpl_github/gui/opvdm.py:943
+#: gui/opvdm.py:936 pub/gpl_github/gui/opvdm.py:943
 msgid "Edit the time mesh"
 msgstr ""
 
-#: complex_solver.c:47
+#: complex_solver.c:47 pub/gpl_github/complex_solver.c:48
 msgid "out of memory!\n"
 msgstr ""
 
-#: complex_solver.c:50
+#: complex_solver.c:50 pub/gpl_github/complex_solver.c:51
 msgid "matrix is singular!\n"
 msgstr ""
 
-#: complex_solver.c:84
+#: complex_solver.c:84 pub/gpl_github/complex_solver.c:84
 msgid "Matrix dumped\n"
 msgstr ""
 
-#: complex_solver.c:103
+#: complex_solver.c:103 pub/gpl_github/complex_solver.c:103
 msgid "Complex solver free\n"
 msgstr ""
 
-#: main.c:184
+#: main.c:184 pub/gpl_github/main.c:156
 msgid "Organic Photovoltaic Device Model (www.opvdm.com)\n"
 msgstr ""
 
-#: main.c:185
+#: main.c:185 pub/gpl_github/main.c:158
 msgid "You should have received a copy of the GNU General Public License\n"
 msgstr ""
 
-#: main.c:186
+#: main.c:186 pub/gpl_github/main.c:160
 msgid "along with this software.  If not, see www.gnu.org/licenses/.\n"
 msgstr ""
 
-#: main.c:188
+#: main.c:188 pub/gpl_github/main.c:163
 msgid "If you wish to collaborate in anyway please get in touch:\n"
 msgstr ""
 
-#: main.c:189
+#: main.c:189 pub/gpl_github/main.c:164
 msgid "roderick.mackenzie@nottingham.ac.uk\n"
 msgstr ""
 
-#: main.c:190
+#: main.c:190 pub/gpl_github/main.c:165
 msgid "www.roderickmackenzie.eu/contact.html\n"
 msgstr ""
 
-#: light_utils.c:55
+#: pub/gpl_github/gui/experiment.py:170
+msgid "tabs open"
+msgstr ""
+
+#: pub/gpl_github/light_utils.c:55 light_utils.c:55
 msgid "It's dark I know what the answer is\n"
 msgstr ""
 
-#: light_utils.c:211
+#: pub/gpl_github/light_utils.c:209 light_utils.c:211
 msgid "Light free memory\n"
 msgstr ""
 
-#: light_utils.c:282
+#: pub/gpl_github/light_utils.c:267 light_utils.c:282
 msgid "No optical materials found\n"
 msgstr ""
 
-#: light_utils.c:445
+#: pub/gpl_github/light_utils.c:440 light_utils.c:445
 msgid "Error at end of patch file\n"
 msgstr ""
 
-#: plugins/pulse/pulse.c:112 pulse.c:112
+#: pub/gpl_github/plugins/pulse/pulse.c:108 plugins/pulse/pulse.c:112
+#: pulse.c:112
 msgid "no pulse config file found"
 msgstr ""
 
-#: plugins/pulse/pulse.c:148 plugins/pulse/pulse.c:177 pulse.c:148 pulse.c:177
+#: pub/gpl_github/plugins/pulse/pulse.c:142
+#: pub/gpl_github/plugins/pulse/pulse.c:167 plugins/pulse/pulse.c:150
+#: plugins/pulse/pulse.c:179 pulse.c:150 pulse.c:179
 msgid "pulse mode not known\n"
 msgstr ""
 
-#: plugins/pulse/pulse.c:183 pulse.c:183
+#: pub/gpl_github/plugins/pulse/pulse.c:171 plugins/pulse/pulse.c:185
+#: pulse.c:185
 msgid "pulse time"
 msgstr ""
 
-#: plugins/pulse/pulse.c:183 pulse.c:183
+#: pub/gpl_github/plugins/pulse/pulse.c:172 plugins/pulse/pulse.c:185
+#: pulse.c:185
 msgid "step"
 msgstr ""
 
-#: plugins/pulse/pulse.c:184 pulse.c:184
+#: pub/gpl_github/plugins/pulse/pulse.c:174 plugins/pulse/pulse.c:186
+#: pulse.c:186
 msgid "current"
 msgstr ""
 
-#: plugins/pulse/pulse.c:215 pulse.c:215
+#: pub/gpl_github/plugins/pulse/pulse.c:209 plugins/pulse/pulse.c:217
+#: pulse.c:217
 msgid "Time - current"
 msgstr ""
 
-#: plugins/pulse/pulse.c:216 plugins/pulse/pulse.c:235
-#: plugins/pulse/pulse.c:255 plugins/pulse/pulse.c:272 dump_1d_slice.c:65
-#: dump_1d_slice.c:90 dump_1d_slice.c:115 dump_1d_slice.c:140
-#: dump_1d_slice.c:165 dump_1d_slice.c:190 dump_1d_slice.c:215
-#: dump_1d_slice.c:240 dump_1d_slice.c:266 dump_1d_slice.c:291
-#: dump_1d_slice.c:316 dump_1d_slice.c:341 dump_1d_slice.c:367
-#: dump_1d_slice.c:392 dump_1d_slice.c:421 dump_1d_slice.c:447
-#: dump_1d_slice.c:473 dump_1d_slice.c:504 dump_1d_slice.c:533
-#: dump_1d_slice.c:558 dump_1d_slice.c:584 dump_1d_slice.c:609
-#: dump_1d_slice.c:634 dump_1d_slice.c:663 dump_1d_slice.c:693
-#: dump_1d_slice.c:718 dump_1d_slice.c:743 dump_1d_slice.c:768
-#: dump_1d_slice.c:793 dump_1d_slice.c:823 dump_1d_slice.c:852
-#: dump_1d_slice.c:881 dump_1d_slice.c:910 dump_1d_slice.c:939
-#: dump_1d_slice.c:968 dump_1d_slice.c:997 dump_1d_slice.c:1026
-#: dump_1d_slice.c:1051 dump_1d_slice.c:1077 dump_1d_slice.c:1102
-#: dump_1d_slice.c:1128 dump_1d_slice.c:1165 dump_1d_slice.c:1202
-#: dump_1d_slice.c:1232 dump_1d_slice.c:1266 dump_1d_slice.c:1292
-#: dump_1d_slice.c:1317 dump_1d_slice.c:1342 pulse.c:216 pulse.c:235
-#: pulse.c:255 pulse.c:272
+#: pub/gpl_github/plugins/pulse/pulse.c:210
+#: pub/gpl_github/plugins/pulse/pulse.c:229
+#: pub/gpl_github/plugins/pulse/pulse.c:247
+#: pub/gpl_github/plugins/pulse/pulse.c:263 pub/gpl_github/dump_1d_slice.c:60
+#: pub/gpl_github/dump_1d_slice.c:81 pub/gpl_github/dump_1d_slice.c:102
+#: pub/gpl_github/dump_1d_slice.c:123 pub/gpl_github/dump_1d_slice.c:144
+#: pub/gpl_github/dump_1d_slice.c:165 pub/gpl_github/dump_1d_slice.c:186
+#: pub/gpl_github/dump_1d_slice.c:207 pub/gpl_github/dump_1d_slice.c:228
+#: pub/gpl_github/dump_1d_slice.c:249 pub/gpl_github/dump_1d_slice.c:270
+#: pub/gpl_github/dump_1d_slice.c:291 pub/gpl_github/dump_1d_slice.c:312
+#: pub/gpl_github/dump_1d_slice.c:333 pub/gpl_github/dump_1d_slice.c:358
+#: pub/gpl_github/dump_1d_slice.c:379 pub/gpl_github/dump_1d_slice.c:400
+#: pub/gpl_github/dump_1d_slice.c:429 pub/gpl_github/dump_1d_slice.c:454
+#: pub/gpl_github/dump_1d_slice.c:475 pub/gpl_github/dump_1d_slice.c:496
+#: pub/gpl_github/dump_1d_slice.c:517 pub/gpl_github/dump_1d_slice.c:538
+#: pub/gpl_github/dump_1d_slice.c:563 pub/gpl_github/dump_1d_slice.c:588
+#: pub/gpl_github/dump_1d_slice.c:609 pub/gpl_github/dump_1d_slice.c:630
+#: pub/gpl_github/dump_1d_slice.c:651 pub/gpl_github/dump_1d_slice.c:672
+#: pub/gpl_github/dump_1d_slice.c:697 pub/gpl_github/dump_1d_slice.c:722
+#: pub/gpl_github/dump_1d_slice.c:748 pub/gpl_github/dump_1d_slice.c:773
+#: pub/gpl_github/dump_1d_slice.c:800 pub/gpl_github/dump_1d_slice.c:826
+#: pub/gpl_github/dump_1d_slice.c:851 pub/gpl_github/dump_1d_slice.c:876
+#: pub/gpl_github/dump_1d_slice.c:897 pub/gpl_github/dump_1d_slice.c:918
+#: pub/gpl_github/dump_1d_slice.c:939 pub/gpl_github/dump_1d_slice.c:960
+#: pub/gpl_github/dump_1d_slice.c:993 pub/gpl_github/dump_1d_slice.c:1026
+#: pub/gpl_github/dump_1d_slice.c:1050 pub/gpl_github/dump_1d_slice.c:1080
+#: pub/gpl_github/dump_1d_slice.c:1101 pub/gpl_github/dump_1d_slice.c:1122
+#: pub/gpl_github/dump_1d_slice.c:1143 plugins/pulse/pulse.c:218
+#: plugins/pulse/pulse.c:237 plugins/pulse/pulse.c:257
+#: plugins/pulse/pulse.c:274 dump_1d_slice.c:65 dump_1d_slice.c:90
+#: dump_1d_slice.c:115 dump_1d_slice.c:140 dump_1d_slice.c:165
+#: dump_1d_slice.c:190 dump_1d_slice.c:215 dump_1d_slice.c:240
+#: dump_1d_slice.c:266 dump_1d_slice.c:291 dump_1d_slice.c:316
+#: dump_1d_slice.c:341 dump_1d_slice.c:367 dump_1d_slice.c:392
+#: dump_1d_slice.c:421 dump_1d_slice.c:447 dump_1d_slice.c:473
+#: dump_1d_slice.c:504 dump_1d_slice.c:533 dump_1d_slice.c:558
+#: dump_1d_slice.c:584 dump_1d_slice.c:609 dump_1d_slice.c:634
+#: dump_1d_slice.c:663 dump_1d_slice.c:693 dump_1d_slice.c:718
+#: dump_1d_slice.c:743 dump_1d_slice.c:768 dump_1d_slice.c:793
+#: dump_1d_slice.c:823 dump_1d_slice.c:852 dump_1d_slice.c:881
+#: dump_1d_slice.c:910 dump_1d_slice.c:939 dump_1d_slice.c:968
+#: dump_1d_slice.c:997 dump_1d_slice.c:1026 dump_1d_slice.c:1051
+#: dump_1d_slice.c:1077 dump_1d_slice.c:1102 dump_1d_slice.c:1128
+#: dump_1d_slice.c:1165 dump_1d_slice.c:1202 dump_1d_slice.c:1232
+#: dump_1d_slice.c:1266 dump_1d_slice.c:1292 dump_1d_slice.c:1317
+#: dump_1d_slice.c:1342 pulse.c:218 pulse.c:237 pulse.c:257 pulse.c:274
 msgid "xy"
 msgstr ""
 
-#: plugins/pulse/pulse.c:217 plugins/pulse/pulse.c:236
-#: plugins/pulse/pulse.c:256 plugins/pulse/pulse.c:273 pulse.c:217 pulse.c:236
-#: pulse.c:256 pulse.c:273
+#: pub/gpl_github/plugins/pulse/pulse.c:211
+#: pub/gpl_github/plugins/pulse/pulse.c:230
+#: pub/gpl_github/plugins/pulse/pulse.c:248
+#: pub/gpl_github/plugins/pulse/pulse.c:264 plugins/pulse/pulse.c:219
+#: plugins/pulse/pulse.c:238 plugins/pulse/pulse.c:258
+#: plugins/pulse/pulse.c:275 pulse.c:219 pulse.c:238 pulse.c:258 pulse.c:275
 msgid "Time"
 msgstr ""
 
-#: plugins/pulse/pulse.c:218 pulse.c:218
+#: pub/gpl_github/plugins/pulse/pulse.c:212 plugins/pulse/pulse.c:220
+#: pulse.c:220
 msgid "Current"
 msgstr ""
 
-#: plugins/pulse/pulse.c:219 plugins/pulse/pulse.c:238
-#: plugins/pulse/pulse.c:258 pulse.c:219 pulse.c:238 pulse.c:258
+#: pub/gpl_github/plugins/pulse/pulse.c:213
+#: pub/gpl_github/plugins/pulse/pulse.c:232
+#: pub/gpl_github/plugins/pulse/pulse.c:250 plugins/pulse/pulse.c:221
+#: plugins/pulse/pulse.c:240 plugins/pulse/pulse.c:260 pulse.c:221 pulse.c:240
+#: pulse.c:260
 msgid "us"
 msgstr ""
 
-#: plugins/pulse/pulse.c:220 pulse.c:220
+#: pub/gpl_github/plugins/pulse/pulse.c:214 plugins/pulse/pulse.c:222
+#: pulse.c:222
 msgid "m"
 msgstr ""
 
-#: plugins/pulse/pulse.c:234 pulse.c:234
+#: pub/gpl_github/plugins/pulse/pulse.c:228 plugins/pulse/pulse.c:236
+#: pulse.c:236
 msgid "Time - -current"
 msgstr ""
 
-#: plugins/pulse/pulse.c:237 pulse.c:237
+#: pub/gpl_github/plugins/pulse/pulse.c:231 plugins/pulse/pulse.c:239
+#: pulse.c:239
 msgid "-Current"
 msgstr ""
 
-#: plugins/pulse/pulse.c:239 pulse.c:239
+#: pub/gpl_github/plugins/pulse/pulse.c:233 plugins/pulse/pulse.c:241
+#: pulse.c:241
 msgid "mA"
 msgstr ""
 
-#: plugins/pulse/pulse.c:254 pulse.c:254
+#: pub/gpl_github/plugins/pulse/pulse.c:246 plugins/pulse/pulse.c:256
+#: pulse.c:256
 msgid "Time - Voltage"
 msgstr ""
 
-#: plugins/pulse/pulse.c:257 pulse.c:257
+#: pub/gpl_github/plugins/pulse/pulse.c:249 plugins/pulse/pulse.c:259
+#: pulse.c:259
 msgid "Volts"
 msgstr ""
 
-#: plugins/pulse/pulse.c:271 pulse.c:271
+#: pub/gpl_github/plugins/pulse/pulse.c:262 plugins/pulse/pulse.c:273
+#: pulse.c:273
 msgid "Time - Photogeneration rate"
 msgstr ""
 
-#: plugins/pulse/pulse.c:274 dump_1d_slice.c:1028 dump_1d_slice.c:1053
-#: pulse.c:274
+#: pub/gpl_github/plugins/pulse/pulse.c:265 pub/gpl_github/dump_1d_slice.c:878
+#: pub/gpl_github/dump_1d_slice.c:899 plugins/pulse/pulse.c:276
+#: dump_1d_slice.c:1028 dump_1d_slice.c:1053 pulse.c:276
 msgid "Generation rate"
 msgstr ""
 
-#: plugins/pulse/pulse.c:275 pulse.c:275
+#: pub/gpl_github/plugins/pulse/pulse.c:266 plugins/pulse/pulse.c:277
+#: pulse.c:277
 msgid "s"
 msgstr ""
 
-#: plugins/pulse/pulse.c:276 dump_1d_slice.c:1030 dump_1d_slice.c:1055
-#: dump_1d_slice.c:1081 dump_1d_slice.c:1106 dump_1d_slice.c:1270
-#: dump_1d_slice.c:1296 dump_1d_slice.c:1321 dump_1d_slice.c:1346 pulse.c:276
+#: pub/gpl_github/plugins/pulse/pulse.c:267 pub/gpl_github/dump_1d_slice.c:880
+#: pub/gpl_github/dump_1d_slice.c:901 pub/gpl_github/dump_1d_slice.c:922
+#: pub/gpl_github/dump_1d_slice.c:943 pub/gpl_github/dump_1d_slice.c:1084
+#: pub/gpl_github/dump_1d_slice.c:1105 pub/gpl_github/dump_1d_slice.c:1126
+#: pub/gpl_github/dump_1d_slice.c:1147 plugins/pulse/pulse.c:278
+#: dump_1d_slice.c:1030 dump_1d_slice.c:1055 dump_1d_slice.c:1081
+#: dump_1d_slice.c:1106 dump_1d_slice.c:1270 dump_1d_slice.c:1296
+#: dump_1d_slice.c:1321 dump_1d_slice.c:1346 pulse.c:278
 msgid "m^{-3} s^{-1}"
 msgstr ""
 
-#: plugins/server/server.c:161 server.c:161
-msgid "I have shut down the server\n"
-msgstr ""
-
-#: plugins/server/server.c:486 server.c:486
-msgid "All jobs finished jobs"
-msgstr ""
-
-#: plugins/server/server.c:492 server.c:492
-msgid "I have finished all my jobs\n"
-msgstr ""
-
-#: plugins/server/server.c:499 server.c:499
-msgid "The server has detected a crash\n"
-msgstr ""
-
+#: pub/gpl_github/dump_1d_slice.c:59 pub/gpl_github/dump_1d_slice.c:101
 #: dump_1d_slice.c:64 dump_1d_slice.c:114
 msgid "Drift current density - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:61 pub/gpl_github/dump_1d_slice.c:82
+#: pub/gpl_github/dump_1d_slice.c:103 pub/gpl_github/dump_1d_slice.c:124
+#: pub/gpl_github/dump_1d_slice.c:145 pub/gpl_github/dump_1d_slice.c:166
+#: pub/gpl_github/dump_1d_slice.c:187 pub/gpl_github/dump_1d_slice.c:208
+#: pub/gpl_github/dump_1d_slice.c:229 pub/gpl_github/dump_1d_slice.c:250
+#: pub/gpl_github/dump_1d_slice.c:271 pub/gpl_github/dump_1d_slice.c:292
+#: pub/gpl_github/dump_1d_slice.c:313 pub/gpl_github/dump_1d_slice.c:334
+#: pub/gpl_github/dump_1d_slice.c:359 pub/gpl_github/dump_1d_slice.c:380
+#: pub/gpl_github/dump_1d_slice.c:401 pub/gpl_github/dump_1d_slice.c:430
+#: pub/gpl_github/dump_1d_slice.c:455 pub/gpl_github/dump_1d_slice.c:476
+#: pub/gpl_github/dump_1d_slice.c:497 pub/gpl_github/dump_1d_slice.c:518
+#: pub/gpl_github/dump_1d_slice.c:539 pub/gpl_github/dump_1d_slice.c:564
+#: pub/gpl_github/dump_1d_slice.c:589 pub/gpl_github/dump_1d_slice.c:610
+#: pub/gpl_github/dump_1d_slice.c:631 pub/gpl_github/dump_1d_slice.c:652
+#: pub/gpl_github/dump_1d_slice.c:673 pub/gpl_github/dump_1d_slice.c:698
+#: pub/gpl_github/dump_1d_slice.c:723 pub/gpl_github/dump_1d_slice.c:749
+#: pub/gpl_github/dump_1d_slice.c:774 pub/gpl_github/dump_1d_slice.c:801
+#: pub/gpl_github/dump_1d_slice.c:827 pub/gpl_github/dump_1d_slice.c:852
+#: pub/gpl_github/dump_1d_slice.c:877 pub/gpl_github/dump_1d_slice.c:898
+#: pub/gpl_github/dump_1d_slice.c:919 pub/gpl_github/dump_1d_slice.c:940
+#: pub/gpl_github/dump_1d_slice.c:961 pub/gpl_github/dump_1d_slice.c:994
+#: pub/gpl_github/dump_1d_slice.c:1027 pub/gpl_github/dump_1d_slice.c:1051
+#: pub/gpl_github/dump_1d_slice.c:1081 pub/gpl_github/dump_1d_slice.c:1102
+#: pub/gpl_github/dump_1d_slice.c:1123 pub/gpl_github/dump_1d_slice.c:1144
 #: dump_1d_slice.c:66 dump_1d_slice.c:91 dump_1d_slice.c:116
 #: dump_1d_slice.c:141 dump_1d_slice.c:166 dump_1d_slice.c:191
 #: dump_1d_slice.c:216 dump_1d_slice.c:241 dump_1d_slice.c:267
@@ -1708,10 +1918,34 @@ msgstr ""
 msgid "Position"
 msgstr ""
 
-#: dump_1d_slice.c:67
+#: pub/gpl_github/dump_1d_slice.c:62 dump_1d_slice.c:67
 msgid "Electron current density (drift)"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:63 pub/gpl_github/dump_1d_slice.c:84
+#: pub/gpl_github/dump_1d_slice.c:105 pub/gpl_github/dump_1d_slice.c:126
+#: pub/gpl_github/dump_1d_slice.c:147 pub/gpl_github/dump_1d_slice.c:168
+#: pub/gpl_github/dump_1d_slice.c:189 pub/gpl_github/dump_1d_slice.c:210
+#: pub/gpl_github/dump_1d_slice.c:231 pub/gpl_github/dump_1d_slice.c:252
+#: pub/gpl_github/dump_1d_slice.c:273 pub/gpl_github/dump_1d_slice.c:294
+#: pub/gpl_github/dump_1d_slice.c:315 pub/gpl_github/dump_1d_slice.c:336
+#: pub/gpl_github/dump_1d_slice.c:361 pub/gpl_github/dump_1d_slice.c:382
+#: pub/gpl_github/dump_1d_slice.c:403 pub/gpl_github/dump_1d_slice.c:432
+#: pub/gpl_github/dump_1d_slice.c:457 pub/gpl_github/dump_1d_slice.c:478
+#: pub/gpl_github/dump_1d_slice.c:499 pub/gpl_github/dump_1d_slice.c:520
+#: pub/gpl_github/dump_1d_slice.c:541 pub/gpl_github/dump_1d_slice.c:566
+#: pub/gpl_github/dump_1d_slice.c:591 pub/gpl_github/dump_1d_slice.c:612
+#: pub/gpl_github/dump_1d_slice.c:633 pub/gpl_github/dump_1d_slice.c:654
+#: pub/gpl_github/dump_1d_slice.c:675 pub/gpl_github/dump_1d_slice.c:700
+#: pub/gpl_github/dump_1d_slice.c:725 pub/gpl_github/dump_1d_slice.c:751
+#: pub/gpl_github/dump_1d_slice.c:776 pub/gpl_github/dump_1d_slice.c:803
+#: pub/gpl_github/dump_1d_slice.c:829 pub/gpl_github/dump_1d_slice.c:854
+#: pub/gpl_github/dump_1d_slice.c:879 pub/gpl_github/dump_1d_slice.c:900
+#: pub/gpl_github/dump_1d_slice.c:921 pub/gpl_github/dump_1d_slice.c:942
+#: pub/gpl_github/dump_1d_slice.c:963 pub/gpl_github/dump_1d_slice.c:996
+#: pub/gpl_github/dump_1d_slice.c:1029 pub/gpl_github/dump_1d_slice.c:1053
+#: pub/gpl_github/dump_1d_slice.c:1083 pub/gpl_github/dump_1d_slice.c:1104
+#: pub/gpl_github/dump_1d_slice.c:1125 pub/gpl_github/dump_1d_slice.c:1146
 #: dump_1d_slice.c:68 dump_1d_slice.c:93 dump_1d_slice.c:118
 #: dump_1d_slice.c:143 dump_1d_slice.c:168 dump_1d_slice.c:193
 #: dump_1d_slice.c:218 dump_1d_slice.c:243 dump_1d_slice.c:269
@@ -1731,31 +1965,63 @@ msgstr ""
 msgid "nm"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:64 pub/gpl_github/dump_1d_slice.c:85
+#: pub/gpl_github/dump_1d_slice.c:106 pub/gpl_github/dump_1d_slice.c:127
+#: pub/gpl_github/dump_1d_slice.c:362 pub/gpl_github/dump_1d_slice.c:383
+#: pub/gpl_github/dump_1d_slice.c:404 pub/gpl_github/dump_1d_slice.c:433
 #: dump_1d_slice.c:69 dump_1d_slice.c:94 dump_1d_slice.c:119
 #: dump_1d_slice.c:144 dump_1d_slice.c:425 dump_1d_slice.c:451
 #: dump_1d_slice.c:477 dump_1d_slice.c:508
 msgid "A m^{-2}"
 msgstr ""
 
-#: dump_1d_slice.c:70 dump_1d_slice.c:95 dump_1d_slice.c:120
-#: dump_1d_slice.c:145 dump_1d_slice.c:170 dump_1d_slice.c:195
-#: dump_1d_slice.c:220 dump_1d_slice.c:245 dump_1d_slice.c:271
-#: dump_1d_slice.c:296 dump_1d_slice.c:321 dump_1d_slice.c:346
-#: dump_1d_slice.c:372 dump_1d_slice.c:426 dump_1d_slice.c:452
-#: dump_1d_slice.c:478 dump_1d_slice.c:509 dump_1d_slice.c:538
-#: dump_1d_slice.c:563 dump_1d_slice.c:589 dump_1d_slice.c:614
-#: dump_1d_slice.c:639 dump_1d_slice.c:668 dump_1d_slice.c:698
-#: dump_1d_slice.c:723 dump_1d_slice.c:748 dump_1d_slice.c:773
-#: dump_1d_slice.c:798 dump_1d_slice.c:828 dump_1d_slice.c:857
-#: dump_1d_slice.c:886 dump_1d_slice.c:915 dump_1d_slice.c:944
-#: dump_1d_slice.c:973 dump_1d_slice.c:1002 dump_1d_slice.c:1031
-#: dump_1d_slice.c:1056 dump_1d_slice.c:1082 dump_1d_slice.c:1107
-#: dump_1d_slice.c:1133 dump_1d_slice.c:1170 dump_1d_slice.c:1207
-#: dump_1d_slice.c:1237 dump_1d_slice.c:1271 dump_1d_slice.c:1297
-#: dump_1d_slice.c:1322 dump_1d_slice.c:1347
+#: pub/gpl_github/dump_1d_slice.c:65 pub/gpl_github/dump_1d_slice.c:86
+#: pub/gpl_github/dump_1d_slice.c:107 pub/gpl_github/dump_1d_slice.c:128
+#: pub/gpl_github/dump_1d_slice.c:149 pub/gpl_github/dump_1d_slice.c:170
+#: pub/gpl_github/dump_1d_slice.c:191 pub/gpl_github/dump_1d_slice.c:212
+#: pub/gpl_github/dump_1d_slice.c:233 pub/gpl_github/dump_1d_slice.c:254
+#: pub/gpl_github/dump_1d_slice.c:275 pub/gpl_github/dump_1d_slice.c:296
+#: pub/gpl_github/dump_1d_slice.c:317 pub/gpl_github/dump_1d_slice.c:363
+#: pub/gpl_github/dump_1d_slice.c:384 pub/gpl_github/dump_1d_slice.c:405
+#: pub/gpl_github/dump_1d_slice.c:434 pub/gpl_github/dump_1d_slice.c:459
+#: pub/gpl_github/dump_1d_slice.c:480 pub/gpl_github/dump_1d_slice.c:501
+#: pub/gpl_github/dump_1d_slice.c:522 pub/gpl_github/dump_1d_slice.c:543
+#: pub/gpl_github/dump_1d_slice.c:568 pub/gpl_github/dump_1d_slice.c:593
+#: pub/gpl_github/dump_1d_slice.c:614 pub/gpl_github/dump_1d_slice.c:635
+#: pub/gpl_github/dump_1d_slice.c:656 pub/gpl_github/dump_1d_slice.c:677
+#: pub/gpl_github/dump_1d_slice.c:702 pub/gpl_github/dump_1d_slice.c:727
+#: pub/gpl_github/dump_1d_slice.c:753 pub/gpl_github/dump_1d_slice.c:778
+#: pub/gpl_github/dump_1d_slice.c:805 pub/gpl_github/dump_1d_slice.c:831
+#: pub/gpl_github/dump_1d_slice.c:856 pub/gpl_github/dump_1d_slice.c:881
+#: pub/gpl_github/dump_1d_slice.c:902 pub/gpl_github/dump_1d_slice.c:923
+#: pub/gpl_github/dump_1d_slice.c:944 pub/gpl_github/dump_1d_slice.c:965
+#: pub/gpl_github/dump_1d_slice.c:998 pub/gpl_github/dump_1d_slice.c:1031
+#: pub/gpl_github/dump_1d_slice.c:1055 pub/gpl_github/dump_1d_slice.c:1085
+#: pub/gpl_github/dump_1d_slice.c:1106 pub/gpl_github/dump_1d_slice.c:1127
+#: pub/gpl_github/dump_1d_slice.c:1148 dump_1d_slice.c:70 dump_1d_slice.c:95
+#: dump_1d_slice.c:120 dump_1d_slice.c:145 dump_1d_slice.c:170
+#: dump_1d_slice.c:195 dump_1d_slice.c:220 dump_1d_slice.c:245
+#: dump_1d_slice.c:271 dump_1d_slice.c:296 dump_1d_slice.c:321
+#: dump_1d_slice.c:346 dump_1d_slice.c:372 dump_1d_slice.c:426
+#: dump_1d_slice.c:452 dump_1d_slice.c:478 dump_1d_slice.c:509
+#: dump_1d_slice.c:538 dump_1d_slice.c:563 dump_1d_slice.c:589
+#: dump_1d_slice.c:614 dump_1d_slice.c:639 dump_1d_slice.c:668
+#: dump_1d_slice.c:698 dump_1d_slice.c:723 dump_1d_slice.c:748
+#: dump_1d_slice.c:773 dump_1d_slice.c:798 dump_1d_slice.c:828
+#: dump_1d_slice.c:857 dump_1d_slice.c:886 dump_1d_slice.c:915
+#: dump_1d_slice.c:944 dump_1d_slice.c:973 dump_1d_slice.c:1002
+#: dump_1d_slice.c:1031 dump_1d_slice.c:1056 dump_1d_slice.c:1082
+#: dump_1d_slice.c:1107 dump_1d_slice.c:1133 dump_1d_slice.c:1170
+#: dump_1d_slice.c:1207 dump_1d_slice.c:1237 dump_1d_slice.c:1271
+#: dump_1d_slice.c:1297 dump_1d_slice.c:1322 dump_1d_slice.c:1347
 msgid "1D position space output"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:66 pub/gpl_github/dump_1d_slice.c:87
+#: pub/gpl_github/dump_1d_slice.c:108 pub/gpl_github/dump_1d_slice.c:129
+#: pub/gpl_github/dump_1d_slice.c:192 pub/gpl_github/dump_1d_slice.c:213
+#: pub/gpl_github/dump_1d_slice.c:364 pub/gpl_github/dump_1d_slice.c:385
+#: pub/gpl_github/dump_1d_slice.c:406 pub/gpl_github/dump_1d_slice.c:435
 #: dump_1d_slice.c:71 dump_1d_slice.c:96 dump_1d_slice.c:121
 #: dump_1d_slice.c:146 dump_1d_slice.c:221 dump_1d_slice.c:246
 #: dump_1d_slice.c:427 dump_1d_slice.c:453 dump_1d_slice.c:479
@@ -1763,79 +2029,104 @@ msgstr ""
 msgid "Transport"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:80 pub/gpl_github/dump_1d_slice.c:122
 #: dump_1d_slice.c:89 dump_1d_slice.c:139
 msgid "Diffusion current density - position"
 msgstr ""
 
-#: dump_1d_slice.c:92
+#: pub/gpl_github/dump_1d_slice.c:83 dump_1d_slice.c:92
 msgid "Electron current density (diffusion)"
 msgstr ""
 
-#: dump_1d_slice.c:117
+#: pub/gpl_github/dump_1d_slice.c:104 dump_1d_slice.c:117
 msgid "Hole current density (drift)"
 msgstr ""
 
-#: dump_1d_slice.c:142
+#: pub/gpl_github/dump_1d_slice.c:125 dump_1d_slice.c:142
 msgid "Hole current density (diffusion)"
 msgstr ""
 
-#: dump_1d_slice.c:164
+#: pub/gpl_github/dump_1d_slice.c:143 dump_1d_slice.c:164
 msgid "LUMO-position"
 msgstr ""
 
-#: dump_1d_slice.c:167 dump_1d_slice.c:192 dump_1d_slice.c:293
-#: dump_1d_slice.c:318 dump_1d_slice.c:343
+#: pub/gpl_github/dump_1d_slice.c:146 pub/gpl_github/dump_1d_slice.c:167
+#: pub/gpl_github/dump_1d_slice.c:251 pub/gpl_github/dump_1d_slice.c:272
+#: pub/gpl_github/dump_1d_slice.c:293 dump_1d_slice.c:167 dump_1d_slice.c:192
+#: dump_1d_slice.c:293 dump_1d_slice.c:318 dump_1d_slice.c:343
 msgid "Electron Energy"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:148 pub/gpl_github/dump_1d_slice.c:169
+#: pub/gpl_github/dump_1d_slice.c:253 pub/gpl_github/dump_1d_slice.c:274
+#: pub/gpl_github/dump_1d_slice.c:295 pub/gpl_github/dump_1d_slice.c:458
+#: pub/gpl_github/dump_1d_slice.c:964 pub/gpl_github/dump_1d_slice.c:997
 #: dump_1d_slice.c:169 dump_1d_slice.c:194 dump_1d_slice.c:295
 #: dump_1d_slice.c:320 dump_1d_slice.c:345 dump_1d_slice.c:537
 #: dump_1d_slice.c:1132 dump_1d_slice.c:1169
 msgid "eV"
 msgstr ""
 
-#: dump_1d_slice.c:171 dump_1d_slice.c:196 dump_1d_slice.c:297
-#: dump_1d_slice.c:322 dump_1d_slice.c:347 dump_1d_slice.c:373
-#: dump_1d_slice.c:398 dump_1d_slice.c:539 dump_1d_slice.c:1238
+#: pub/gpl_github/dump_1d_slice.c:150 pub/gpl_github/dump_1d_slice.c:171
+#: pub/gpl_github/dump_1d_slice.c:255 pub/gpl_github/dump_1d_slice.c:276
+#: pub/gpl_github/dump_1d_slice.c:297 pub/gpl_github/dump_1d_slice.c:318
+#: pub/gpl_github/dump_1d_slice.c:339 pub/gpl_github/dump_1d_slice.c:460
+#: pub/gpl_github/dump_1d_slice.c:1056 dump_1d_slice.c:171 dump_1d_slice.c:196
+#: dump_1d_slice.c:297 dump_1d_slice.c:322 dump_1d_slice.c:347
+#: dump_1d_slice.c:373 dump_1d_slice.c:398 dump_1d_slice.c:539
+#: dump_1d_slice.c:1238
 msgid "Band structure"
 msgstr ""
 
-#: dump_1d_slice.c:189
+#: pub/gpl_github/dump_1d_slice.c:164 dump_1d_slice.c:189
 msgid "HOMO-position"
 msgstr ""
 
-#: dump_1d_slice.c:214
+#: pub/gpl_github/dump_1d_slice.c:185 dump_1d_slice.c:214
 msgid "Electron temperature - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:188 pub/gpl_github/dump_1d_slice.c:209
 #: dump_1d_slice.c:217 dump_1d_slice.c:242
 msgid "Temperature (K)"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:190 pub/gpl_github/dump_1d_slice.c:211
 #: dump_1d_slice.c:219 dump_1d_slice.c:244
 msgid "K"
 msgstr ""
 
-#: dump_1d_slice.c:239
+#: pub/gpl_github/dump_1d_slice.c:206 dump_1d_slice.c:239
 msgid "Hole temperature - position"
 msgstr ""
 
-#: dump_1d_slice.c:265
+#: pub/gpl_github/dump_1d_slice.c:227 dump_1d_slice.c:265
 msgid "Doping - position"
 msgstr ""
 
-#: dump_1d_slice.c:268
+#: pub/gpl_github/dump_1d_slice.c:230 dump_1d_slice.c:268
 msgid "Doping density"
 msgstr ""
 
-#: dump_1d_slice.c:270 dump_1d_slice.c:697 dump_1d_slice.c:722
-#: dump_1d_slice.c:747 dump_1d_slice.c:772 dump_1d_slice.c:797
-#: dump_1d_slice.c:827 dump_1d_slice.c:856 dump_1d_slice.c:885
-#: dump_1d_slice.c:914 dump_1d_slice.c:943 dump_1d_slice.c:972
-#: dump_1d_slice.c:1001
+#: pub/gpl_github/dump_1d_slice.c:232 pub/gpl_github/dump_1d_slice.c:592
+#: pub/gpl_github/dump_1d_slice.c:613 pub/gpl_github/dump_1d_slice.c:634
+#: pub/gpl_github/dump_1d_slice.c:655 pub/gpl_github/dump_1d_slice.c:676
+#: pub/gpl_github/dump_1d_slice.c:701 pub/gpl_github/dump_1d_slice.c:726
+#: pub/gpl_github/dump_1d_slice.c:752 pub/gpl_github/dump_1d_slice.c:777
+#: pub/gpl_github/dump_1d_slice.c:804 pub/gpl_github/dump_1d_slice.c:830
+#: pub/gpl_github/dump_1d_slice.c:855 dump_1d_slice.c:270 dump_1d_slice.c:697
+#: dump_1d_slice.c:722 dump_1d_slice.c:747 dump_1d_slice.c:772
+#: dump_1d_slice.c:797 dump_1d_slice.c:827 dump_1d_slice.c:856
+#: dump_1d_slice.c:885 dump_1d_slice.c:914 dump_1d_slice.c:943
+#: dump_1d_slice.c:972 dump_1d_slice.c:1001
 msgid "m^{-3}"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:234 pub/gpl_github/dump_1d_slice.c:636
+#: pub/gpl_github/dump_1d_slice.c:657 pub/gpl_github/dump_1d_slice.c:678
+#: pub/gpl_github/dump_1d_slice.c:703 pub/gpl_github/dump_1d_slice.c:754
+#: pub/gpl_github/dump_1d_slice.c:779 pub/gpl_github/dump_1d_slice.c:806
+#: pub/gpl_github/dump_1d_slice.c:832 pub/gpl_github/dump_1d_slice.c:857
 #: dump_1d_slice.c:272 dump_1d_slice.c:749 dump_1d_slice.c:774
 #: dump_1d_slice.c:799 dump_1d_slice.c:829 dump_1d_slice.c:887
 #: dump_1d_slice.c:916 dump_1d_slice.c:945 dump_1d_slice.c:974
@@ -1843,98 +2134,118 @@ msgstr ""
 msgid "Charge density"
 msgstr ""
 
-#: dump_1d_slice.c:290
+#: pub/gpl_github/dump_1d_slice.c:248 dump_1d_slice.c:290
 msgid "Band gap-position"
 msgstr ""
 
-#: dump_1d_slice.c:315
+#: pub/gpl_github/dump_1d_slice.c:269 dump_1d_slice.c:315
 msgid "Electron quasi Fermi-level position"
 msgstr ""
 
-#: dump_1d_slice.c:340
+#: pub/gpl_github/dump_1d_slice.c:290 dump_1d_slice.c:340
 msgid "Hole quasi Fermi-level position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:311 pub/gpl_github/dump_1d_slice.c:314
+#: pub/gpl_github/dump_1d_slice.c:332 pub/gpl_github/dump_1d_slice.c:335
 #: dump_1d_slice.c:366 dump_1d_slice.c:369 dump_1d_slice.c:391
 #: dump_1d_slice.c:394
 msgid "Potential"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:316 pub/gpl_github/dump_1d_slice.c:337
 #: dump_1d_slice.c:371 dump_1d_slice.c:396
 msgid "V"
 msgstr ""
 
-#: dump_1d_slice.c:397
+#: pub/gpl_github/dump_1d_slice.c:338 dump_1d_slice.c:397
 msgid "Change in 1D position space output"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:357 pub/gpl_github/dump_1d_slice.c:378
 #: dump_1d_slice.c:420 dump_1d_slice.c:446
 msgid "Current density - position"
 msgstr ""
 
-#: dump_1d_slice.c:423
+#: pub/gpl_github/dump_1d_slice.c:360 dump_1d_slice.c:423
 msgid "Electron current density"
 msgstr ""
 
-#: dump_1d_slice.c:449
+#: pub/gpl_github/dump_1d_slice.c:381 dump_1d_slice.c:449
 msgid "Hole current density"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:399 pub/gpl_github/dump_1d_slice.c:428
 #: dump_1d_slice.c:472 dump_1d_slice.c:503
 msgid "Total current density (Jn+Jp) - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:402 pub/gpl_github/dump_1d_slice.c:431
 #: dump_1d_slice.c:475 dump_1d_slice.c:506
 msgid "Total current density (Jn+Jp)"
 msgstr ""
 
-#: dump_1d_slice.c:532
+#: pub/gpl_github/dump_1d_slice.c:453 dump_1d_slice.c:532
 msgid "Equlibrium Fermi-level - position"
 msgstr ""
 
-#: dump_1d_slice.c:535
+#: pub/gpl_github/dump_1d_slice.c:456 dump_1d_slice.c:535
 msgid "Energy"
 msgstr ""
 
-#: dump_1d_slice.c:557
+#: pub/gpl_github/dump_1d_slice.c:474 dump_1d_slice.c:557
 msgid "Relative permittivity - position"
 msgstr ""
 
-#: dump_1d_slice.c:562 dump_1d_slice.c:1206 dump_1d_slice.c:1236
+#: pub/gpl_github/dump_1d_slice.c:479 pub/gpl_github/dump_1d_slice.c:1030
+#: pub/gpl_github/dump_1d_slice.c:1054 dump_1d_slice.c:562
+#: dump_1d_slice.c:1206 dump_1d_slice.c:1236
 msgid "au"
 msgstr ""
 
-#: dump_1d_slice.c:564 dump_1d_slice.c:590 dump_1d_slice.c:615
-#: dump_1d_slice.c:640 dump_1d_slice.c:669 dump_1d_slice.c:699
-#: dump_1d_slice.c:724
+#: pub/gpl_github/dump_1d_slice.c:481 pub/gpl_github/dump_1d_slice.c:502
+#: pub/gpl_github/dump_1d_slice.c:523 pub/gpl_github/dump_1d_slice.c:544
+#: pub/gpl_github/dump_1d_slice.c:569 pub/gpl_github/dump_1d_slice.c:594
+#: pub/gpl_github/dump_1d_slice.c:615 dump_1d_slice.c:564 dump_1d_slice.c:590
+#: dump_1d_slice.c:615 dump_1d_slice.c:640 dump_1d_slice.c:669
+#: dump_1d_slice.c:699 dump_1d_slice.c:724
 msgid "Material parameters"
 msgstr ""
 
-#: dump_1d_slice.c:583
+#: pub/gpl_github/dump_1d_slice.c:495 dump_1d_slice.c:583
 msgid "Electron mobility - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:500 pub/gpl_github/dump_1d_slice.c:521
+#: pub/gpl_github/dump_1d_slice.c:542 pub/gpl_github/dump_1d_slice.c:567
 #: dump_1d_slice.c:588 dump_1d_slice.c:613 dump_1d_slice.c:638
 #: dump_1d_slice.c:667
 msgid "m^{2} V^{-1} s^{-1}"
 msgstr ""
 
-#: dump_1d_slice.c:608
+#: pub/gpl_github/dump_1d_slice.c:516 dump_1d_slice.c:608
 msgid "Hole mobility - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:537 pub/gpl_github/dump_1d_slice.c:562
 #: dump_1d_slice.c:633 dump_1d_slice.c:662
 msgid "Average electron mobility free mu0*nf/nall"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:540 pub/gpl_github/dump_1d_slice.c:565
 #: dump_1d_slice.c:636 dump_1d_slice.c:665
 msgid "Mobility"
 msgstr ""
 
-#: dump_1d_slice.c:692
+#: pub/gpl_github/dump_1d_slice.c:587 dump_1d_slice.c:692
 msgid "Free electron carrier density - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:590 pub/gpl_github/dump_1d_slice.c:611
+#: pub/gpl_github/dump_1d_slice.c:632 pub/gpl_github/dump_1d_slice.c:653
+#: pub/gpl_github/dump_1d_slice.c:674 pub/gpl_github/dump_1d_slice.c:699
+#: pub/gpl_github/dump_1d_slice.c:724 pub/gpl_github/dump_1d_slice.c:750
+#: pub/gpl_github/dump_1d_slice.c:775 pub/gpl_github/dump_1d_slice.c:802
 #: dump_1d_slice.c:695 dump_1d_slice.c:720 dump_1d_slice.c:745
 #: dump_1d_slice.c:770 dump_1d_slice.c:795 dump_1d_slice.c:825
 #: dump_1d_slice.c:854 dump_1d_slice.c:883 dump_1d_slice.c:912
@@ -1942,58 +2253,65 @@ msgstr ""
 msgid "Carrier density"
 msgstr ""
 
-#: dump_1d_slice.c:717
+#: pub/gpl_github/dump_1d_slice.c:608 dump_1d_slice.c:717
 msgid "Free hole carrier density - position"
 msgstr ""
 
-#: dump_1d_slice.c:742
+#: pub/gpl_github/dump_1d_slice.c:629 dump_1d_slice.c:742
 msgid "Trapped electron carrier density - position"
 msgstr ""
 
-#: dump_1d_slice.c:767
+#: pub/gpl_github/dump_1d_slice.c:650 dump_1d_slice.c:767
 msgid "Trapped hole carrier density - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:671 pub/gpl_github/dump_1d_slice.c:696
 #: dump_1d_slice.c:792 dump_1d_slice.c:822
 msgid "Total hole density - position"
 msgstr ""
 
-#: dump_1d_slice.c:851
+#: pub/gpl_github/dump_1d_slice.c:721 dump_1d_slice.c:851
 msgid "Change in electron population - position"
 msgstr ""
 
-#: dump_1d_slice.c:858
+#: pub/gpl_github/dump_1d_slice.c:728 dump_1d_slice.c:858
 msgid "Chaerge density"
 msgstr ""
 
-#: dump_1d_slice.c:880
+#: pub/gpl_github/dump_1d_slice.c:747 dump_1d_slice.c:880
 msgid "Total charge - position"
 msgstr ""
 
-#: dump_1d_slice.c:909
+#: pub/gpl_github/dump_1d_slice.c:772 dump_1d_slice.c:909
 msgid "Change in total charge - position"
 msgstr ""
 
-#: dump_1d_slice.c:938
+#: pub/gpl_github/dump_1d_slice.c:799 dump_1d_slice.c:938
 msgid "Change in hole population - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:825 pub/gpl_github/dump_1d_slice.c:850
 #: dump_1d_slice.c:967 dump_1d_slice.c:996
 msgid "Excess electron density - position"
 msgstr ""
 
-#: dump_1d_slice.c:970
+#: pub/gpl_github/dump_1d_slice.c:828 dump_1d_slice.c:970
 msgid "Electron density"
 msgstr ""
 
-#: dump_1d_slice.c:999
+#: pub/gpl_github/dump_1d_slice.c:853 dump_1d_slice.c:999
 msgid "Hole density"
 msgstr ""
 
-#: dump_1d_slice.c:1025
+#: pub/gpl_github/dump_1d_slice.c:875 dump_1d_slice.c:1025
 msgid "Free electron generation rate - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:882 pub/gpl_github/dump_1d_slice.c:903
+#: pub/gpl_github/dump_1d_slice.c:924 pub/gpl_github/dump_1d_slice.c:945
+#: pub/gpl_github/dump_1d_slice.c:966 pub/gpl_github/dump_1d_slice.c:999
+#: pub/gpl_github/dump_1d_slice.c:1086 pub/gpl_github/dump_1d_slice.c:1107
+#: pub/gpl_github/dump_1d_slice.c:1128 pub/gpl_github/dump_1d_slice.c:1149
 #: dump_1d_slice.c:1032 dump_1d_slice.c:1057 dump_1d_slice.c:1083
 #: dump_1d_slice.c:1108 dump_1d_slice.c:1134 dump_1d_slice.c:1171
 #: dump_1d_slice.c:1272 dump_1d_slice.c:1298 dump_1d_slice.c:1323
@@ -2001,67 +2319,90 @@ msgstr ""
 msgid "Recombination"
 msgstr ""
 
-#: dump_1d_slice.c:1050
+#: pub/gpl_github/dump_1d_slice.c:896 dump_1d_slice.c:1050
 msgid "Free hole generation rate - position"
 msgstr ""
 
-#: dump_1d_slice.c:1076
+#: pub/gpl_github/dump_1d_slice.c:917 dump_1d_slice.c:1076
 msgid "Electron recombination rate - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:920 pub/gpl_github/dump_1d_slice.c:941
 #: dump_1d_slice.c:1079 dump_1d_slice.c:1104
 msgid "Recombination rate"
 msgstr ""
 
-#: dump_1d_slice.c:1101
+#: pub/gpl_github/dump_1d_slice.c:938 dump_1d_slice.c:1101
 msgid "Hole recombination rate - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:959 pub/gpl_github/dump_1d_slice.c:992
 #: dump_1d_slice.c:1127 dump_1d_slice.c:1164
 msgid "Trap fermi level - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:962 pub/gpl_github/dump_1d_slice.c:995
 #: dump_1d_slice.c:1130 dump_1d_slice.c:1167
 msgid "Electron Fermi level"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:1025 pub/gpl_github/dump_1d_slice.c:1049
 #: dump_1d_slice.c:1201 dump_1d_slice.c:1231
 msgid "Material number - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:1028 pub/gpl_github/dump_1d_slice.c:1052
 #: dump_1d_slice.c:1204 dump_1d_slice.c:1234
 msgid "Number"
 msgstr ""
 
-#: dump_1d_slice.c:1208
+#: pub/gpl_github/dump_1d_slice.c:1032 dump_1d_slice.c:1208
 msgid "Model"
 msgstr ""
 
-#: dump_1d_slice.c:1265
+#: pub/gpl_github/dump_1d_slice.c:1079 dump_1d_slice.c:1265
 msgid "Free hole to trapped electron - position"
 msgstr ""
 
+#: pub/gpl_github/dump_1d_slice.c:1082 pub/gpl_github/dump_1d_slice.c:1103
+#: pub/gpl_github/dump_1d_slice.c:1124 pub/gpl_github/dump_1d_slice.c:1145
 #: dump_1d_slice.c:1268 dump_1d_slice.c:1294 dump_1d_slice.c:1319
 #: dump_1d_slice.c:1344
 msgid "Rate"
 msgstr ""
 
-#: dump_1d_slice.c:1291
+#: pub/gpl_github/dump_1d_slice.c:1100 dump_1d_slice.c:1291
 msgid "Free electron to trapped hole - position"
 msgstr ""
 
-#: dump_1d_slice.c:1316
+#: pub/gpl_github/dump_1d_slice.c:1121 dump_1d_slice.c:1316
 msgid "Hole relaxation rate - position"
 msgstr ""
 
-#: dump_1d_slice.c:1341
+#: pub/gpl_github/dump_1d_slice.c:1142 dump_1d_slice.c:1341
 msgid "Electron relaxation rate - position"
 msgstr ""
 
-#: memory.c:203
+#: pub/gpl_github/memory.c:197 memory.c:203
 msgid "Solved"
 msgstr ""
 
-#: memory.c:203
+#: pub/gpl_github/memory.c:197 memory.c:203
 msgid "Equations"
+msgstr ""
+
+#: plugins/server/server.c:161 server.c:161
+msgid "I have shut down the server\n"
+msgstr ""
+
+#: plugins/server/server.c:486 server.c:486
+msgid "All jobs finished jobs"
+msgstr ""
+
+#: plugins/server/server.c:492 server.c:492
+msgid "I have finished all my jobs\n"
+msgstr ""
+
+#: plugins/server/server.c:499 server.c:499
+msgid "The server has detected a crash\n"
 msgstr ""
