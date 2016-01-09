@@ -41,6 +41,7 @@
 #include "complex_solver.h"
 #include "cal_path.h"
 #include "lang.h"
+#include "log.h"
 
 static int unused __attribute__ ((unused));
 
@@ -78,7 +79,7 @@ void light_transfer_gen_rate_to_device(struct device *cell, struct light *in)
 
 void light_init(struct light *in, struct device *cell, char *output_path)
 {
-	printf(_("Light initialization\n"));
+	printf_log(_("Light initialization\n"));
 	in->pulse_width = 0.0;
 	strcpy(in->output_path, output_path);
 	strcpy(in->input_path, cell->inputpath);
@@ -114,8 +115,8 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	sprintf(lib_name, "%s.so", in->mode);
 
 	join_path(2, lib_path, get_light_path(), lib_name);
-	printf("I want to open %s %s %s\n", lib_path, get_light_path(),
-	       lib_name);
+	printf_log("I want to open %s %s %s\n", lib_path, get_light_path(),
+		   lib_name);
 
 	char *error;
 
@@ -173,7 +174,7 @@ void light_init(struct light *in, struct device *cell, char *output_path)
 	(*in->fn_fixup) ("light_transfer_gen_rate_to_device",
 			 &light_transfer_gen_rate_to_device);
 	(*in->fn_fixup) ("complex_solver", &complex_solver);
-
+	(*in->fn_fixup) ("printf_log", &printf_log);
 	(*in->light_ver) ();
 	(*in->fn_init) ();
 }

@@ -89,6 +89,9 @@ int main(int argc, char *argv[])
 		ewe("IO error\n");
 	}
 
+	dump_init(&cell);
+	dump_load_config(&cell);
+
 	remove("snapshots.zip");
 	remove("light_dump.zip");
 
@@ -184,7 +187,6 @@ int main(int argc, char *argv[])
 		strcpy(sim_input_path(), sim_output_path());
 	}
 
-	dump_init(&cell);
 	dump_load_config(&cell);
 
 	if (scanarg(argv, argc, "--onlypos") == TRUE) {

@@ -27,6 +27,7 @@
 #include "sim.h"
 #include "solver.h"
 #include "buffer.h"
+#include "log.h"
 
 double min_pos_error = 1e-4;
 
@@ -146,7 +147,7 @@ double get_p_error(struct device *in, double *b)
 int solve_pos(struct device *in)
 {
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Solve pos\n");
+		printf_log("Solve pos\n");
 	int i;
 
 	int N = in->ymeshpoints * 3 - 2;
@@ -364,13 +365,14 @@ int solve_pos(struct device *in)
 			} else {
 				double update;
 				//printf("%d\n",get_clamp_state());
+
 				double clamp_temp = 300.0;
 				update =
 				    b[i] / (1.0 +
 					    fabs(b[i] / in->posclamp /
 						 (clamp_temp * kb / Q)));
-
 				in->phi[i] += update;
+
 				//printf("%le %le\n",i,b[i]);
 			}
 		}
@@ -470,7 +472,7 @@ int solve_pos(struct device *in)
 		//#ifdef print_newtonerror
 
 		if (get_dump_status(dump_print_pos_error) == TRUE)
-			printf("%d Pos error = %e %d\n", ittr, error, adv);
+			printf_log("%d Pos error = %e %d\n", ittr, error, adv);
 		//#endif
 
 #ifdef dump_converge
@@ -526,10 +528,9 @@ int solve_pos(struct device *in)
 	free(Tx);
 	free(b);
 
-	if (get_dump_status(dump_iodump) == TRUE) {
-		printf("Solved pos\n");
-		printf("Vl=%le Vr=%le phi_mid=%le\n", in->Vl, in->Vr,
-		       in->phi[in->ymeshpoints / 2]);
-	}
+	printf_log("Solved pos\n");
+	printf_log("Vl=%le Vr=%le phi_mid=%le\n", in->Vl, in->Vr,
+		   in->phi[in->ymeshpoints / 2]);
+
 	return 0;
 }

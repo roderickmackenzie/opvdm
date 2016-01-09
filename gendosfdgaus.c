@@ -41,6 +41,8 @@ static int unused __attribute__ ((unused));
 
 #include "server.h"
 #include "dump.h"
+#include "log.h"
+
 #ifdef dos_debug
 #define test_dist
 
@@ -880,7 +882,7 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 	}
 #ifdef dos_bin
 	if (buf_len != buf_pos) {
-		ewe("Expected dos size is different from generated\n");
+		ewe(_("Expected dos size is different from generated\n"));
 	}
 	gzFile file;
 	file = gzopen(outfile, "w9b");
@@ -931,16 +933,15 @@ void gen_do(struct dosconfig *in, struct dosconfig *in2, char *outfile,
 }
 
 void gen_dos_fd_gaus_n(int mat) {
-	printf(">>>>>>>>>>>>>>>>>>>>gen_dos_fd_gaus_n %d\n", mat);
 	char temp[100];
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Electrons.... %s\n", confige[mat].dos_name);
+		printf_log("Electrons.... %s\n", confige[mat].dos_name);
 	 sprintf(temp, "%s_dosn.dat", confige[mat].dos_name);
 	 gen_do(&confige[mat], &configh[mat], temp, TRUE, mat);
 } void gen_dos_fd_gaus_p(int mat) {
 	char temp[100];
 	if (get_dump_status(dump_iodump) == TRUE)
-		printf("Holes.... %s\n", configh[mat].dos_name);
+		printf_log("Holes.... %s\n", configh[mat].dos_name);
 	 sprintf(temp, "%s_dosp.dat", configh[mat].dos_name);
 	 gen_do(&configh[mat], &confige[mat], temp, FALSE, mat);
 } void gen_load_dos(int mat, char *dos_name, char *pl_name) {
@@ -1269,6 +1270,6 @@ void gen_dos_fd_gaus_fd() {
 	print_jobs(&globalserver);
 
 	server_run_jobs(&globalserver);
-	printf("Finished generating....\n");
+	printf_log(_("Finished generating DoS....\n"));
 
 }

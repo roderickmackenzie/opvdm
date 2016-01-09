@@ -32,53 +32,11 @@
 #include "../../buffer.h"
 #include "../../gui_hooks.h"
 #include "../../lang.h"
+#include "../../log.h"
 
 static int unused __attribute__ ((unused));
 
 struct pulse pulse_config;
-
-int pulse_find_config(char *ret, char *dir_name, char *search_name)
-{
-	int i = 0;
-	int found = FALSE;
-	char filepath[256];
-	char sim_name[256];
-	struct inp_file inp;
-	struct inp_list a;
-	inp_listdir(&a);
-
-	for (i = 0; i < a.len; i++) {
-		if ((strcmp(a.names[i], ".") != 0)
-		    && (strcmp(a.names[i], "..") != 0)) {
-			if ((cmpstr_min(a.names[i], "pulse") == 0)
-			    && (strcmp_end(a.names[i], ".inp") == 0)) {
-				inp_init(&inp);
-				inp_load_from_path(&inp, dir_name, a.names[i]);
-				inp_search_string(&inp, sim_name,
-						  "#sim_menu_name");
-				inp_free(&inp);
-
-				if (strcmp(sim_name, search_name) == 0) {
-					strcpy(ret, a.names[i]);
-					found = TRUE;
-					break;
-				}
-
-			}
-		}
-	}
-
-	inp_list_free(&a);
-
-	if (found == TRUE) {
-		return 0;
-	} else {
-		strcpy(ret, "");
-		return -1;
-	}
-
-	return -1;
-}
 
 void sim_pulse(struct device *in)
 {
@@ -103,8 +61,8 @@ void sim_pulse(struct device *in)
 	char config_file_name[200];
 	char search_name[200];
 
-	if (pulse_find_config(config_file_name, in->inputpath, in->simmode) !=
-	    0) {
+	if (find_config_file
+	    (config_file_name, in->inputpath, in->simmode, "pulse") != 0) {
 		ewe("%s %s %s\n", _("no pulse config file found"),
 		    in->inputpath, in->simmode);
 	}
@@ -117,7 +75,7 @@ void sim_pulse(struct device *in)
 
 	time_init(in);
 //time_load_mesh(in,number);
-	time_load_mesh_build(in, number);
+	time_load_mesh(in, number);
 //time_mesh_save();
 //getchar();
 //struct istruct pulseout;
@@ -170,10 +128,10 @@ void sim_pulse(struct device *in)
 		}
 
 		if (get_dump_status(dump_print_text) == TRUE) {
-			printf("%s=%e %s=%d %.1e ", _("pulse time"), in->time,
-			       _("step"), step, in->last_error);
-			printf("Vtot=%lf %s = %e mA (%e A/m^2)\n", V,
-			       _("current"), get_I(in) / 1e-3, get_J(in));
+			printf_log("%s=%e %s=%d %.1e ", _("pulse time"),
+				   in->time, _("step"), step, in->last_error);
+			printf_log("Vtot=%lf %s = %e mA (%e A/m^2)\n", V,
+				   _("current"), get_I(in) / 1e-3, get_J(in));
 		}
 
 		ittr++;

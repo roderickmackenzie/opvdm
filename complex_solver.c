@@ -28,6 +28,7 @@
 #include "buffer.h"
 #include <string.h>
 #include "lang.h"
+#include "log.h"
 
 static int last_col = 0;
 static int last_nz = 0;
@@ -100,7 +101,7 @@ void complex_solver_free()
 	Az = NULL;
 	last_col = 0;
 	last_nz = 0;
-	printf(_("Complex solver free\n"));
+	printf_log(_("Complex solver free\n"));
 }
 
 void complex_solver_print(int col, int nz, int *Ti, int *Tj, double *Tx,

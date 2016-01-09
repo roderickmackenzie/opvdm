@@ -99,7 +99,6 @@ double epitaxy_get_electrical_length(struct epitaxy *in)
 	double tot = 0.0;
 
 	for (i = 0; i < in->layers; i++) {
-		printf("rod>>>%d\n", in->electrical_layer[i]);
 		if (in->electrical_layer[i] == TRUE) {
 			tot += in->width[i];
 		}

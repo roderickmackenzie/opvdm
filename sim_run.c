@@ -35,13 +35,14 @@
 #include "complex_solver.h"
 #include "elec_plugins.h"
 #include "ntricks.h"
+#include "log.h"
 
 struct device cell;
 
 int run_simulation(char *outputpath, char *inputpath)
 {
 	char temp[1000];
-	printf("Run_simulation\n");
+	printf_log("Run_simulation\n");
 
 	cell.kl_in_newton = FALSE;
 
@@ -57,19 +58,19 @@ int run_simulation(char *outputpath, char *inputpath)
 //getchar();
 	int i;
 
-	printf("Load config\n");
+	printf_log("Load config\n");
 	load_config(&cell);
 
 	if (strcmp(cell.simmode, "optics") != 0) {
-		printf("Loading DoS for %d layers\n",
-		       cell.my_epitaxy.electrical_layers);
+		printf_log("Loading DoS for %d layers\n",
+			   cell.my_epitaxy.electrical_layers);
 		char tempn[100];
 		char tempp[100];
 		i = 0;
 		for (i = 0; i < cell.my_epitaxy.electrical_layers; i++) {
 			dos_init(i);
-			printf("Load DoS %d/%d\n", i,
-			       cell.my_epitaxy.electrical_layers);
+			printf_log("Load DoS %d/%d\n", i,
+				   cell.my_epitaxy.electrical_layers);
 			sprintf(tempn, "%s_dosn.dat",
 				cell.my_epitaxy.dos_file[i]);
 			sprintf(tempp, "%s_dosp.dat",
@@ -120,7 +121,7 @@ int run_simulation(char *outputpath, char *inputpath)
 		    cell.xlen * cell.zlen * epsilon0 * cell.epsilonr[0] /
 		    (cell.ylen + cell.other_layers);
 		if (get_dump_status(dump_print_text) == TRUE)
-			printf("C=%le\n", cell.C);
+			printf_log("C=%le\n", cell.C);
 		cell.A = cell.xlen * cell.zlen;
 		cell.Vol = cell.xlen * cell.zlen * cell.ylen;
 
@@ -148,8 +149,6 @@ int run_simulation(char *outputpath, char *inputpath)
 		solver_realloc(&cell);
 
 		plot_open(&cell);
-
-		cell.stop = FALSE;
 
 		plot_now(&cell, "plot");
 		//set_solver_dump_every_matrix(1);

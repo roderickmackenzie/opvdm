@@ -19,13 +19,13 @@
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-//<clean=none></clean>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "sim.h"
 #include "dump.h"
 #include <math.h>
+#include "log.h"
 
 void init_dump(struct device *in)
 {
@@ -110,11 +110,13 @@ void my_guess(struct device *in)
 	}
 
 	if (get_dump_status(dump_iodump) == TRUE) {
-		printf("check1= %e %e\n",
-		       get_p_den(top_l, in->Te[0], in->imat[0]), charge_left);
-		printf("check2= %e %e\n",
-		       get_n_den(top_r, in->Te[in->ymeshpoints - 1],
-				 in->imat[in->ymeshpoints - 1]), charge_right);
+		printf_log("check1= %e %e\n",
+			   get_p_den(top_l, in->Te[0], in->imat[0]),
+			   charge_left);
+		printf_log("check2= %e %e\n",
+			   get_n_den(top_r, in->Te[in->ymeshpoints - 1],
+				     in->imat[in->ymeshpoints - 1]),
+			   charge_right);
 	}
 
 	double delta_phi =
@@ -123,13 +125,13 @@ void my_guess(struct device *in)
 	double test_r = -in->Xi[0] - in->Eg[0] - top_l;
 	in->vbi = delta_phi;
 	if (get_dump_status(dump_print_text) == TRUE) {
-		printf("delta=%le\n", delta_phi);
-		printf(">>>>top_l= %le\n", top_l + Eg);
-		printf(">>>>top_r= %le\n", -top_r);
-		printf("left= %le right = %le  %le %le\n", test_l, test_r,
-		       test_r - test_l, delta_phi);
-		printf("%le %le %le %le %le\n", top_l, top_r, Eg, delta_phi,
-		       in->phi[0]);
+		printf_log("delta=%le\n", delta_phi);
+		printf_log(">>>>top_l= %le\n", top_l + Eg);
+		printf_log(">>>>top_r= %le\n", -top_r);
+		printf_log("left= %le right = %le  %le %le\n", test_l, test_r,
+			   test_r - test_l, delta_phi);
+		printf_log("%le %le %le %le %le\n", top_l, top_r, Eg, delta_phi,
+			   in->phi[0]);
 	}
 
 	Ef = -(top_l + Xi + Eg);
@@ -154,12 +156,12 @@ void my_guess(struct device *in)
 	in->r_holes = Rp;
 
 	if (get_dump_status(dump_iodump) == TRUE) {
-		printf("Ef=%e\n", Ef);
-		printf("Holes on left contact = %e\n", Lp);
-		printf("Electrons on left contact = %e\n", Ln);
+		printf_log("Ef=%e\n", Ef);
+		printf_log("Holes on left contact = %e\n", Lp);
+		printf_log("Electrons on left contact = %e\n", Ln);
 
-		printf("Holes on right contact = %e\n", Rp);
-		printf("Electrons on right contact = %e\n", Rn);
+		printf_log("Holes on right contact = %e\n", Rp);
+		printf_log("Electrons on right contact = %e\n", Rn);
 
 		FILE *contacts = fopena(in->outputpath, "contacts.dat", "w");
 		fprintf(contacts, "%le\n", Lp);

@@ -76,7 +76,6 @@ class server:
 		self.sim_dir=sim_dir
 		self.cluster=str2bool(inp_get_token_value("server.inp","#cluster"))
 		self.server_ip=inp_get_token_value("server.inp","#server_ip");
-		self.error_messages=[]
 		self.finished_jobs=[]
 
 	def start_threads(self):
@@ -110,20 +109,17 @@ class server:
 		self.extern_gui_sim_start()
 
 	def gui_sim_stop(self):
+		text=self.check_warnings()
 		self.progress_window.stop()
 		self.statusicon.set_from_stock(gtk.STOCK_YES)
 		self.extern_gui_sim_stop("Finished simulation")
 		my_help_class.help_set_help(["plot.png",_("<big><b>Simulation finished!</b></big>\nClick on the plot icon to plot the results")])
-		if len(self.error_messages)!=0:
-			text='\n'.join(self.error_messages)
-			if (text.count('License')==0):
-				message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
-				message.set_markup(text)
-				message.run()
-				message.destroy()
-			else:
-				c=copying()
-				c.wow(get_exe_command())
+		print text
+		if len(text)!=0:
+			message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
+			message.set_markup(text)
+			message.run()
+			message.destroy()
 
 
 	def setup_gui(self,extern_gui_sim_start,extern_gui_sim_stop):
@@ -167,7 +163,6 @@ class server:
 
 	def start(self):
 		self.finished_jobs=[]
-		self.error_messages=[]
 		if self.enable_gui==True:
 			self.progress_window.show()
 			self.gui_sim_start()
@@ -209,7 +204,7 @@ class server:
 				self.mylock=False
 			if data.startswith("node_error"):
 				command=data.split("#")
-				self.error_messages.append("Node error!!! "+command[1])
+				print "Node error!!! "+command[1]
 				#self.mylock.set()
 			if data.startswith("load"):
 				if data.count("#")>1:
@@ -335,23 +330,37 @@ class server:
 							#os.system(cmd)
 
 							#sys.exit()
+	def check_warnings(self):
+		message=""
+		for i in range(0,len(self.jobs)):
+			log_file=os.path.join(self.jobs[i],"log.dat")
+			if os.path.isfile(log_file):
+				f = open(log_file, "r")
+				lines = f.readlines()
+				f.close()
+	
+				for l in range(0, len(lines)):
+					lines[l]=lines[l].rstrip()
+					if lines[l].startswith("error:") or lines[l].startswith("warning:"):
+						message=message+lines[l]+"\n"
+		return message
+		
 
 	def stop(self):
 		if self.cluster==True:
 			self.socket.close()
 			self.tcp_sock.close()
 
+		self.progress_window.set_fraction(0.0) 
+		self.running=False
+
+		self.gui_sim_stop()
 
 		self.jobs=[]
 		self.status=[]
 		self.jobs_running=0
 		self.jobs_run=0
-		self.gui_sim_stop()
-		self.progress_window.set_fraction(0.0) 
-		self.running=False
-
-	
-		print "I have shut down the server."
+		print _("I have shut down the server.")
 
 
 	def simple_run(self):
@@ -388,7 +397,6 @@ class server:
 					if test=="lock":
 						if self.finished_jobs.count(data)==0:
 							self.finished_jobs.append(data)
-
 							rest=data[4:]
 							self.jobs_run=self.jobs_run+1
 							self.jobs_running=self.jobs_running-1
@@ -404,9 +412,6 @@ class server:
 						text=data.split(":")[1]
 						self.progress_window.set_text(text)
 					self.progress_window.progress.set_pulse_step(0.01)
-					self.progress_window.pulse()
-			elif data.startswith("error")==True:
-				error_messsage=data.split(":")[1]
-				self.error_messages.append(error_messsage)		
+					self.progress_window.pulse()		
 
 

@@ -33,12 +33,14 @@
 #include "../../buffer.h"
 #include "../../gui_hooks.h"
 #include "../../pl.h"
+#include "../../log.h"
+#include "../../lang.h"
 
 static int unused __attribute__ ((unused));
 
 void sim_jv(struct device *in)
 {
-	printf("entered jv\n");
+	printf_log(_("Running JV simulation\n"));
 	struct buffer buf;
 	buffer_init(&buf);
 
@@ -149,8 +151,8 @@ void sim_jv(struct device *in)
 				    Jlast + (J - Jlast) * (0 - Vlast) / (V -
 									 Vlast);
 				nsc = get_extracted_np(in);
-				printf("nsc=%le\n", nsc);
-				printf("Jsc = %e\n", in->Jsc);
+				printf_log("nsc=%le\n", nsc);
+				printf_log("Jsc = %e\n", in->Jsc);
 			}
 
 			if ((Jlast <= 0) && (J >= 0.0)) {
@@ -158,7 +160,7 @@ void sim_jv(struct device *in)
 				    Vlast + (Vexternal - Vlast) * (0 -
 								   Jlast) / (J -
 									     Jlast);
-				printf("Voc = %e\n", in->Voc);
+				printf_log("Voc = %e\n", in->Voc);
 				k_voc =
 				    get_avg_recom(in) /
 				    pow(get_extracted_np(in), 2.0);
@@ -185,8 +187,9 @@ void sim_jv(struct device *in)
 		}
 
 		if (get_dump_status(dump_print_converge) == TRUE) {
-			printf("V=%lf %lf current = %e mA (%e A/m^2) %le\n", V,
-			       Vexternal, get_I(in) / 1e-3, J, in->last_error);
+			printf_log("V=%lf %lf current = %e mA (%e A/m^2) %le\n",
+				   V, Vexternal, get_I(in) / 1e-3, J,
+				   in->last_error);
 		}
 
 		Jlast = J;
@@ -203,12 +206,10 @@ void sim_jv(struct device *in)
 		//dialog_set_progress ((in->Vstart+V)/(in->Vstop-in->Vstart));
 		if ((Vstep >= 0) && (V > Vstop)) {
 			in->stop = TRUE;
-			printf("--------------1\n");
 		}
 
 		if ((Vstep < 0) && (V < Vstop)) {
 			in->stop = TRUE;
-			printf("--------------2\n");
 		}
 
 		if (get_equiv_J(in) > config.jv_max_j) {
@@ -230,13 +231,13 @@ void sim_jv(struct device *in)
 	in->FF = fabs(in->Pmax / (in->Jsc * in->Voc));
 
 	if (get_dump_status(dump_print_text) == TRUE) {
-		printf("Voc= %lf (V)\n", in->Voc);
-		printf("Jsc= %lf (A/m^2)\n", in->Jsc);
-		printf("Pmax= %lf (W/m^2)\n", in->Pmax);
-		printf("Voltage to get Pmax= %lf (V)\n", in->Pmax_voltage);
-		printf("FF= %lf\n", in->FF * 100.0);
-		printf("Efficiency= %lf percent\n",
-		       fabs(in->Pmax / in->Psun / 1000) * 100.0);
+		printf_log("Voc= %lf (V)\n", in->Voc);
+		printf_log("Jsc= %lf (A/m^2)\n", in->Jsc);
+		printf_log("Pmax= %lf (W/m^2)\n", in->Pmax);
+		printf_log("Voltage to get Pmax= %lf (V)\n", in->Pmax_voltage);
+		printf_log("FF= %lf\n", in->FF * 100.0);
+		printf_log("Efficiency= %lf percent\n",
+			   fabs(in->Pmax / in->Psun / 1000) * 100.0);
 	}
 
 	FILE *out;

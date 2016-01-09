@@ -22,53 +22,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include "sim.h"
-#include "inp.h"
+#include <stdarg.h>
+#include "util.h"
+#include "true_false.h"
+#include "lang.h"
+#include "log.h"
 
-static int unused __attribute__ ((unused));
+static int log_level = 0;
 
-void time_mesh_save()
+void set_logging_level(int value)
 {
+	log_level = value;
 }
 
-void time_load_mesh(struct device *in, int number)
+void log_clear()
 {
+	FILE *out;
+	out = fopen("log.dat", "w");
+	fprintf(out, "opvdm log file:\n");
+	fclose(out);
 }
 
-void time_init(struct device *in)
+void printf_log(const char *format, ...)
 {
-}
+	FILE *out;
+	char data[1000];
+	va_list args;
+	va_start(args, format);
+	vsprintf(data, format, args);
 
-void device_timestep(struct device *in)
-{
-}
+	//printf("%s\n",temp);
+	if ((log_level == log_level_screen)
+	    || (log_level == log_level_screen_and_disk)) {
+		printf("%s", data);
+	}
 
-int time_run()
-{
-	return 0;
-}
-
-double time_get_voltage()
-{
-	return 0.0;
-}
-
-double time_get_fs_laser()
-{
-	return 0.0;
-}
-
-double time_get_sun()
-{
-	return 0.0;
-}
-
-double time_get_laser()
-{
-	return 0.0;
-}
-
-void time_memory_free()
-{
+	if ((log_level == log_level_disk)
+	    || (log_level == log_level_screen_and_disk)) {
+		out = fopen("log.dat", "a");
+		fprintf(out, "%s", data);
+		fclose(out);
+	}
 }

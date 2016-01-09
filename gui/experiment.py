@@ -59,7 +59,6 @@ _ = i18n.language.gettext
 def experiment_new_filename():
 	for i in range(0,20):
 		pulse_name="pulse"+str(i)+".inp"
-		time_mesh_name="time_mesh_config"+str(i)+".inp"
 		if inp_isfile(pulse_name)==False:
 			return i
 	return -1

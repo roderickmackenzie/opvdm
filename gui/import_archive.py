@@ -137,12 +137,10 @@ def import_archive(src_archive,dest_archive,only_over_write):
 		print "Importing",my_file,"to",dest_archive
 		copy_check_ver(dest_archive,src_archive,my_file,False,True)
 
-	files=[ "epitaxy.inp", "fit.inp", "constraints.inp","duplicate.inp", "thermal.inp","time_mesh_config.inp","mesh.inp" ]
+	files=[ "epitaxy.inp", "fit.inp", "constraints.inp","duplicate.inp", "thermal.inp","mesh.inp" ]
 
 	ls=zip_lsdir(src_archive)
 	for i in range(0,len(ls)):
-		if inp_issequential_file(ls[i],"time_mesh"):
-			files.append(ls[i])
 
 		if inp_issequential_file(ls[i],"homo"):
 			files.append(ls[i])

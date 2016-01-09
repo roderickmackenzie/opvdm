@@ -147,7 +147,6 @@ class tab_time_mesh(gtk.VBox):
 			self.store.append(data)
 
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -162,7 +161,6 @@ class tab_time_mesh(gtk.VBox):
 			model.remove(iter)
 
 		self.build_mesh()
-		self.save_mesh()
 
 		self.draw_graph()
 		self.fig.canvas.draw()
@@ -178,7 +176,6 @@ class tab_time_mesh(gtk.VBox):
  			self.store.move_after( iter,self.store.iter_next(iter))
 
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -189,7 +186,6 @@ class tab_time_mesh(gtk.VBox):
 		if new_time!=None:
 			self.start_time=float(new_time)
 			self.build_mesh()
-			self.save_mesh()
 			self.draw_graph()
 			self.fig.canvas.draw()
 			self.save_data()
@@ -201,7 +197,6 @@ class tab_time_mesh(gtk.VBox):
 		if new_time!=None:
 			self.fs_laser_time=float(new_time)
 			self.build_mesh()
-			self.save_mesh()
 			self.draw_graph()
 			self.fig.canvas.draw()
 			self.save_data()
@@ -209,14 +204,12 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_length(self, cell, path, new_text, model):
 		model[path][SEG_LENGTH] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
 
 	def update(self):
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 
@@ -224,7 +217,6 @@ class tab_time_mesh(gtk.VBox):
 		#print "Rod",path
 		model[path][SEG_DT] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -232,7 +224,6 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_voltage_start(self, cell, path, new_text, model):
 		model[path][SEG_VOLTAGE_START] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -240,7 +231,6 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_voltage_stop(self, cell, path, new_text, model):
 		model[path][SEG_VOLTAGE_STOP] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -248,7 +238,6 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_sun(self, cell, path, new_text, model):
 		model[path][SEG_SUN] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -256,7 +245,6 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_laser(self, cell, path, new_text, model):
 		model[path][SEG_LASER] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -264,7 +252,6 @@ class tab_time_mesh(gtk.VBox):
 	def on_cell_edited_mul(self, cell, path, new_text, model):
 		model[path][SEG_MUL] = new_text
 		self.build_mesh()
-		self.save_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
 		self.save_data()
@@ -513,17 +500,17 @@ class tab_time_mesh(gtk.VBox):
 
 		self.statusbar.push(0, str(len(self.time))+_(" mesh points"))
 		
-	def save_mesh(self):
-		lines=[]
+	#def save_mesh(self):
+	#	lines=[]
 		
-		lines.append(str(len(self.time)))
-		for i in range(0,len(self.time)):
-			lines.append(str(format(self.time[i],'.6e'))+" "+str(format(self.laser[i],'.6e'))+" "+str(format(self.sun[i],'.6e'))+" "+str(format(self.voltage[i],'.6e'))+" "+str(format(self.fs_laser[i],'.6e')))
-		lines.append("#ver")
-		lines.append("1.0")
-		lines.append("#end")
+	#	lines.append(str(len(self.time)))
+	#	for i in range(0,len(self.time)):
+	#		lines.append(str(format(self.time[i],'.6e'))+" "+str(format(self.laser[i],'.6e'))+" "+str(format(self.sun[i],'.6e'))+" "+str(format(self.voltage[i],'.6e'))+" "+str(format(self.fs_laser[i],'.6e')))
+	#	lines.append("#ver")
+	#	lines.append("1.0")
+	#	lines.append("#end")
 
-		inp_write_lines_to_file("time_mesh"+str(self.index)+".inp",lines)
+	#	inp_write_lines_to_file("time_mesh"+str(self.index)+".inp",lines)
 
 	def init(self,index):
 		self.index=index

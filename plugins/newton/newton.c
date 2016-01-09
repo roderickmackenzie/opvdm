@@ -1450,7 +1450,7 @@ int solve_cur(struct device *in)
 	only_update_thermal = FALSE;
 #endif
 //in->enable_back=FALSE;
-	int keep_going = FALSE;
+	int stop = FALSE;
 	int thermalrun = 0;
 	double check[10];
 	int cpos = 0;
@@ -1477,7 +1477,7 @@ int solve_cur(struct device *in)
 
 		int propper = TRUE;
 
-		update_solver_vars(in, propper);
+		update_solver_vars(in, TRUE);
 		//printf("Going to clamp=%d\n",propper);
 		//solver_dump_matrix(in->M,in->N,in->Ti,in->Tj, in->Tx,in->b);
 		//printf("%d\n");
@@ -1509,36 +1509,41 @@ int solve_cur(struct device *in)
 			fclose(in->converge);
 		}
 
-		keep_going = FALSE;
+		stop = TRUE;
 
-		//printf("%le\n",in->min_cur_error);
-		//getchar();
-		in->dd_conv = FALSE;
-		if ((ittr < 2) && (error < in->min_cur_error))
-			in->dd_conv = TRUE;
-		if ((ittr < in->max_electrical_itt)
-		    && (error > in->min_cur_error))
-			keep_going = TRUE;
-		if (ittr < in->newton_min_itt)
-			keep_going = TRUE;
-
-		check[cpos] = error;
-		cpos++;
-		if (ittr >= in->newton_min_itt) {
-			cpos = 0;
-			if (in->newton_clever_exit == TRUE) {
-				if ((check[0] < error) || (check[1] < error))
-					keep_going = FALSE;
+		if (ittr < in->max_electrical_itt) {
+			if (error > in->min_cur_error) {
+				stop = FALSE;
 			}
 		}
-//printf("%d %d %d %le\n",newton_min_ittr,cpos,keep_going,error);
-		if (ittr < newton_min_ittr)
-			keep_going = TRUE;
 
-	} while (keep_going == TRUE);
+		if (ittr < in->newton_min_itt) {
+			stop = FALSE;
+		}
+
+		if (in->newton_clever_exit == TRUE) {
+			check[cpos] = error;
+			cpos++;
+
+			if (cpos > 10) {
+				cpos = 0;
+			}
+
+			if (ittr >= in->newton_min_itt) {
+				if ((check[0] < error) || (check[1] < error)) {
+					stop = TRUE;
+				}
+			}
+		}
+
+	} while (stop == FALSE);
 
 	in->newton_last_ittr = ittr;
 
+	if (error > 1e-3) {
+		printf_log
+		    ("warning: The solver has not converged very well.\n");
+	}
 //getchar();
 	if (get_dump_status(dump_newton) == TRUE) {
 		dump_1d_slice(in, in->outputpath);

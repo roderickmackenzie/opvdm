@@ -27,6 +27,7 @@
 #include "dump.h"
 #include "mesh.h"
 #include <math.h>
+#include "log.h"
 
 void free_srh_bands(struct device *in, double **var)
 {
@@ -194,7 +195,7 @@ void device_free(struct device *in)
 
 	free(in->phi_save);
 
-	printf("%s %i %s\n", _("Solved"), in->odes, _("Equations"));
+	printf_log("%s %i %s\n", _("Solved"), in->odes, _("Equations"));
 }
 
 void device_get_memory(struct device *in)

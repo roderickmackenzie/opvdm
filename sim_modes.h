@@ -46,4 +46,6 @@
 
 #define pulse_open_circuit 0
 #define pulse_load 1
+#define fxdomain_open_circuit 0
+#define fxdomain_load 1
 #endif

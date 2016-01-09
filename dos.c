@@ -28,6 +28,8 @@
 #include "server.h"
 #include "sim.h"
 #include "dump.h"
+#include "lang.h"
+#include "log.h"
 
 #define dos_warn
 double max = -1000;
@@ -198,7 +200,7 @@ void load_dos_file(struct dos *mydos, char *file)
 	mydos->used = TRUE;
 
 	if (get_dump_status(dump_print_text) == TRUE)
-		printf("Loading %s\n", file);
+		printf_log("%s %s\n", _("Loading file"), file);
 
 #ifdef dos_bin
 	gzFile in;
@@ -239,8 +241,7 @@ void load_dos_file(struct dos *mydos, char *file)
 
 	in = gzopen(file, "rb");
 	if (in == Z_NULL) {
-		printf("DOS file not found\n");
-		exit(0);
+		ewe(_("DOS file not found\n"));
 	}
 
 	//fseek(in, 0, SEEK_END);
@@ -263,7 +264,7 @@ void load_dos_file(struct dos *mydos, char *file)
 #else
 	in = fopen(file, "r");
 	if (in == NULL) {
-		printf("DOS n file not found\n");
+		ewe(_("DoS n file not found\n"));
 	}
 #endif
 

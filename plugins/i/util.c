@@ -37,6 +37,7 @@
 #include "../../gui_hooks.h"
 #include "../../server.h"
 #include "../../lang.h"
+#include "../../log.h"
 
 void join_path(int args, ...)
 {
@@ -102,11 +103,11 @@ int ewe(const char *format, ...)
 	va_start(args, format);
 	vsprintf(temp, format, args);
 
-	printf("%s\n", temp);
-
 	sprintf(temp2, "error:%s", temp);
 
-	gui_send_data(temp2);
+	printf_log("%s\n", temp2);
+
+	//gui_send_data(temp2);
 
 	va_end(args);
 
@@ -217,6 +218,14 @@ int english_to_bin(char *in)
 		return pulse_open_circuit;
 	} else if (strcmp(in, "load") == 0) {
 		return pulse_load;
+	} else if (strcmp(in, "none") == 0) {
+		return log_level_none;
+	} else if (strcmp(in, "screen") == 0) {
+		return log_level_screen;
+	} else if (strcmp(in, "disk") == 0) {
+		return log_level_disk;
+	} else if (strcmp(in, "screen_and_disk") == 0) {
+		return log_level_screen_and_disk;
 	}
 
 	ewe("I don't understand the command %s\n", in);
@@ -748,8 +757,8 @@ void remove_dir(char *dir_name)
 					  next_file->d_name);
 				if (isdir(filepath) == 0) {
 					remove_dir(filepath);
-					printf(_("Deleting dir =%s\n"),
-					       filepath);
+					printf_log(_("Deleting dir =%s\n"),
+						   filepath);
 					remove(filepath);
 				} else {
 					//printf("Deleteing file =%s\n",filepath);

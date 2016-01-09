@@ -60,4 +60,6 @@ void string_to_hex(char *out, char *in);
 int strextract_name(char *out, char *in);
 int strextract_int(char *in);
 char *strextract_domain(char *in);
+int find_config_file(char *ret, char *dir_name, char *search_name,
+		     char *start_of_name);
 #endif

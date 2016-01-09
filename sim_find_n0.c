@@ -34,11 +34,12 @@
 #include "dump.h"
 #include "elec_plugins.h"
 #include "complex_solver.h"
+#include "log.h"
 
 void find_n0(struct device *in)
 {
 	int i;
-	printf("Finding n0\n");
+	printf_log("Finding n0\n");
 	double oldsun = in->Psun;
 	double oldv = in->Vapplied;
 	in->Vapplied = 0;
@@ -90,5 +91,5 @@ void find_n0(struct device *in)
 	in->Psun = oldsun;
 	in->Vapplied = oldv;
 	light_solve_and_update(in, &(in->mylight), in->Psun, 0.0);
-	printf("Exit finding n0\n");
+	printf_log("Exit finding n0\n");
 }

@@ -38,6 +38,7 @@
 #include "hard_limit.h"
 #include "epitaxy.h"
 #include "lang.h"
+#include "log.h"
 
 static int unused __attribute__ ((unused));
 
@@ -52,7 +53,7 @@ void light_solve_optical_problem(struct light *in)
 	if ((in->laser_eff == 0) && (in->Psun == 0)) {
 
 		if (get_dump_status(dump_optics) == TRUE)
-			printf(_("It's dark I know what the answer is\n"));
+			printf_log(_("It's dark I know what the answer is\n"));
 		for (i = 0; i < in->lpoints; i++) {
 			memset(in->En[i], 0.0, in->points * sizeof(double));
 			memset(in->Ep[i], 0.0, in->points * sizeof(double));
@@ -206,7 +207,8 @@ void light_free_memory(struct light *in)
 	free(in->bz);
 	free(in->l);
 	inter_free(&(in->sun_read));
-	printf(_("Light free memory\n"));
+
+	printf_log(_("Light free memory\n"));
 }
 
 void light_load_materials(struct light *in)
@@ -419,7 +421,7 @@ void light_load_materials(struct light *in)
 						//printf("add=%le\n",add);
 					}
 				} else if (strcmp(type, "gaus_math") == 0) {
-					printf("gaus math\n");
+					printf_log("gaus math\n");
 					double add = 0.0;
 					b = fabs(b);
 					for (ii = 0; ii < in->mat_n[i].len;
@@ -437,7 +439,7 @@ void light_load_materials(struct light *in)
 			} while (!feof(patch_in));
 
 			if (strcmp(token, "#end") != 0) {
-				printf(_("Error at end of patch file\n"));
+				printf_log(_("Error at end of patch file\n"));
 				exit(0);
 			}
 
@@ -500,7 +502,8 @@ void light_load_materials(struct light *in)
 				} while (!feof(patch_in));
 
 				if (strcmp(token, "#end") != 0) {
-					printf("Error at end of inter file\n");
+					printf_log
+					    ("Error at end of inter file\n");
 					exit(0);
 				}
 
@@ -674,7 +677,7 @@ void light_init_mesh(struct light *in)
 
 	join_path(2, in->config_file, in->output_path, "optics.inp");
 
-	printf("Load optics config %s\n", in->config_file);
+	printf_log("Load optics config %s\n", in->config_file);
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->input_path, "optics.inp");
 	inp_check(&inp, 1.85);

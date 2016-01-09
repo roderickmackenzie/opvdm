@@ -33,6 +33,49 @@
 #include "code_ctrl.h"
 #include "true_false.h"
 
+int find_config_file(char *ret, char *dir_name, char *search_name,
+		     char *start_of_name)
+{
+	int i = 0;
+	int found = FALSE;
+	char sim_name[256];
+	struct inp_file inp;
+	struct inp_list a;
+	inp_listdir(&a);
+
+	for (i = 0; i < a.len; i++) {
+		if ((strcmp(a.names[i], ".") != 0)
+		    && (strcmp(a.names[i], "..") != 0)) {
+			if ((cmpstr_min(a.names[i], start_of_name) == 0)
+			    && (strcmp_end(a.names[i], ".inp") == 0)) {
+				inp_init(&inp);
+				inp_load_from_path(&inp, dir_name, a.names[i]);
+				inp_search_string(&inp, sim_name,
+						  "#sim_menu_name");
+				inp_free(&inp);
+
+				if (strcmp(sim_name, search_name) == 0) {
+					strcpy(ret, a.names[i]);
+					found = TRUE;
+					break;
+				}
+
+			}
+		}
+	}
+
+	inp_list_free(&a);
+
+	if (found == TRUE) {
+		return 0;
+	} else {
+		strcpy(ret, "");
+		return -1;
+	}
+
+	return -1;
+}
+
 void inp_listdir(struct inp_list *out)
 {
 	char pwd[1000];

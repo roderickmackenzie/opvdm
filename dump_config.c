@@ -26,6 +26,7 @@
 #include "sim.h"
 #include "dump.h"
 #include "inp.h"
+#include "log.h"
 
 void dump_load_config(struct device *in)
 {
@@ -33,7 +34,7 @@ void dump_load_config(struct device *in)
 	struct inp_file inp;
 	inp_init(&inp);
 	inp_load_from_path(&inp, in->inputpath, "dump.inp");
-	inp_check(&inp, 1.34);
+	inp_check(&inp, 1.37);
 
 	dump = inp_search_english(&inp, "#plot");
 	set_dump_status(dump_plot, dump);
@@ -108,6 +109,11 @@ void dump_load_config(struct device *in)
 
 	dump = inp_search_english(&inp, "#dump_first_guess");
 	set_dump_status(dump_first_guess, dump);
+
+	dump = inp_search_english(&inp, "#dump_log_level");
+
+	set_logging_level(dump);
+	log_clear();
 
 	inp_free(&inp);
 

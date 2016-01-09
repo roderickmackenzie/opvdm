@@ -28,6 +28,7 @@
 #include "../../sim.h"
 #include "../../server.h"
 #include "../../gui_hooks.h"
+#include "../../log.h"
 
 void server_stop_and_exit()
 {
@@ -67,7 +68,7 @@ void server_add_job(struct server *myserver, char *command, char *output)
 	} else {
 		odes = run_simulation(command, output);
 	}
-	printf("Solved %d ODEs\n", odes);
+	printf_log("Solved %d ODEs\n", odes);
 }
 
 int server_run_jobs(struct server *myserver)
