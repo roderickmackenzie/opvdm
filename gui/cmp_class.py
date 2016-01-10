@@ -32,7 +32,6 @@ from inp import inp_load_file
 from inp import inp_search_token_value
 from scan_item import scan_item
 from scan_item import scan_item_add
-from cal_path import find_data_file
 import glob
 from util import time_with_units
 from plot_widget import plot_widget
@@ -41,6 +40,7 @@ from window_list import windows
 from plot_state import plot_state
 from plot_io import plot_load_info
 from cal_path import get_exe_command
+from cal_path import get_image_file_path
 
 class cmp_class(gtk.Window):
 	mix_y=None
@@ -329,14 +329,14 @@ class cmp_class(gtk.Window):
 
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","video.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"video.png"))
 		self.video = gtk.ToolButton(image)
 		self.plot.toolbar.add(self.video)
 		self.video.show()
 		self.video.connect("clicked", self.callback_save)
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","scale.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"scale.png"))
 		self.scale = gtk.ToolButton(image)
 		self.plot.toolbar.add(self.scale)
 
@@ -470,7 +470,7 @@ class cmp_class(gtk.Window):
 			print "CONVERT!!!!!!!!!!!",type(self.plot.plot_token.key_units)
 		self.set_border_width(10)
 		self.set_title("Compare")
-		self.set_icon_from_file(find_data_file(os.path.join("gui/image.jpg")))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 
 		self.connect('key_press_event', self.on_key_press_event)
 

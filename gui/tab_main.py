@@ -38,7 +38,6 @@ from epitaxy import epitaxy_get_width
 from epitaxy import epitaxy_get_mat_file
 from epitaxy import epitaxy_get_electrical_layer
 from help import my_help_class
-from cal_path import find_data_file
 from epitaxy import epitaxy_get_pl_file
 from epitaxy import epitaxy_get_name
 

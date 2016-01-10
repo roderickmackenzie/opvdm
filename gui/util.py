@@ -252,13 +252,19 @@ def time_with_units(time):
 def fx_with_units(fx):
 	ret=str(fx)
 	if (fx<1e3):
-		ret=str(fx*1)+" Hz"
+		ret=" Hz"
+		mul=1.0
 	elif (fx<1e6):
-		ret=str(fx/1e3)+" kHz"
+		ret="kHz"
+		mul=1e-3
 	elif (fx<1e9):
-		ret=str(fx/1e6)+" MHz"
+		ret="MHz"
+		mul=1e-9
+	elif (fx<1e13):
+		ret="THz"
+		mul=1e-12
 
-	return ret
+	return mul,ret
 
 
 def pango_to_gnuplot(data):

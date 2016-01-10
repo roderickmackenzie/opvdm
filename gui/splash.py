@@ -29,7 +29,7 @@ import glib
 from token_lib import tokens
 from numpy import *
 from util import pango_to_gnuplot
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from ver import ver
 from notice import notice
 
@@ -56,7 +56,7 @@ class splash_window():
 		self.window.set_keep_above(True)
 		fixed = gtk.Fixed()
 		image = gtk.Image()
-		image_file=find_data_file("gui/splash.png")
+		image_file=os.path.join(get_image_file_path(),"splash.png")
 		label = gtk.Label()
 		label.set_use_markup(gtk.TRUE)
 		label.set_markup('<span color="black" size="88000"><b>opvdm</b></span>')

@@ -31,7 +31,7 @@ sys.path.append(lib_dir)
 from win_lin import running_on_linux
 from cal_path import get_exe_command
 from cal_path import get_exe_name
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from cal_path import calculate_paths
 calculate_paths()
 
@@ -62,6 +62,7 @@ from search import find_fit_error
 from util import opvdm_clone
 from export_as import export_as
 from experiment import experiment
+from fxexperiment import fxexperiment
 from copying import copying
 from plot_gen import plot_gen
 from plot_gen import set_plot_auto_close
@@ -164,7 +165,7 @@ class opvdm_main_window(gobject.GObject):
 		if running_on_linux()==True:
 			if message!="":
 				pynotify.init ("opvdm")
-				Hello=pynotify.Notification ("opvdm:",message,find_data_file(os.path.join("gui","application-opvdm.svg")))
+				Hello=pynotify.Notification ("opvdm:",message,os.path.join(get_image_file_path(),"application-opvdm.svg"))
 				Hello.set_timeout(2000)
 				Hello.show ()
 
@@ -455,6 +456,11 @@ class opvdm_main_window(gobject.GObject):
 			del self.experiment_window
 			self.experiment_window=None
 
+		if self.fxexperiment_window!=None:
+			del self.fxexperiment_window
+			self.fxexperiment_window=None
+
+
 		if self.qe_window!=None:
 			del self.qe_window
 			self.qe_window=None
@@ -595,6 +601,19 @@ class opvdm_main_window(gobject.GObject):
 		else:
 			self.experiment_window.show_all()
 
+	def callback_fxexperiment_window(self, widget, data=None):
+
+		if self.fxexperiment_window==None:
+			self.fxexperiment_window=fxexperiment()
+			self.fxexperiment_window.init()
+
+		my_help_class.help_set_help(["time.png",_("<big><b>The time mesh editor</b></big>\n To do time domain simulations one must define how voltage the light vary as a function of time.  This can be done in this window.  Also use this window to define the simulation length and time step.")])
+		if self.fxexperiment_window.get_property("visible")==True:
+			self.fxexperiment_window.hide_all()
+		else:
+			self.fxexperiment_window.show_all()
+
+
 	def callback_undo(self, widget, data=None):
 		l=self.undo_list.get_list()
 		if len(l)>0:
@@ -646,7 +665,7 @@ class opvdm_main_window(gobject.GObject):
 
 		if debug_mode()==True:
 			image = gtk.Image()
-	   		image.set_from_file(find_data_file(os.path.join("gui","qe.png")))
+	   		image.set_from_file(os.path.join(get_image_file_path(),"qe.png"))
 			self.qe_button = gtk.ToolButton(image)
 			self.tooltips.set_tip(self.qe_button, _("Quantum efficiency"))
 			self.qe_button.connect("clicked", self.callback_qe_window)
@@ -741,6 +760,8 @@ class opvdm_main_window(gobject.GObject):
 
 		self.experiment_window=None
 
+		self.fxexperiment_window=None
+
 		self.qe_window=None
 
 		self.win_list=windows()
@@ -749,7 +770,7 @@ class opvdm_main_window(gobject.GObject):
 		self.config=config()
 		#table = gtk.Table(3,6,False)
 
-		self.window.set_icon_from_file(find_data_file("gui/image.jpg"))
+		self.window.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 
 		
 
@@ -841,7 +862,7 @@ class opvdm_main_window(gobject.GObject):
 		pos=pos+1
 
 	        image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","play.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"play.png"))
 		self.play = gtk.ToolButton(image)
 		self.tooltips.set_tip(self.play, _("Run the simulation"))
 		toolbar.insert(self.play, pos)
@@ -849,7 +870,7 @@ class opvdm_main_window(gobject.GObject):
 		pos=pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","forward.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"forward.png"))
 		self.tb_run_scan = gtk.ToolButton(image)
 		self.tb_run_scan.connect("clicked", self.callback_run_scan)
 		self.tooltips.set_tip(self.tb_run_scan, _("Run parameter scan"))
@@ -859,7 +880,7 @@ class opvdm_main_window(gobject.GObject):
 
 		if debug_mode()==True:
 			image = gtk.Image()
-	   		image.set_from_file(find_data_file(os.path.join("gui","fit.png")))
+	   		image.set_from_file(os.path.join(get_image_file_path(),"fit.png"))
 			self.tb_run_fit = gtk.ToolButton(image)
 			self.tb_run_fit.connect("clicked", self.callback_run_fit)
 			self.tooltips.set_tip(self.tb_run_fit, _("Run a fit command"))
@@ -868,7 +889,7 @@ class opvdm_main_window(gobject.GObject):
 			pos=pos+1
 
 	        image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","pause.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"pause.png"))
 		self.stop = gtk.ToolButton(image )
 		self.tooltips.set_tip(self.stop, _("Stop the simulation"))
 		self.stop.connect("clicked", self.callback_simulate_stop)
@@ -882,7 +903,7 @@ class opvdm_main_window(gobject.GObject):
 		pos=pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","scan.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"scan.png"))
 		self.param_scan = gtk.ToolButton(image)
 		self.param_scan.connect("clicked", self.callback_scan)
 		self.tooltips.set_tip(self.param_scan, _("Parameter scan"))
@@ -896,7 +917,7 @@ class opvdm_main_window(gobject.GObject):
 		pos=pos+1
 
 	        image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","plot.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"plot.png"))
 		self.plot_select = gtk.MenuToolButton(image,"hello")
 		self.tooltips.set_tip(self.plot_select, _("Find a file to plot"))
 		self.plotted_graphs = used_files_menu()
@@ -907,7 +928,7 @@ class opvdm_main_window(gobject.GObject):
 		pos=pos+1
 
 		#image = gtk.Image()
-   		#image.set_from_file(find_data_file(os.path.join("gui","refresh.png")))
+   		#image.set_from_file(os.path.join(get_image_file_path(),"refresh.png"))
 		#self.plot_open = gtk.ToolButton(image)
 		#self.tooltips.set_tip(self.plot_open, "Replot the graph")
 		#toolbar.insert(self.plot_open, pos)
@@ -915,7 +936,7 @@ class opvdm_main_window(gobject.GObject):
 		#os=pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","plot_time.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"plot_time.png"))
 		self.examine = gtk.ToolButton(image)
 		self.tooltips.set_tip(self.examine, _("Examine results in time domain"))
 		self.examine.connect("clicked", self.callback_examine)
@@ -931,14 +952,20 @@ class opvdm_main_window(gobject.GObject):
 
 
 		image = gtk.Image()
-	   	image.set_from_file(find_data_file(os.path.join("gui","time.png")))
+	   	image.set_from_file(os.path.join(get_image_file_path(),"time.png"))
 		self.experiment_window_button = gtk.ToolButton(image)
 		self.tooltips.set_tip(self.experiment_window_button, _("Edit the time mesh"))
 		self.experiment_window_button.connect("clicked", self.callback_edit_experiment_window)
 		toolbar.insert(self.experiment_window_button, pos)
 		pos=pos+1
 
-
+		image = gtk.Image()
+   		image.set_from_file(os.path.join(get_image_file_path(),"spectrum.png"))
+		self.examine = gtk.ToolButton(image)
+		self.tooltips.set_tip(self.examine, _("Frequency domain mesh editor"))
+		self.examine.connect("clicked", self.callback_fxexperiment_window)
+		toolbar.insert(self.examine, pos)
+		pos=pos+1
 
 		sep2 = gtk.SeparatorToolItem()
 		sep2.set_draw(False)
@@ -1027,7 +1054,7 @@ class opvdm_main_window(gobject.GObject):
 		self.window2.set_title(_("Organic Photovoltaic Device Model (www.opvdm.com)"))
 		self.window2.connect("delete-event", self.callback_close_window2)
 
-		self.window2.set_icon_from_file(find_data_file(os.path.join("gui","image.jpg")))
+		self.window2.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 		if main_vbox==None:
 			self.window2.add(self.window2_box)
 		else:

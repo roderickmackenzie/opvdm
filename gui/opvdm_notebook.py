@@ -31,7 +31,6 @@ from inp import inp_load_file
 from inp import inp_get_next_token_array
 from inp import inp_isfile
 from inp import inp_update_token_value
-from cal_path import find_data_file
 from tab_main import tab_main
 from tab import tab_class
 from tab_homo import tab_bands

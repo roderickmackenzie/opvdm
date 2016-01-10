@@ -39,7 +39,7 @@ from inp import inp_get_token_value
 import matplotlib.mlab as mlab
 from inp import inp_write_lines_to_file
 import webbrowser
-from util import time_with_units
+from util import fx_with_units
 from inp import inp_search_token_value
 from cal_path import get_image_file_path
 from scan_item import scan_remove_file
@@ -50,17 +50,13 @@ _ = i18n.language.gettext
 
 (
 SEG_LENGTH,
-SEG_DT,
-SEG_VOLTAGE_START,
-SEG_VOLTAGE_STOP,
-SEG_MUL,
-SEG_SUN,
-SEG_LASER
-) = range(7)
+SEG_DFX,
+SEG_MUL
+) = range(3)
 
 mesh_articles = []
 
-class tab_time_mesh(gtk.VBox):
+class tab_fxmesh(gtk.VBox):
 	lines=[]
 	edit_list=[]
 
@@ -72,66 +68,44 @@ class tab_time_mesh(gtk.VBox):
 	visible=1
 
 	def save_data(self):
-		file_name="time_mesh_config"+str(self.index)+".inp"
+		file_name="fxmesh"+str(self.index)+".inp"
 		scan_remove_file(file_name)
 
 		out_text=[]
-		out_text.append("#start_time")
-		out_text.append(str(float(self.start_time)))
-		out_text.append("#fs_laser_time")
-		out_text.append(str(float(self.fs_laser_time)))
-		out_text.append("#time_segments")
+		out_text.append("#fx_start")
+		out_text.append(str(float(self.fx_start)))
+		out_text.append("#fx_segments")
 		out_text.append(str(int(len(self.store))))
 		i=0
 		for line in self.store:
-			out_text.append("#time_segment"+str(i)+"_len")
+			out_text.append("#fx_segment"+str(i)+"_len")
 			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" period"),1)
 			out_text.append(str(line[SEG_LENGTH]))
 
-			out_text.append("#time_segment"+str(i)+"_dt")
-			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" dt"),1)
-			out_text.append(str(line[SEG_DT]))
+			out_text.append("#fx_segment"+str(i)+"_dfx")
+			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" dfx"),1)
+			out_text.append(str(line[SEG_DFX]))
 
-			out_text.append("#time_segment"+str(i)+"_voltage_start")
-			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" start voltage"),1)
-			out_text.append(str(line[SEG_VOLTAGE_START]))
-
-			out_text.append("#time_segment"+str(i)+"_voltage_stop")
-			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" stop voltage"),1)
-			out_text.append(str(line[SEG_VOLTAGE_STOP]))
-
-			out_text.append("#time_segment"+str(i)+"_mul")
+			out_text.append("#fx_segment"+str(i)+"_mul")
 			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" mul"),1)
 			out_text.append(str(line[SEG_MUL]))
-
-			out_text.append("#time_segment"+str(i)+"_sun")
-			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" sun"),1)
-			out_text.append(str(line[SEG_SUN]))
-
-			out_text.append("#time_segment"+str(i)+"_laser")
-			scan_item_add(file_name,out_text[len(out_text)-1],_("Part ")+str(i)+_(" laser"),1)
-			out_text.append(str(line[SEG_LASER]))
 			i=i+1
 
 		out_text.append("#ver")
-		out_text.append("1.1")
+		out_text.append("1.0")
 		out_text.append("#end")
 		
 		inp_write_lines_to_file(os.path.join(os.getcwd(),file_name),out_text)
 		self.update_scan_tokens()
 
 	def update_scan_tokens(self):
-		file_name="time_mesh_config"+str(self.index)+".inp"
+		file_name="fxmesh"+str(self.index)+".inp"
 		scan_remove_file(file_name)
 
 		for i in range(0,len(self.list)):
-			scan_item_add(file_name,"#time_segment"+str(i)+"_len",_("Part ")+str(i)+_(" period"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_dt",_("Part ")+str(i)+_(" dt"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_voltage_start",_("Part ")+str(i)+_(" start voltage"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_voltage_stop",_("Part ")+str(i)+_(" stop voltage"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_mul",_("Part ")+str(i)+_(" mul"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_sun",_("Part ")+str(i)+_(" Sun"),1)
-			scan_item_add(file_name,"#time_segment"+str(i)+"_laser",_("Part ")+str(i)+_(" CW laser"),1)
+			scan_item_add(file_name,"#fx_segment"+str(i)+"_len",_("Part ")+str(i)+_(" period"),1)
+			scan_item_add(file_name,"#fx_segment"+str(i)+"_dfx",_("Part ")+str(i)+_(" dfx"),1)
+			scan_item_add(file_name,"#fx_segment"+str(i)+"_mul",_("Part ")+str(i)+_(" mul"),1)
 
 
 	def callback_add_section(self, widget, treeview):
@@ -179,26 +153,20 @@ class tab_time_mesh(gtk.VBox):
 		self.fig.canvas.draw()
 		self.save_data()
 
-	def callback_start_time(self, widget, treeview):
-		new_time=dlg_get_text( _("Enter the start time of the simulation"), str(self.start_time))
+	def callback_start_fx(self, widget, treeview):
+		new_fx=dlg_get_text( _("Enter the start frequency of the simulation"), str(self.fx_start))
 
-		if new_time!=None:
-			self.start_time=float(new_time)
+		if new_fx!=None:
+			self.fx_start=float(new_fx)
 			self.build_mesh()
 			self.draw_graph()
 			self.fig.canvas.draw()
 			self.save_data()
 
-
-	def callback_laser(self, widget, treeview):
-		new_time=dlg_get_text( _("Enter the time at which the laser pulse will fire (-1) to turn it off"), str(self.fs_laser_time))
-
-		if new_time!=None:
-			self.fs_laser_time=float(new_time)
-			self.build_mesh()
-			self.draw_graph()
-			self.fig.canvas.draw()
-			self.save_data()
+	def update(self):
+		self.build_mesh()
+		self.draw_graph()
+		self.fig.canvas.draw()
 
 	def on_cell_edited_length(self, cell, path, new_text, model):
 		model[path][SEG_LENGTH] = new_text
@@ -207,42 +175,9 @@ class tab_time_mesh(gtk.VBox):
 		self.fig.canvas.draw()
 		self.save_data()
 
-	def update(self):
-		self.build_mesh()
-		self.draw_graph()
-		self.fig.canvas.draw()
-
-	def on_cell_edited_dt(self, cell, path, new_text, model):
+	def on_cell_edited_dfx(self, cell, path, new_text, model):
 		#print "Rod",path
-		model[path][SEG_DT] = new_text
-		self.build_mesh()
-		self.draw_graph()
-		self.fig.canvas.draw()
-		self.save_data()
-
-	def on_cell_edited_voltage_start(self, cell, path, new_text, model):
-		model[path][SEG_VOLTAGE_START] = new_text
-		self.build_mesh()
-		self.draw_graph()
-		self.fig.canvas.draw()
-		self.save_data()
-
-	def on_cell_edited_voltage_stop(self, cell, path, new_text, model):
-		model[path][SEG_VOLTAGE_STOP] = new_text
-		self.build_mesh()
-		self.draw_graph()
-		self.fig.canvas.draw()
-		self.save_data()
-
-	def on_cell_edited_sun(self, cell, path, new_text, model):
-		model[path][SEG_SUN] = new_text
-		self.build_mesh()
-		self.draw_graph()
-		self.fig.canvas.draw()
-		self.save_data()
-
-	def on_cell_edited_laser(self, cell, path, new_text, model):
-		model[path][SEG_LASER] = new_text
+		model[path][SEG_FX] = new_text
 		self.build_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()
@@ -261,15 +196,16 @@ class tab_time_mesh(gtk.VBox):
 	def draw_graph(self):
 
 		n=0
-		if (len(self.time)>0):
-			mul,unit=time_with_units(float(self.time[len(self.time)-1]-self.time[0]))
+		if (len(self.fx)>0):
+			mul,unit=fx_with_units(float(self.fx[len(self.fx)-1]-self.fx[0]))
 		else:
 			mul=1.0
-			unit="s"
+			unit="Hz"
 
-		time=[]
-		for i in range(0,len(self.time)):
-			time.append(self.time[i]*mul)
+		fx=[]
+		for i in range(0,len(self.fx)):
+			fx.append(self.fx[i]*mul)
+
 		self.fig.clf()
 		self.fig.subplots_adjust(bottom=0.2)
 		self.fig.subplots_adjust(left=0.1)
@@ -280,44 +216,13 @@ class tab_time_mesh(gtk.VBox):
 		layer=0
 		color =['r','g','b','y','o','r','g','b','y','o']
 
-		self.ax1.set_ylabel(_("Voltage (Volts)"))
+		self.ax1.set_ylabel(_("Magnitude (Volts)"))
 
-		voltage, = self.ax1.plot(time,self.voltage, 'ro-', linewidth=3 ,alpha=1.0)
-		self.ax1.set_xlabel(_("Time (")+unit+')')
+		frequency, = self.ax1.plot(fx,self.mag, 'ro-', linewidth=3 ,alpha=1.0)
+		self.ax1.set_xlabel(_("Frequency (")+unit+')')
 
-		self.ax2 = self.ax1.twinx()
-		self.ax2.set_ylabel(_("Magnitude (au)"))
-		#ax2.set_ylabel('Energy (eV)')
-
-		sun, = self.ax2.plot(time,self.sun, 'go-', linewidth=3 ,alpha=1.0)
-		if debug_mode()==True:
-			laser, = self.ax2.plot(time,self.laser, 'bo-', linewidth=3 ,alpha=1.0)
-
-		fs_laser_enabled=False
-		if self.fs_laser_time!=-1:
-			if len(self.time)>2:
-				dt=(self.time[len(time)-1]-self.time[0])/100
-				start=self.fs_laser_time-dt*5
-				stop=self.fs_laser_time+dt*5
-				x = linspace(start,stop,100)
-				y=self.gaussian(x,self.fs_laser_time,dt)
-				#print y
-
-				fs_laser, = self.ax2.plot(x*mul,y, 'g-', linewidth=3 ,alpha=1.0)
-				fs_laser_enabled=True
-				self.ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-
-		if debug_mode()==True:
-			if fs_laser_enabled==True:
-				self.fig.legend((voltage, sun, laser,fs_laser), (_("Voltage"), _("Sun"), _("CW laser"), _("fs laser")), 'upper right')
-			else:
-				self.fig.legend((voltage, sun, laser), (_("Voltage"), _("Sun"), _("CW laser")), 'upper right')
-		else:
-			if fs_laser_enabled==True:
-				self.fig.legend((voltage, sun, fs_laser), (_("Voltage"), _("Sun"), _("fs laser")), 'upper right')
-			else:
-				self.fig.legend((voltage, sun), (_("Voltage"), _("Sun")), 'upper right')
-
+		#self.fig.legend((frequency), (_("Frequency")), 'upper right')
+	
 
 
 	def save_image(self,file_name):
@@ -354,10 +259,10 @@ class tab_time_mesh(gtk.VBox):
 		webbrowser.open('http://www.opvdm.com/man/index.html')
 
 	def create_model(self):
-		store = gtk.ListStore(str, str, str, str, str, str, str)
+		store = gtk.ListStore(str, str, str)
 
 		for line in self.list:
-			store.append([str(line[SEG_LENGTH]), str(line[SEG_DT]), str(line[SEG_VOLTAGE_START]), str(line[SEG_VOLTAGE_STOP]), str(line[SEG_MUL]), str(line[SEG_SUN]), str(line[SEG_LASER])])
+			store.append([str(line[SEG_LENGTH]), str(line[SEG_DFX]), str(line[SEG_MUL])])
 
 		return store
 
@@ -367,29 +272,15 @@ class tab_time_mesh(gtk.VBox):
 		renderer = gtk.CellRendererText()
 		renderer.connect("edited", self.on_cell_edited_length, model)
 		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn(_("Length"), renderer, text=SEG_LENGTH)
+		column = gtk.TreeViewColumn(_("Frequency"), renderer, text=SEG_LENGTH)
 		column.set_sort_column_id(SEG_LENGTH)
 		treeview.append_column(column)
 
 		renderer = gtk.CellRendererText()
-		renderer.connect("edited", self.on_cell_edited_dt, model)
-		column = gtk.TreeViewColumn("dt", renderer, text=SEG_DT)
+		renderer.connect("edited", self.on_cell_edited_dfx, model)
+		column = gtk.TreeViewColumn("dfx", renderer, text=SEG_DFX)
 		renderer.set_property('editable', True)
-		column.set_sort_column_id(SEG_DT)
-		treeview.append_column(column)
-
-		renderer = gtk.CellRendererText()
-		renderer.connect("edited", self.on_cell_edited_voltage_start, model)
-		column = gtk.TreeViewColumn(_("Start Voltage"), renderer, text=SEG_VOLTAGE_START)
-		renderer.set_property('editable', True)
-		column.set_sort_column_id(SEG_VOLTAGE_START)
-		treeview.append_column(column)
-
-		renderer = gtk.CellRendererText()
-		renderer.connect("edited", self.on_cell_edited_voltage_stop, model)
-		column = gtk.TreeViewColumn(_("Stop Voltage"), renderer, text=SEG_VOLTAGE_STOP)
-		renderer.set_property('editable', True)
-		column.set_sort_column_id(SEG_VOLTAGE_STOP)
+		column.set_sort_column_id(SEG_DFX)
 		treeview.append_column(column)
 
 		renderer = gtk.CellRendererText()
@@ -399,53 +290,29 @@ class tab_time_mesh(gtk.VBox):
 		column.set_sort_column_id(SEG_MUL)
 		treeview.append_column(column)
 
-		if debug_mode()==True:
-			renderer = gtk.CellRendererText()
-			renderer.connect("edited", self.on_cell_edited_sun, model)
-			renderer.set_property('editable', True)
-			column = gtk.TreeViewColumn(_("Sun"), renderer, text=SEG_SUN)
-			column.set_sort_column_id(SEG_SUN)
-			treeview.append_column(column)
-
-		if debug_mode()==True:
-			renderer = gtk.CellRendererText()
-			renderer.connect("edited", self.on_cell_edited_laser, model)
-			renderer.set_property('editable', True)
-			column = gtk.TreeViewColumn(_("CW laser"), renderer, text=SEG_LASER)
-			column.set_sort_column_id(SEG_LASER)
-			treeview.append_column(column)
-
 	def load_data(self):
 
 		lines=[]
-		self.start_time=0.0
-		self.fs_laser_time=0.0
+		self.start_fx=0.0
 		self.list=[]
 
-		file_name="time_mesh_config"+str(self.index)+".inp"
+		file_name="fxmesh"+str(self.index)+".inp"
 
 		ret=inp_load_file(lines,file_name)
 		if ret==True:
-			if inp_search_token_value(lines, "#ver")=="1.1":
+			if inp_search_token_value(lines, "#ver")=="1.0":
 				pos=0
 				token,value,pos=inp_read_next_item(lines,pos)
-				self.start_time=float(value)
-
-				token,value,pos=inp_read_next_item(lines,pos)
-				self.fs_laser_time=float(value)
+				self.fx_start=float(value)
 
 				token,value,pos=inp_read_next_item(lines,pos)
 				segments=int(value)
 
 				for i in range(0, segments):
 					token,length,pos=inp_read_next_item(lines,pos)
-					token,dt,pos=inp_read_next_item(lines,pos)
-					token,voltage_start,pos=inp_read_next_item(lines,pos)
-					token,voltage_stop,pos=inp_read_next_item(lines,pos)
+					token,dfx,pos=inp_read_next_item(lines,pos)
 					token,mul,pos=inp_read_next_item(lines,pos)
-					token,sun,pos=inp_read_next_item(lines,pos)
-					token,laser,pos=inp_read_next_item(lines,pos)
-					self.list.append((length,dt,voltage_start,voltage_stop,mul,sun,laser))
+					self.list.append((length,dfx,mul))
 
 				print self.list
 				return True
@@ -460,66 +327,29 @@ class tab_time_mesh(gtk.VBox):
 		return False
 
 	def build_mesh(self):
-		self.laser=[]
-		self.sun=[]
-		self.voltage=[]
-		self.time=[]
-		self.fs_laser=[]
-		pos=self.start_time
-		fired=False
-
-		laser_pulse_width=float(inp_get_token_value("optics.inp", "#laser_pulse_width"))
-
-		sun_steady_state=float(inp_get_token_value("light.inp", "#Psun"))
+		self.mag=[]
+		self.fx=[]
+		pos=self.fx_start
 
 		seg=0
 		for line in self.store:
-			end_time=pos+float(line[SEG_LENGTH])
-			dt=float(line[SEG_DT])
-			voltage_start=float(line[SEG_VOLTAGE_START])
-			voltage_stop=float(line[SEG_VOLTAGE_STOP])
+			end_fx=pos+float(line[SEG_LENGTH])
+			dfx=float(line[SEG_DFX])
 			mul=float(line[SEG_MUL])
-			sun=float(line[SEG_SUN])
-			laser=float(line[SEG_LASER])
-			#print "VOLTAGE=",line[SEG_VOLTAGE],end_time,pos
 
-			if dt!=0.0 and mul!=0.0:
-				voltage=voltage_start
-				while(pos<end_time):
-					dv=(voltage_stop-voltage_start)*(dt/float(line[SEG_LENGTH]))
-					self.time.append(pos)
-					self.laser.append(laser)
-					self.sun.append(sun+sun_steady_state)
-					self.voltage.append(voltage)
-					#print seg,voltage
-					self.fs_laser.append(0.0)
-					pos=pos+dt
-					voltage=voltage+dv
+			if dfx!=0.0 and mul!=0.0:
+				while(pos<end_fx):
+					self.fx.append(pos)
+					self.mag.append(1.0)
+					pos=pos+dfx
 
-					if fired==False:
-						if pos>self.fs_laser_time and self.fs_laser_time!=-1:
-							fired=True
-							self.fs_laser[len(self.fs_laser)-1]=laser_pulse_width/dt
-
-					dt=dt*mul
+					dfx=dfx*mul
 
 			seg=seg+1
 
-		#print self.voltage
 
-		self.statusbar.push(0, str(len(self.time))+_(" mesh points"))
+		self.statusbar.push(0, str(len(self.fx))+_(" mesh points"))
 		
-	#def save_mesh(self):
-	#	lines=[]
-		
-	#	lines.append(str(len(self.time)))
-	#	for i in range(0,len(self.time)):
-	#		lines.append(str(format(self.time[i],'.6e'))+" "+str(format(self.laser[i],'.6e'))+" "+str(format(self.sun[i],'.6e'))+" "+str(format(self.voltage[i],'.6e'))+" "+str(format(self.fs_laser[i],'.6e')))
-	#	lines.append("#ver")
-	#	lines.append("1.0")
-	#	lines.append("#end")
-
-	#	inp_write_lines_to_file("time_mesh"+str(self.index)+".inp",lines)
 
 	def init(self,index):
 		self.index=index
@@ -582,18 +412,10 @@ class tab_time_mesh(gtk.VBox):
 		tool_bar_pos=tool_bar_pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(os.path.join(get_image_file_path(),"laser.png"))
-		laser = gtk.ToolButton(image)
-		tooltips.set_tip(laser, _("Laser start time"))
-		laser.connect("clicked", self.callback_laser,treeview)
-		toolbar.insert(laser, tool_bar_pos)
-		tool_bar_pos=tool_bar_pos+1
-
-		image = gtk.Image()
    		image.set_from_file(os.path.join(get_image_file_path(),"start.png"))
 		start = gtk.ToolButton(image)
-		tooltips.set_tip(start, _("Simulation start time"))
-		start.connect("clicked", self.callback_start_time,treeview)
+		tooltips.set_tip(start, _("Simulation start frequency"))
+		start.connect("clicked", self.callback_start_fx,treeview)
 		toolbar.insert(start, tool_bar_pos)
 		tool_bar_pos=tool_bar_pos+1
 

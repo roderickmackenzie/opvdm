@@ -25,7 +25,6 @@ import gtk
 import sys
 import os
 import shutil
-from cal_path import find_data_file
 
 def notice():
 	ret="opvdm (Organic Photovoltaic Device Model GUI)\n"

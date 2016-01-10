@@ -29,7 +29,6 @@ from scan_item import scan_item
 import vte
 from tab_base import tab_base
 from help import my_help_class
-from cal_path import find_data_file
 
 class tab_terminal(gtk.VBox,tab_base):
 

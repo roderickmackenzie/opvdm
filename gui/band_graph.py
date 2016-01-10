@@ -32,7 +32,6 @@ from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanva
 import gobject
 import os, fnmatch
 from plot_gen import plot_gen
-from cal_path import find_data_file
 import zipfile
 import glob
 from scan_item import scan_item_add

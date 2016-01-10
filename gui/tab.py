@@ -38,7 +38,6 @@ from util import str2bool
 from scan_item import scan_remove_file
 from inp import inp_load_file
 from help import my_help_class
-from cal_path import find_data_file
 from util import latex_to_pygtk_subscript
 from i18n import yes_no
 

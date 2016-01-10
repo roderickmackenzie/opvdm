@@ -25,9 +25,10 @@ import gtk
 import sys
 import os
 import shutil
-from cal_path import find_data_file
 from ver import ver
 from notice import notice
+from cal_path import get_image_file_path
+
 def about_dialog_show():
 	about = gtk.AboutDialog()
 	about.set_program_name("opvdm")
@@ -36,7 +37,7 @@ def about_dialog_show():
 	about.set_comments(ver()+"\n"+notice())
 	about.set_website("http://www.opvdm.com")
 
-	image=find_data_file("gui/image.jpg")
+	image=os.path.join(get_image_file_path(),"image.jpg")
 	about.set_logo(gtk.gdk.pixbuf_new_from_file(image))
 	about.run()
 	about.destroy()

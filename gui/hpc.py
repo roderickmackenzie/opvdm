@@ -26,7 +26,7 @@ import sys
 import os
 import shutil
 import commands
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from search import find_fit_log
 from search import find_fit_speed_log
 from window_list import windows
@@ -372,7 +372,7 @@ class hpc_class(gtk.Window):
 		button.show()
 		vbox_r.pack_start(button, False, False, 0)
 		self.win_list.set_window(self,"hpc_window")
-		self.set_icon_from_file(find_data_file("gui/server.png"))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"server.png"))
 		self.set_size_request(700,-1)
 		self.set_title("Organic Photovoltaic Device Model (www.opvdm.com)")
 		self.connect("delete-event", self.callback_close_window) 

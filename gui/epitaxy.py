@@ -32,7 +32,6 @@ from inp import inp_load_file
 from inp import inp_search_token_value
 from scan_item import scan_item
 from scan_item import scan_item_add
-from cal_path import find_data_file
 import glob
 from util import time_with_units
 from plot_widget import plot_widget

@@ -34,7 +34,7 @@ from util import str2bool
 from inp import inp_search_token_value
 from inp import inp_update_token_value
 from scan_item import scan_item_add
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from emesh import tab_electrical_mesh
 from plot_gen import plot_gen
 from opvdm_open import opvdm_open
@@ -211,7 +211,7 @@ class layer_widget(gtk.VBox):
 
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/mesh.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"mesh.png"))
 		self.mesh = gtk.ToolButton(image)
 		tooltips.set_tip(self.mesh, _("Edit the electrical mesh"))
 		self.mesh.connect("clicked", self.callback_edit_mesh)
@@ -219,7 +219,7 @@ class layer_widget(gtk.VBox):
 		pos=pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/optics.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"optics.png"))
 		self.optics_button = gtk.ToolButton(image)
 		tooltips.set_tip(self.optics_button, _("Optical simulation"))
 		self.optics_button.connect("clicked", self.callback_optics_sim)
@@ -228,7 +228,7 @@ class layer_widget(gtk.VBox):
 		pos=pos+1
 
 		#image = gtk.Image()
-   		#image.set_from_file(find_data_file("gui/dir_file.png"))
+   		#image.set_from_file(os.path.join(get_image_file_path(),"dir_file.png"))
 		#self.mesh = gtk.ToolButton(image)
 		self.mesh = gtk.ToolButton(gtk.STOCK_OPEN)
 		tooltips.set_tip(self.mesh, _("Look at the materials database"))

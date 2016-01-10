@@ -177,7 +177,7 @@ def get_inp_file_path():
 
 def get_image_file_path():
 	global share_path
-	return os.path.join(share_path,"gui")
+	return os.path.join(share_path,"images")
 
 def get_lang_path():
 	global share_path

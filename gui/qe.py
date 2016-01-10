@@ -32,7 +32,7 @@ from numpy import arange, sin, pi
 from matplotlib.backends.backend_gtkagg import FigureCanvasGTKAgg as FigureCanvas
 from matplotlib.backends.backend_gtkagg import NavigationToolbar2GTKAgg as NavigationToolbar
 import gobject
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from scan_item import scan_item_add
 
 class qe_window(gtk.Window):
@@ -171,7 +171,7 @@ class qe_window(gtk.Window):
 		tool_bar_pos=tool_bar_pos+1
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file("gui/play.png"))
+   		image.set_from_file(os.path.join(get_image_file_path(),"play.png"))
 		save = gtk.ToolButton(image)
 		tooltips.set_tip(save, "Run simulation")
 		save.connect("clicked", self.callback_refresh)
@@ -231,7 +231,7 @@ class qe_window(gtk.Window):
 		window_main_vbox.add(self.hbox)
 		self.add(window_main_vbox)
 		self.set_title("Quantum Efficency calculator - (www.opvdm.com)")
-		self.set_icon_from_file(find_data_file("gui/qe.png"))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"qe.png"))
 		self.connect("delete-event", self.callback_close)
 		self.set_position(gtk.WIN_POS_CENTER)
 

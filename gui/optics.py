@@ -31,7 +31,7 @@ from inp import inp_get_token_value
 import gobject
 import os, fnmatch
 from plot_gen import plot_gen
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 import zipfile
 import glob
 from scan_item import scan_item_add
@@ -178,7 +178,7 @@ class class_optical(gtk.Window):
 		tool_bar_pos=0
 
 		image = gtk.Image()
-   		image.set_from_file(find_data_file(os.path.join("gui","play.png")))
+   		image.set_from_file(os.path.join(get_image_file_path(),"play.png"))
 		self.play = gtk.ToolButton(image)
    		#image.set_from_file(self.icon_theme.lookup_icon("media-playback-start", 32, 0).get_filename())
 		refresh = gtk.ToolButton(image)
@@ -287,7 +287,7 @@ class class_optical(gtk.Window):
 		self.fig_photon_density.draw_graph()
 		self.fig_photon_abs.draw_graph()
 
-		self.set_icon_from_file(find_data_file("gui/image.jpg"))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 		self.set_title("Optical Model - (www.opvdm.com)")
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.progress_window.stop()

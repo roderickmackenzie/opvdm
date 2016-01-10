@@ -43,7 +43,7 @@ import webbrowser
 from debug import debug_mode
 from inp import inp_update_token_value
 from inp import inp_get_token_value
-from experiment_tab import experiment_tab
+from fxexperiment_tab import fxexperiment_tab
 from util_zip import zip_lsdir
 from inp import inp_isfile
 from inp import inp_copy_file
@@ -57,12 +57,12 @@ _ = i18n.language.gettext
 
 def experiment_new_filename():
 	for i in range(0,20):
-		pulse_name="pulse"+str(i)+".inp"
-		if inp_isfile(pulse_name)==False:
+		name="fxdomain"+str(i)+".inp"
+		if inp_isfile(name)==False:
 			return i
 	return -1
 
-class experiment(gtk.Window):
+class fxexperiment(gtk.Window):
 
 	def update(self):
 		for item in self.notebook.get_children():
@@ -83,7 +83,7 @@ class experiment(gtk.Window):
 		return item_factory.get_widget("<main>")
 
 	def callback_close(self, widget, data=None):
-		self.win_list.update(self,"experiment_window")
+		#self.win_list.update(self,"experiment_window")
 		self.hide()
 		return True
 
@@ -95,9 +95,9 @@ class experiment(gtk.Window):
 
 		if new_sim_name!=None:
 			index=experiment_new_filename()
-			inp_copy_file("pulse"+str(index)+".inp","pulse0.inp")
-			inp_copy_file("time_mesh_config"+str(index)+".inp","time_mesh_config0.inp")
-			inp_update_token_value("pulse"+str(index)+".inp", "#sim_menu_name", new_sim_name+"@pulse",1)
+			inp_copy_file("fxdomain"+str(index)+".inp","fxdomain0.inp")
+			inp_copy_file("fxmesh"+str(index)+".inp","fxmesh0.inp")
+			inp_update_token_value("fxdomain"+str(index)+".inp", "#sim_menu_name", new_sim_name+"@fxdomain",1)
 			self.add_page(index)
 			global_object_get("tb_item_sim_mode_update")()
 
@@ -114,14 +114,14 @@ class experiment(gtk.Window):
 		if new_sim_name!=None:
 			new_sim_name=new_sim_name+"@"+tab.tab_name.split("@")[1]
 			index=experiment_new_filename()
-			if inp_copy_file("pulse"+str(index)+".inp","pulse"+str(old_index)+".inp")==False:
-				print "Error copying file"+"pulse"+str(old_index)+".inp"
+			if inp_copy_file("fxdomain"+str(index)+".inp","fxdomain"+str(old_index)+".inp")==False:
+				print "Error copying file"+"fxdomain"+str(old_index)+".inp"
 				return
-			if inp_copy_file("time_mesh_config"+str(index)+".inp","time_mesh_config"+str(old_index)+".inp")==False:
-				print "Error copying file"+"pulse"+str(old_index)+".inp"
+			if inp_copy_file("fxmesh"+str(index)+".inp","fxmesh"+str(old_index)+".inp")==False:
+				print "Error copying file"+"fxdomain"+str(old_index)+".inp"
 				return
 
-			inp_update_token_value("pulse"+str(index)+".inp", "#sim_menu_name", new_sim_name,1)
+			inp_update_token_value("fxdomain"+str(index)+".inp", "#sim_menu_name", new_sim_name,1)
 			self.add_page(index)
 			global_object_get("tb_item_sim_mode_update")()
 
@@ -156,8 +156,8 @@ class experiment(gtk.Window):
 		response = md.run()
 
 		if response == gtk.RESPONSE_YES:
-			inp_remove_file("pulse"+str(tab.index)+".inp")
-			inp_remove_file("time_mesh_config"+str(tab.index)+".inp")
+			inp_remove_file("fxdomain"+str(tab.index)+".inp")
+			inp_remove_file("fxmesh"+str(tab.index)+".inp")
 			self.notebook.remove_page(pageNum)
 			global_object_get("tb_item_sim_mode_update")()
 			
@@ -180,7 +180,7 @@ class experiment(gtk.Window):
 		file_list=zip_lsdir(os.path.join(os.getcwd(),"sim.opvdm"))
 		files=[]
 		for i in range(0,len(file_list)):
-			if file_list[i].startswith("pulse") and file_list[i].endswith(".inp"):
+			if file_list[i].startswith("fxdomain") and file_list[i].endswith(".inp"):
 				files.append(file_list[i])
 
 		print "load tabs",files
@@ -199,7 +199,7 @@ class experiment(gtk.Window):
 
 
 	def add_page(self,index):
-		new_tab=experiment_tab()
+		new_tab=fxexperiment_tab()
 		new_tab.init(index)
 		new_tab.close_button.connect("clicked", self.callback_view_toggle_tab,new_tab.tab_name)
 
@@ -221,7 +221,7 @@ class experiment(gtk.Window):
 		self.tooltips = gtk.Tooltips()
 
 		self.set_border_width(2)
-		self.set_title(_("Time domain experiment window - opvdm"))
+		self.set_title(_("Frequency domain experiment window - opvdm"))
 
 		self.status_bar = gtk.Statusbar()      
 		self.status_bar.show()

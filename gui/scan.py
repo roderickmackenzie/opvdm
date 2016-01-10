@@ -26,7 +26,7 @@ import gtk
 import sys
 import os
 import shutil
-from cal_path import find_data_file
+from cal_path import get_image_file_path
 from about import about_dialog_show
 from used_files_menu import used_files_menu
 from server import server
@@ -373,7 +373,7 @@ class scan_class(gtk.Window):
 
 		button = gtk.Button()
 		close_image = gtk.Image()
-   		close_image.set_from_file(find_data_file(os.path.join("gui","close.png")))
+   		close_image.set_from_file(os.path.join(get_image_file_path(),"close.png"))
 		close_image.show()
 		button.add(close_image)
 		button.props.relief = gtk.RELIEF_NONE
@@ -507,7 +507,7 @@ class scan_class(gtk.Window):
 		pos=0
 
 		#image = gtk.Image()
-		#image.set_from_file(find_data_file(os.path.join("gui","new-tab.png")))
+		#image.set_from_file(os.path.join(get_image_file_path(),"new-tab.png"))
 		tb_new_scan = gtk.MenuToolButton(gtk.STOCK_NEW)
 		tb_new_scan.connect("clicked", self.callback_add_page)
 		self.tooltips.set_tip(tb_new_scan, _("New simulation"))
@@ -550,7 +550,7 @@ class scan_class(gtk.Window):
 		pos=pos+1
 
 		image = gtk.Image()
-		image.set_from_file(find_data_file(os.path.join("gui","forward2.png")))
+		image.set_from_file(os.path.join(get_image_file_path(),"forward2.png"))
 		tb_simulate = gtk.ToolButton(image)
 		tb_simulate.connect("clicked", self.callback_run_all_simulations)
 		self.tooltips.set_tip(tb_simulate, _("Run all simulation"))
@@ -565,7 +565,7 @@ class scan_class(gtk.Window):
 			pos=pos+1
 
 			image = gtk.Image()
-	   		image.set_from_file(find_data_file(os.path.join("gui","server.png")))
+	   		image.set_from_file(os.path.join(get_image_file_path(),"server.png"))
 			cluster = gtk.ToolButton(image)
 			cluster.connect("clicked", self.callback_cluster)
 			self.tooltips.set_tip(cluster, _("Configure cluster"))
@@ -606,7 +606,7 @@ class scan_class(gtk.Window):
 
 		self.connect("delete-event", self.callback_close)
 		self.notebook.connect("switch-page",self.switch_page)
-		self.set_icon_from_file(find_data_file(os.path.join("gui","image.jpg")))
+		self.set_icon_from_file(os.path.join(get_image_file_path(),"image.jpg"))
 
 		self.hide()
 

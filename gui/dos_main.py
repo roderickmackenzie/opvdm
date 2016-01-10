@@ -39,7 +39,6 @@ from epitaxy import epitaxy_get_electrical_layer
 from epitaxy import epitaxy_get_mat_file
 from global_objects import global_object_register
 from help import my_help_class
-from cal_path import find_data_file
 from epitaxy import epitaxy_get_name
 
 class dos_main(gtk.HBox,tab_base):
