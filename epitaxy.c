@@ -103,7 +103,6 @@ double epitaxy_get_electrical_length(struct epitaxy *in)
 			tot += in->width[i];
 		}
 	}
-
 	return tot;
 }
 

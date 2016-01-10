@@ -26,6 +26,7 @@
 #include "../../dump.h"
 #include "../../sim.h"
 #include "pulse.h"
+#include "../../log.h"
 
 void newton_aux_pulse_voc(struct device *in, double V, double *i, double *didv,
 			  double *didphi, double *didxil, double *didxipl,
@@ -43,7 +44,7 @@ double pulse_newton_sim_voc_fast(struct device *in, int do_LC)
 
 double pulse_newton_sim_voc(struct device *in)
 {
-	printf("Looking for Voc\n");
+	printf_log("Looking for Voc\n");
 	double C = in->C;
 	double clamp = 0.1;
 	double step = 0.01;
@@ -83,7 +84,7 @@ double pulse_newton_sim_voc(struct device *in)
 		step = step / (1.0 + fabs(step / clamp));
 		in->Vapplied += step;
 		if (get_dump_status(dump_print_text) == TRUE) {
-			printf
+			printf_log
 			    ("%d pulse voc find Voc Vapplied=%lf step=%le error=%le\n",
 			     count, in->Vapplied, step, e1);
 		}

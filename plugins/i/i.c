@@ -1695,6 +1695,12 @@ void inter_free(struct istruct *in)
 	free(in->data);
 }
 
+void inter_reset(struct istruct *in)
+{
+	in->len = 0;
+	in->max_len = 0;
+}
+
 double inter_array_get_max(double *data, int len)
 {
 	int i;

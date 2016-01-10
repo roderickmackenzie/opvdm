@@ -115,8 +115,13 @@ class experiment(gtk.Window):
 		if new_sim_name!=None:
 			new_sim_name=new_sim_name+"@"+tab.tab_name.split("@")[1]
 			index=experiment_new_filename()
-			inp_copy_file("pulse"+str(index)+".inp","pulse"+str(old_index)+".inp")
-			inp_copy_file("time_mesh_config"+str(index)+".inp","time_mesh_config"+str(old_index)+".inp")
+			if inp_copy_file("pulse"+str(index)+".inp","pulse"+str(old_index)+".inp")==False:
+				print "Error copying file"+"pulse"+str(old_index)+".inp"
+				return
+			if inp_copy_file("time_mesh_config"+str(index)+".inp","time_mesh_config"+str(old_index)+".inp")==False:
+				print "Error copying file"+"pulse"+str(old_index)+".inp"
+				return
+
 			inp_update_token_value("pulse"+str(index)+".inp", "#sim_menu_name", new_sim_name,1)
 			self.add_page(index)
 			global_object_get("tb_item_sim_mode_update")()

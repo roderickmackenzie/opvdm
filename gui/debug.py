@@ -22,10 +22,10 @@
 import sys
 import os
 from os.path import expanduser
+from cal_path import get_bin_path
 
 def debug_mode():
-	home = expanduser("~")
-	if os.path.isfile(os.path.join(home,".debugmode"))==True:
+	if os.path.isfile(os.path.join(get_bin_path(),"debug_mode"))==True:
 		return True
 	else:
 		return False

@@ -108,4 +108,5 @@ void inter_dft(double *real, double *imag, struct istruct *in, double fx);
 int inter_get_max_pos(struct istruct *in);
 int inter_search_pos(struct istruct *in, double x);
 double inter_join_bins(struct istruct *in, double delta);
+void inter_reset(struct istruct *in);
 #endif

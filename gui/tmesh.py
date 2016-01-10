@@ -45,7 +45,7 @@ from inp import inp_search_token_value
 from cal_path import get_image_file_path
 from scan_item import scan_remove_file
 from scan_item import scan_item_add
-
+from debug import debug_mode
 import i18n
 _ = i18n.language.gettext
 
@@ -291,7 +291,8 @@ class tab_time_mesh(gtk.VBox):
 		#ax2.set_ylabel('Energy (eV)')
 
 		sun, = self.ax2.plot(time,self.sun, 'go-', linewidth=3 ,alpha=1.0)
-		laser, = self.ax2.plot(time,self.laser, 'bo-', linewidth=3 ,alpha=1.0)
+		if debug_mode()==True:
+			laser, = self.ax2.plot(time,self.laser, 'bo-', linewidth=3 ,alpha=1.0)
 
 		fs_laser_enabled=False
 		if self.fs_laser_time!=-1:
@@ -302,14 +303,21 @@ class tab_time_mesh(gtk.VBox):
 				x = linspace(start,stop,100)
 				y=self.gaussian(x,self.fs_laser_time,dt)
 				#print y
+
 				fs_laser, = self.ax2.plot(x*mul,y, 'g-', linewidth=3 ,alpha=1.0)
 				fs_laser_enabled=True
 				self.ax2.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 
-		if fs_laser_enabled==True:
-			self.fig.legend((voltage, sun, laser,fs_laser), (_("Voltage"), _("Sun"), _("CW laser"), _("fs laser")), 'upper right')
+		if debug_mode()==True:
+			if fs_laser_enabled==True:
+				self.fig.legend((voltage, sun, laser,fs_laser), (_("Voltage"), _("Sun"), _("CW laser"), _("fs laser")), 'upper right')
+			else:
+				self.fig.legend((voltage, sun, laser), (_("Voltage"), _("Sun"), _("CW laser")), 'upper right')
 		else:
-			self.fig.legend((voltage, sun, laser), (_("Voltage"), _("Sun"), _("CW laser")), 'upper right')
+			if fs_laser_enabled==True:
+				self.fig.legend((voltage, sun, fs_laser), (_("Voltage"), _("Sun"), _("fs laser")), 'upper right')
+			else:
+				self.fig.legend((voltage, sun), (_("Voltage"), _("Sun")), 'upper right')
 
 
 
@@ -392,19 +400,21 @@ class tab_time_mesh(gtk.VBox):
 		column.set_sort_column_id(SEG_MUL)
 		treeview.append_column(column)
 
-		renderer = gtk.CellRendererText()
-		renderer.connect("edited", self.on_cell_edited_sun, model)
-		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn(_("Sun"), renderer, text=SEG_SUN)
-		column.set_sort_column_id(SEG_SUN)
-		treeview.append_column(column)
+		if debug_mode()==True:
+			renderer = gtk.CellRendererText()
+			renderer.connect("edited", self.on_cell_edited_sun, model)
+			renderer.set_property('editable', True)
+			column = gtk.TreeViewColumn(_("Sun"), renderer, text=SEG_SUN)
+			column.set_sort_column_id(SEG_SUN)
+			treeview.append_column(column)
 
-		renderer = gtk.CellRendererText()
-		renderer.connect("edited", self.on_cell_edited_laser, model)
-		renderer.set_property('editable', True)
-		column = gtk.TreeViewColumn(_("CW laser"), renderer, text=SEG_LASER)
-		column.set_sort_column_id(SEG_LASER)
-		treeview.append_column(column)
+		if debug_mode()==True:
+			renderer = gtk.CellRendererText()
+			renderer.connect("edited", self.on_cell_edited_laser, model)
+			renderer.set_property('editable', True)
+			column = gtk.TreeViewColumn(_("CW laser"), renderer, text=SEG_LASER)
+			column.set_sort_column_id(SEG_LASER)
+			treeview.append_column(column)
 
 	def load_data(self):
 

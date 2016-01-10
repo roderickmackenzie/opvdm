@@ -59,7 +59,6 @@ void sim_pulse(struct device *in)
 	inter_init(&lost_charge);
 
 	char config_file_name[200];
-	char search_name[200];
 
 	if (find_config_file
 	    (config_file_name, in->inputpath, in->simmode, "pulse") != 0) {
@@ -67,14 +66,19 @@ void sim_pulse(struct device *in)
 		    in->inputpath, in->simmode);
 	}
 
+	printf("%s\n", config_file_name);
+
 	pulse_load_config(&pulse_config, in, config_file_name);
 	int number = strextract_int(config_file_name);
+	ntricks_externv_set_load(pulse_config.pulse_Rload);
+
 	in->go_time = FALSE;
 
 	in->time = 0.0;
 
 	time_init(in);
 //time_load_mesh(in,number);
+
 	time_load_mesh(in, number);
 //time_mesh_save();
 //getchar();
@@ -89,11 +93,10 @@ void sim_pulse(struct device *in)
 			       time_get_laser());
 
 	double V = 0.0;
-	double V0 = 0.0;
 
 	if (pulse_config.pulse_sim_mode == pulse_load) {
 		sim_externalv(in, time_get_voltage());
-		newton_pulse(in, time_get_voltage(), FALSE);
+		ntricks_externv_newton(in, time_get_voltage(), FALSE);
 	} else if (pulse_config.pulse_sim_mode == pulse_open_circuit) {
 		in->Vapplied = in->Vbi;
 		pulse_newton_sim_voc(in);
@@ -107,8 +110,6 @@ void sim_pulse(struct device *in)
 	in->go_time = TRUE;
 
 	double extracted_through_contacts = 0.0;
-	double laser_width = 0.0;
-	double laser_power = 0.0;
 	double i0 = 0;
 	carrier_count_reset(in);
 	reset_np_save(in);
@@ -119,7 +120,8 @@ void sim_pulse(struct device *in)
 		dump_dynamic_add_data(&store, in, in->time);
 
 		if (pulse_config.pulse_sim_mode == pulse_load) {
-			i0 = newton_pulse(in, time_get_voltage(), TRUE);
+			i0 = ntricks_externv_newton(in, time_get_voltage(),
+						    TRUE);
 		} else if (pulse_config.pulse_sim_mode == pulse_open_circuit) {
 			V = in->Vapplied;
 			pulse_newton_sim_voc_fast(in, TRUE);
@@ -157,7 +159,7 @@ void sim_pulse(struct device *in)
 		//getchar();
 
 	} while (1);
-	char outpath[1000];
+
 	struct istruct out_flip;
 
 	dump_dynamic_save(in->outputpath, &store);

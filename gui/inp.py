@@ -105,7 +105,7 @@ def inp_copy_file(dest,src):
 	lines=[]
 	if inp_load_file(lines,src)==True:
 		inp_write_lines_to_file(dest,lines)
-		True
+		return True
 	else:
 		return False
 

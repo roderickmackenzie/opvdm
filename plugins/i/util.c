@@ -331,7 +331,7 @@ int strextract_int(char *in)
 {
 	char temp[200];
 	int i = 0;
-	double ret = 0.0;
+	int ret = 0.0;
 	int count = 0;
 	for (i = 0; i < strlen(in); i++) {
 		if ((in[i] > 47) && (in[i] < 58)) {
@@ -341,7 +341,6 @@ int strextract_int(char *in)
 
 	}
 	temp[count] = 0;
-
 	sscanf(temp, "%ld", &ret);
 	return ret;
 }

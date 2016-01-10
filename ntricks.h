@@ -40,4 +40,12 @@ void ramp(struct device *in, double from, double to, double steps);
 void ramp_externalv(struct device *in, double from, double to);
 void set_ntricks_fast(int val);
 double sim_voc(struct device *in);
+
+void ntricks_externv_set_load(double R);
+void ntricks_externv_newton_aux(struct device *in, double V, double *i,
+				double *didv, double *didphi, double *didxil,
+				double *didxipl, double *didphir,
+				double *didxir, double *didxipr);
+double ntricks_externv_newton(struct device *in, double Vtot, int usecap);
+
 #endif
