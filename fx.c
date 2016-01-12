@@ -127,6 +127,15 @@ void fx_step()
 #endif
 }
 
+int fx_points()
+{
+#ifdef enable_fx
+	return mesh_len;
+#else
+	return 0;
+#endif
+}
+
 int fx_run()
 {
 #ifdef enable_fx

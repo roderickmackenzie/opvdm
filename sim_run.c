@@ -102,6 +102,9 @@ int run_simulation(char *outputpath, char *inputpath)
 	join_path(2, temp, cell.outputpath, "dynamic");
 	remove_dir(temp);
 
+	join_path(2, temp, cell.outputpath, "frequency");
+	remove_dir(temp);
+
 	for (i = 0; i < cell.ymeshpoints; i++) {
 		cell.Nad[i] = get_dos_doping(cell.imat[i]);
 	}

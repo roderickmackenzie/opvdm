@@ -8,7 +8,7 @@
 //
 //    This program is free software; you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation; version 2 of the License
+//    the Free Software Foundation; either version 2 of the License.
 //
 //    This program is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,13 +18,10 @@
 //    You should have received a copy of the GNU General Public License along
 //    with this program; if not, write to the Free Software Foundation, Inc.,
 //    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#ifndef _fx
-#define _fx
-void fx_mesh_save();
-void fx_load_mesh(struct device *in, int number);
-void fx_step();
-int fx_run();
-double fx_get_fx();
-void fx_memory_free();
-int fx_points();
+#ifndef _fit_sin
+#define _fit_sin
+
+void fit_sin(double *ret_mag, double *ret_delta, struct istruct *in, double fx,
+	     char *prefix);
+
 #endif

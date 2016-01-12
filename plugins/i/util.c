@@ -39,6 +39,20 @@
 #include "../../lang.h"
 #include "../../log.h"
 
+void fx_with_units(char *out, double number)
+{
+	if (number < 1e3) {
+		sprintf(out, "%.3lf Hz", number);
+	} else if (number < 1e6) {
+		sprintf(out, "%.3lf KHz", number * 1e-3);
+	} else if (number < 1e9) {
+		sprintf(out, "%.3lf MHz", number * 1e-6);
+	} else if (number < 1e12) {
+		sprintf(out, "%.3lf GHz", number * 1e-9);
+	}
+
+}
+
 void join_path(int args, ...)
 {
 	int max = args + 1;

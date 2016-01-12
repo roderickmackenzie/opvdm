@@ -607,7 +607,7 @@ class opvdm_main_window(gobject.GObject):
 			self.fxexperiment_window=fxexperiment()
 			self.fxexperiment_window.init()
 
-		my_help_class.help_set_help(["time.png",_("<big><b>The time mesh editor</b></big>\n To do time domain simulations one must define how voltage the light vary as a function of time.  This can be done in this window.  Also use this window to define the simulation length and time step.")])
+		my_help_class.help_set_help(["spectrum.png",_("<big><b>Frequency domain mesh editor</b></big>\n Some times it is useful to do frequency domain simulations such as when simulating impedance spectroscopy.  This window will allow you to choose which frequencies will be simulated.")])
 		if self.fxexperiment_window.get_property("visible")==True:
 			self.fxexperiment_window.hide_all()
 		else:

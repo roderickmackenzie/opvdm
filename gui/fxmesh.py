@@ -109,7 +109,7 @@ class tab_fxmesh(gtk.VBox):
 
 
 	def callback_add_section(self, widget, treeview):
-		data=["0.0", "0.0", "0.0", "0.0", "1.0", "0.0", "0.0"]
+		data=["0.0", "0.0", "1.0"]
 		selection = treeview.get_selection()
 		model, iter = selection.get_selected()
 
@@ -177,7 +177,7 @@ class tab_fxmesh(gtk.VBox):
 
 	def on_cell_edited_dfx(self, cell, path, new_text, model):
 		#print "Rod",path
-		model[path][SEG_FX] = new_text
+		model[path][SEG_DFX] = new_text
 		self.build_mesh()
 		self.draw_graph()
 		self.fig.canvas.draw()

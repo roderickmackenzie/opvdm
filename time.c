@@ -28,6 +28,10 @@
 
 static int unused __attribute__ ((unused));
 
+void time_enable_everything(int in)
+{
+}
+
 void time_mesh_save()
 {
 }

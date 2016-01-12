@@ -290,7 +290,9 @@ class plot_widget(gtk.VBox):
 						if self.plot_token.label_data==True:
 							for ii in range(0,len(t)):
 								if z[ii]!="":
-									self.ax[plot_number].annotate(fx_with_units(float(z[ii])),xy = (t[ii], s[ii]), xytext = (-20, 20),textcoords = 'offset points', ha = 'right', va = 'bottom',bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
+									fx_unit=fx_with_units(float(z[ii]))
+									label_text=str(float(z[ii])*fx_unit[0])+" "+fx_unit[1]
+									self.ax[plot_number].annotate(label_text,xy = (t[ii], s[ii]), xytext = (-20, 20),textcoords = 'offset points', ha = 'right', va = 'bottom',bbox = dict(boxstyle = 'round,pad=0.5', fc = 'yellow', alpha = 0.5),arrowprops = dict(arrowstyle = '->', connectionstyle = 'arc3,rad=0'))
 
 						if number_of_plots>1:
 							self.ax[plot_number].yaxis.set_major_formatter(ticker.FormatStrFormatter('%0.1e'))

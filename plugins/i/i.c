@@ -34,9 +34,19 @@
 #include "i.h"
 #include "true_false.h"
 #include "util.h"
+#include "../../const.h"
 
 static int unused __attribute__ ((unused));
 static char *unused_pchar __attribute__ ((unused));
+
+void inter_sin(struct istruct *in, double mag, double fx, double delta)
+{
+	int i;
+	for (i = 0; i < in->len; i++) {
+		in->data[i] = fabs(mag) * sin(2 * PI * fx * (in->x[i] + delta));
+	}
+
+}
 
 void inter_add_to_hist(struct istruct *in, double pos, double value)
 {

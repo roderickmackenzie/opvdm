@@ -53,8 +53,8 @@ ifdef windows
 	LD=i686-w64-mingw32-ld
 	platform=windows
 	
-        inc+=-I$(HOME)/windll/zlib/include/ -I$(HOME)/windll/openssl-1.0.1j/include/ -I$(HOME)/windll/libzip/libzip-0.11.2/lib/
-	llink=    ./gui/res.o -lzip-2
+        inc+=-I$(HOME)/windll/zlib/include/ -I$(HOME)/windll/openssl-1.0.1j/include/ -I$(HOME)/windll/libzip/libzip-0.11.2/lib/ -I$(HOME)/windll/gsl-1.16/
+	llink= -L$(HOME)/windll/gsl-1.16/.libs/ -L$(HOME)/windll/gsl-1.16/cblas/.libs/ ./images/res.o -lzip-2 -lgsl -lgslcblas
 	#llink+=-L~/windll/umfpack/AMD/Lib -L~/windll/umfpack/UMFPACK/Lib -L~/windll/openssl-1.0.1j/ -static-libgcc -static-libstdc++
 else
 	CC=gcc
@@ -68,10 +68,10 @@ endif
 
 .PHONY: clean
 
-main: main.c solver.o light_utils.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o dump_map.o dump_energy_slice.o pos.o inital.o advmath.o config.o plot.o timer.o memory.o dos.o gendosfdgaus.o exp.o pl.o time.o fast.o anal.o dump.o dump_config.o dump_1d_slice.o dump_dynamic.o ntricks.o ntricks_externalv.o dos_an.o startstop.o complex_solver.o thermal.o light_interface.o dump_ctrl.o light_dump.o light_test.o inp.o rand.o buffer.o hard_limit.o epitaxy.o mesh.o patch.o cal_path.o log.o fx.o
+main: main.c solver.o light_utils.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o dump_map.o dump_energy_slice.o pos.o inital.o advmath.o config.o plot.o timer.o memory.o dos.o gendosfdgaus.o exp.o pl.o time.o fast.o anal.o dump.o dump_config.o dump_1d_slice.o dump_dynamic.o ntricks.o ntricks_externalv.o dos_an.o startstop.o complex_solver.o thermal.o light_interface.o dump_ctrl.o light_dump.o light_test.o inp.o rand.o buffer.o hard_limit.o epitaxy.o mesh.o patch.o cal_path.o log.o fx.o fit_sin.o
 	./buildplugins.sh "$(opt_normal) $(debug_opt)" "$(platform)" "$(CC)" "$(LD)"
 	./build_fit_plugins.sh $(platform)
-	$(CC) main.c light_dump.o buffer.o light_utils.o light_test.o solver.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o pos.o inital.o advmath.o config.o plot.o timer.o memory.o dos.o dump_map.o dump_energy_slice.o gendosfdgaus.o exp.o pl.o time.o $(plugins) fast.o anal.o dump.o dump_config.o dump_1d_slice.o dump_dynamic.o ntricks.o ntricks_externalv.o dos_an.o startstop.o complex_solver.o thermal.o light_interface.o dump_ctrl.o inp.o rand.o hard_limit.o epitaxy.o mesh.o patch.o cal_path.o  log.o  fx.o -o go.o -L. -lumfpack $(flags) $(link) $(inc)  -Wall -lm  -lcrypto $(opt_normal) $(llink)
+	$(CC) main.c light_dump.o buffer.o light_utils.o light_test.o solver.o gui_hooks.o sim_find_n0.o sim_run.o newton_update.o pos.o inital.o advmath.o config.o plot.o timer.o memory.o dos.o dump_map.o dump_energy_slice.o gendosfdgaus.o exp.o pl.o time.o $(plugins) fast.o anal.o dump.o dump_config.o dump_1d_slice.o dump_dynamic.o ntricks.o ntricks_externalv.o dos_an.o startstop.o complex_solver.o thermal.o light_interface.o dump_ctrl.o inp.o rand.o hard_limit.o epitaxy.o mesh.o patch.o cal_path.o log.o fx.o fit_sin.o -o go.o -L. -lumfpack $(flags) $(link) $(inc)  -Wall -lm  -lcrypto $(opt_normal) $(llink)
 # -lefence
 
 .PHONY: install
@@ -250,6 +250,8 @@ time.o: time.c
 fx.o: fx.c
 	$(CC) -c fx.c -o fx.o  $(inc) $(flags) $(opt_normal) $(warn)
 
+fit_sin.o: fit_sin.c
+	$(CC) -c fit_sin.c -o fit_sin.o  $(inc) $(flags) $(opt_normal) $(warn)
 
 exp.o: exp.c
 	$(CC) -c exp.c -o exp.o  $(inc) $(flags) $(opt_normal) $(warn)

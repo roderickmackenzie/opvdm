@@ -109,4 +109,6 @@ int inter_get_max_pos(struct istruct *in);
 int inter_search_pos(struct istruct *in, double x);
 double inter_join_bins(struct istruct *in, double delta);
 void inter_reset(struct istruct *in);
+void inter_find_peaks(struct istruct *out, struct istruct *in, int find_max);
+void inter_sin(struct istruct *in, double mag, double fx, double delta);
 #endif

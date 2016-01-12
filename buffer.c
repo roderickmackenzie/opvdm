@@ -105,6 +105,44 @@ void buffer_add_xy_data(struct buffer *in, double *x, double *y, int len)
 	}
 }
 
+void buffer_add_xy_data_z_label(struct buffer *in, double *x, double *y,
+				double *z, int len)
+{
+	int i;
+	char string[200];
+	double x_out = 0.0;
+	double y_out = 0.0;
+	double max = 0.0;
+	double min = 0.0;
+
+	if (len > 0) {
+		max = y[0];
+		min = y[0];
+
+		for (i = 0; i < len; i++) {
+			if (y[i] < min)
+				min = y[i];
+			if (y[i] > max)
+				max = y[i];
+		}
+
+		for (i = 0; i < len; i++) {
+			x_out = x[i];
+			y_out = y[i];
+			if (in->norm_x_axis == TRUE) {
+				x_out /= x[len - 1];
+			}
+
+			if (in->norm_y_axis == TRUE) {
+				y_out = (y[i] - min) / (max - min);
+			}
+
+			sprintf(string, "%le %le %le\n", x_out, y_out, z[i]);
+			buffer_add_string(in, string);
+		}
+	}
+}
+
 void buffer_add_string(struct buffer *in, char *string)
 {
 	int str_len = strlen(string);

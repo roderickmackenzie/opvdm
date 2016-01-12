@@ -30,3 +30,4 @@
 #include "./plugins/i/true_false.h"
 #include "./plugins/i/i.h"
 #include "./plugins/remesh_stub/remesh_stub.h"
+#include "./plugins/fxdomain/fxdomain.h"

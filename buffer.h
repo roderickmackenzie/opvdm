@@ -58,4 +58,6 @@ void buffer_dump(char *file, struct buffer *in);
 void buffer_dump_path(char *path, char *file, struct buffer *in);
 void buffer_free(struct buffer *in);
 void buffer_dump_aes(char *path, char *file, struct buffer *in, char *key_text);
+void buffer_add_xy_data_z_label(struct buffer *in, double *x, double *y,
+				double *z, int len);
 #endif

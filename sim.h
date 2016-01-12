@@ -72,6 +72,7 @@ double time_get_sun();
 double time_get_laser();
 double time_get_fs_laser();
 void time_memory_free();
+void time_enable_everything(int in);
 //
 int get_clamp_state();
 

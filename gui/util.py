@@ -259,10 +259,10 @@ def fx_with_units(fx):
 		mul=1e-3
 	elif (fx<1e9):
 		ret="MHz"
+		mul=1e-6
+	elif (fx<1e12):
+		ret="GHz"
 		mul=1e-9
-	elif (fx<1e13):
-		ret="THz"
-		mul=1e-12
 
 	return mul,ret
 

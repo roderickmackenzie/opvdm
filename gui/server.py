@@ -311,7 +311,6 @@ class server:
 						print "Running job",self.jobs[i]
 						if self.enable_gui==True:
 							self.progress_window.set_text("Running job"+self.jobs[i])
-
 						self.jobs_running=self.jobs_running+1
 						if running_on_linux()==True:
 							cmd="cd "+self.jobs[i]+";"
@@ -412,6 +411,19 @@ class server:
 						text=data.split(":")[1]
 						self.progress_window.set_text(text)
 					self.progress_window.progress.set_pulse_step(0.01)
-					self.progress_window.pulse()		
+					self.progress_window.pulse()
+			elif (data.startswith("percent")):
+				if len(self.jobs)==1:
+					splitup=data.split(":")
+					if len(splitup)>1:
+						frac=float(data.split(":")[1])
+						self.progress_window.set_fraction(frac)	
+			elif (data.startswith("text")):
+				if len(self.jobs)==1:
+					splitup=data.split(":")
+					if len(splitup)>1:
+						self.progress_window.set_text(data.split(":")[1])
+
+
 
 
